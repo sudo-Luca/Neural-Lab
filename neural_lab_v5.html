@@ -1,0 +1,2340 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Neural Lab v5</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800;900&display=swap" rel="stylesheet"/>
+    <style>
+      :root {
+        --bg: #05060c;
+        --p1: #0a0c18;
+        --p2: #0d1020;
+        --brd: #192040;
+        --a1: #00e5ff;
+        --a2: #bf5fff;
+        --grn: #00ff9d;
+        --ylw: #ffd600;
+        --red: #ff3d5a;
+        --org: #ff8c2a;
+        --text: #b8cce8;
+        --dim: #445577;
+        --glow1: 0 0 18px rgba(0, 229, 255, 0.3);
+        --glow2: 0 0 18px rgba(191, 95, 255, 0.3);
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: hidden; }
+      body { font-family: "JetBrains Mono", monospace; background: var(--bg); color: var(--text); display: flex; }
+      ::-webkit-scrollbar { width: 4px; height: 4px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--a1); }
+      input[type="text"], input[type="number"], textarea { width: 100%; padding: 5px 8px; background: #030408; border: 1px solid var(--brd); color: var(--text); font-family: "JetBrains Mono", monospace; font-size: 11px; border-radius: 3px; outline: none; transition: 0.15s; }
+      input:focus, textarea:focus { border-color: var(--a1); box-shadow: 0 0 6px rgba(0, 229, 255, 0.15); }
+      textarea { resize: vertical; min-height: 60px; }
+      select { width: 100%; padding: 5px 8px; background: #030408; border: 1px solid var(--brd); color: var(--text); font-family: "JetBrains Mono", monospace; font-size: 11px; border-radius: 3px; outline: none; cursor: pointer; }
+      input[type="range"] { width: 100%; accent-color: var(--a1); cursor: pointer; height: 3px; }
+      input[type="color"] { width: 26px; height: 20px; border: 1px solid var(--brd); border-radius: 2px; background: none; cursor: pointer; padding: 0; }
+      input[type="checkbox"] { accent-color: var(--a1); cursor: pointer; width: 12px; height: 12px; }
+      .btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; font-family: "JetBrains Mono", monospace; font-size: 10px; border: 1px solid var(--brd); background: transparent; color: var(--text); cursor: pointer; border-radius: 3px; transition: 0.15s; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+      .btn:hover { border-color: var(--a1); color: var(--a1); box-shadow: 0 0 8px rgba(0, 229, 255, 0.15); }
+      .btn.ok { border-color: var(--a1); color: var(--a1); }
+      .btn.ok:hover { background: rgba(0, 229, 255, 0.07); box-shadow: var(--glow1); }
+      .btn.go { border-color: var(--grn); color: var(--grn); }
+      .btn.go:hover { background: rgba(0, 255, 157, 0.07); }
+      .btn.warn { border-color: var(--org); color: var(--org); }
+      .btn.danger { border-color: var(--red); color: var(--red); }
+      .btn.on { border-color: var(--a2); color: var(--a2); background: rgba(191, 95, 255, 0.07); box-shadow: var(--glow2); }
+      .btn.pulse { animation: pulse 0.6s infinite; }
+      @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+      .btn-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+      #left { width: 260px; min-width: 160px; max-width: 520px; background: var(--p1); border-right: 1px solid var(--brd); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+      #center { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+      #right { width: 370px; min-width: 200px; max-width: 650px; background: var(--p1); border-left: 1px solid var(--brd); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+
+      /* ── RESIZE HANDLES ── */
+      .rsz-col {
+        width: 5px;
+        background: var(--brd);
+        cursor: col-resize;
+        flex-shrink: 0;
+        position: relative;
+        transition: background 0.15s;
+        z-index: 10;
+      }
+      .rsz-col::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1px;
+        height: 32px;
+        background: var(--dim);
+        border-radius: 1px;
+        opacity: 0.5;
+        transition: 0.15s;
+      }
+      .rsz-col:hover, .rsz-col.dragging {
+        background: var(--a1);
+        box-shadow: 0 0 8px rgba(0,229,255,0.3);
+      }
+      .rsz-col:hover::after, .rsz-col.dragging::after {
+        background: var(--a1);
+        opacity: 1;
+        height: 48px;
+      }
+      .rsz-row {
+        height: 5px;
+        background: var(--brd);
+        cursor: row-resize;
+        flex-shrink: 0;
+        position: relative;
+        transition: background 0.15s;
+        z-index: 10;
+      }
+      .rsz-row::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 1px;
+        width: 32px;
+        background: var(--dim);
+        border-radius: 1px;
+        opacity: 0.5;
+        transition: 0.15s;
+      }
+      .rsz-row:hover, .rsz-row.dragging {
+        background: var(--a1);
+        box-shadow: 0 0 8px rgba(0,229,255,0.3);
+      }
+      .rsz-row:hover::after, .rsz-row.dragging::after {
+        background: var(--a1);
+        opacity: 1;
+        width: 48px;
+      }
+      /* prevent text selection while dragging */
+      body.resizing { user-select: none; cursor: col-resize; }
+      body.resizing-row { user-select: none; cursor: row-resize; }
+      .ph { padding: 12px 14px 9px; border-bottom: 1px solid var(--brd); background: linear-gradient(135deg, var(--p1), var(--p2)); }
+      .ph h1 { font-family: "Syne", sans-serif; font-weight: 900; font-size: 14px; color: var(--a1); letter-spacing: 0.1em; text-shadow: var(--glow1); }
+      .ph p { font-size: 9px; color: var(--dim); margin-top: 2px; }
+      #lscroll { flex: 1; overflow-y: auto; padding-bottom: 16px; }
+      .sec { padding: 9px 12px 8px; border-bottom: 1px solid var(--brd); }
+      .sh { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 7px; font-weight: 500; }
+      lbl, .lbl { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-top: 6px; margin-bottom: 3px; }
+      lbl:first-child, .lbl:first-child { margin-top: 0; }
+      .sg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 4px; }
+      .sb { background: #030408; border: 1px solid var(--brd); border-radius: 3px; padding: 6px 8px; text-align: center; }
+      .sb .v { font-family: "Syne", sans-serif; font-weight: 800; font-size: 15px; color: var(--a1); }
+      .sb .k { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 1px; }
+      #lossChart { width: 100%; height: 66px; display: block; margin-top: 6px; cursor: crosshair; }
+      .ds-row { display: flex; align-items: center; gap: 4px; margin: 2px 0; font-size: 10px; padding: 4px 6px; background: #030408; border: 1px solid var(--brd); border-radius: 3px; }
+      .ds-row span { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+      .badge { display: inline-block; padding: 1px 5px; border-radius: 6px; font-size: 8px; }
+      .bg { border: 1px solid var(--grn); color: var(--grn); background: rgba(0, 255, 157, 0.1); }
+      .br { border: 1px solid var(--red); color: var(--red); background: rgba(255, 61, 90, 0.1); }
+      .by { border: 1px solid var(--ylw); color: var(--ylw); background: rgba(255, 214, 0, 0.1); }
+      #canvasWrap { flex: 1; position: relative; overflow: hidden; background: var(--bg); }
+      canvas { display: block; width: 100%; height: 100%; }
+      #logPanel { height: 190px; min-height: 60px; max-height: 70vh; background: var(--p1); border-top: none; display: flex; flex-direction: column; }
+      .lh { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--brd); background: var(--p2); }
+      .lh h3 { font-family: "Syne", sans-serif; font-size: 10px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; flex: 1; }
+      .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--grn); box-shadow: 0 0 5px var(--grn); animation: blink 1.4s infinite; }
+      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+      #log { flex: 1; overflow-y: auto; padding: 7px 12px; font-size: 10px; line-height: 1.75; font-family: "JetBrains Mono", monospace; }
+      .ls { color: var(--a2); font-weight: 700; }
+      .ln { color: var(--ylw); }
+      .lf { color: var(--dim); font-size: 9px; }
+      .lv { color: var(--grn); }
+      .lw { color: var(--a1); }
+      .lb { color: var(--a2); }
+      .ll { color: var(--red); font-weight: 700; }
+      .lu { color: var(--org); }
+      .lsep { color: #192040; user-select: none; }
+      .tabs { display: flex; border-bottom: 1px solid var(--brd); background: var(--p2); overflow-x: auto; }
+      .tab { padding: 8px 11px; font-size: 9px; cursor: pointer; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 2px solid transparent; transition: 0.15s; white-space: nowrap; flex-shrink: 0; }
+      .tab:hover { color: var(--text); }
+      .tab.active { color: var(--a1); border-bottom-color: var(--a1); }
+      .tc { display: none; }
+      .tc.show { display: block; animation: fi 0.2s ease; }
+      @keyframes fi { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+      #rpbody { flex: 1; overflow-y: auto; }
+      .card { background: #030408; border: 1px solid var(--brd); border-radius: 5px; padding: 11px; margin: 9px 11px 0; position: relative; overflow: hidden; animation: fi 0.2s ease; }
+      .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--a1), var(--a2)); }
+      .card h3 { font-family: "Syne", sans-serif; font-size: 12px; font-weight: 700; color: var(--a1); margin-bottom: 8px; }
+      .dr { display: flex; justify-content: space-between; align-items: baseline; padding: 3px 0; border-bottom: 1px solid rgba(25, 32, 64, 0.5); font-size: 10px; }
+      .dr:last-child { border-bottom: none; }
+      .dk { color: var(--dim); }
+      .dv { color: var(--text); font-weight: 500; }
+      .dv.p { color: var(--grn); }
+      .dv.n { color: var(--red); }
+      .fb { background: #020307; border: 1px solid var(--brd); border-radius: 3px; padding: 8px 10px; margin-top: 7px; font-size: 10px; line-height: 2; }
+      .ft { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
+      .fs { display: flex; align-items: baseline; gap: 5px; flex-wrap: wrap; }
+      .fe { color: var(--dim); font-size: 9px; min-width: 75px; }
+      .fval { color: var(--grn); }
+      .fvar { color: var(--a1); }
+      .wt { width: 100%; border-collapse: collapse; font-size: 9px; margin-top: 6px; }
+      .wt th { background: #080a14; color: var(--dim); font-size: 8px; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 6px; border: 1px solid var(--brd); text-align: left; }
+      .wt td { padding: 3px 6px; border: 1px solid var(--brd); }
+      .wt td.p { color: var(--grn); }
+      .wt td.n { color: var(--red); }
+      .wbar { display: inline-block; height: 3px; border-radius: 1px; margin-left: 4px; vertical-align: middle; }
+      .abar-wrap { display: flex; align-items: center; gap: 6px; font-size: 9px; margin: 5px 0; }
+      .abar-bg { flex: 1; height: 5px; background: #0a0c1a; border-radius: 2px; overflow: hidden; }
+      .abar { height: 100%; border-radius: 2px; transition: width 0.3s; }
+      #flib-wrap { padding: 8px 11px 16px; }
+      .fs-box { position: relative; margin-bottom: 8px; }
+      .fs-box input { padding-left: 26px; font-size: 11px; }
+      .fs-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--dim); font-size: 11px; pointer-events: none; }
+      .ftags { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 7px; }
+      .ftag { padding: 2px 7px; border-radius: 9px; font-size: 8px; cursor: pointer; border: 1px solid var(--brd); color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; transition: 0.12s; }
+      .ftag:hover, .ftag.on { border-color: var(--a1); color: var(--a1); background: rgba(0, 229, 255, 0.06); }
+      .fcat { margin-bottom: 3px; border: 1px solid var(--brd); border-radius: 4px; overflow: hidden; }
+      .fcath { display: flex; align-items: center; gap: 7px; padding: 7px 10px; cursor: pointer; background: var(--p2); transition: 0.12s; }
+      .fcath:hover { background: #0f1222; }
+      .fci { font-size: 13px; width: 18px; text-align: center; }
+      .fct { flex: 1; font-family: "Syne", sans-serif; font-size: 10px; font-weight: 600; }
+      .fcc { font-size: 8px; color: var(--dim); background: rgba(25, 32, 64, 0.8); padding: 1px 5px; border-radius: 6px; }
+      .fca { font-size: 9px; color: var(--dim); transition: transform 0.15s; }
+      .fca.o { transform: rotate(90deg); }
+      .fcb { display: none; padding: 3px 0; }
+      .fcb.o { display: block; }
+      .fsub { margin: 2px 7px; border: 1px solid rgba(25, 32, 64, 0.4); border-radius: 3px; overflow: hidden; }
+      .fsubh { display: flex; align-items: center; gap: 5px; padding: 5px 9px; cursor: pointer; font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.07em; transition: 0.12s; }
+      .fsubh:hover { background: rgba(25, 32, 64, 0.3); }
+      .fsuba { font-size: 8px; color: var(--dim); transition: transform 0.15s; margin-left: auto; }
+      .fsuba.o { transform: rotate(90deg); }
+      .fsubb { display: none; padding: 1px 0; }
+      .fsubb.o { display: block; }
+      .fentry { padding: 6px 11px 6px 18px; cursor: pointer; border-bottom: 1px solid rgba(25, 32, 64, 0.25); transition: 0.1s; position: relative; }
+      .fentry:last-child { border-bottom: none; }
+      .fentry:hover { background: rgba(0, 229, 255, 0.03); }
+      .fentry.hi { background: rgba(0, 229, 255, 0.06); }
+      .fen { font-size: 10px; color: var(--text); margin-bottom: 1px; }
+      .feq { font-size: 11px; color: var(--a1); margin-bottom: 2px; }
+      .fed { font-size: 8px; color: var(--dim); line-height: 1.4; }
+      .fetags { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 3px; }
+      .fetag { font-size: 7px; padding: 1px 4px; border-radius: 4px; border: 1px solid var(--brd); color: var(--dim); }
+      .fnone { text-align: center; padding: 24px; color: var(--dim); font-size: 10px; }
+      .fdpanel { background: #020307; border: 1px solid var(--a1); border-radius: 4px; padding: 11px; margin: 0 0 8px; display: none; }
+      .fdpanel.show { display: block; animation: fi 0.18s ease; }
+      .fdpanel h4 { color: var(--a1); font-size: 11px; font-family: "Syne", sans-serif; margin-bottom: 7px; }
+      .fdeq { font-size: 14px; color: var(--grn); margin: 6px 0 9px; letter-spacing: 0.03em; line-height: 1.6; word-break: break-all; }
+      .fdex { font-size: 9px; color: var(--text); line-height: 1.8; margin-bottom: 7px; }
+      .fdpc { display: flex; gap: 10px; }
+      .fdpros, .fdcons { flex: 1; font-size: 8px; line-height: 1.9; }
+      .fdpros span { color: var(--grn); }
+      .fdcons span { color: var(--red); }
+      .fdrange { display: flex; justify-content: space-between; font-size: 8px; margin-top: 6px; padding-top: 5px; border-top: 1px solid var(--brd); }
+      .fdrange span { color: var(--dim); }
+      .fdrange b { color: var(--ylw); }
+      .fdderiv { margin-top: 5px; font-size: 8px; color: var(--dim); }
+      .fdderiv b { color: var(--ylw); }
+      .fgwrap { width: 100%; height: 60px; margin: 7px 0; }
+      .fgwrap canvas { width: 100%; height: 100%; border: 1px solid var(--brd); border-radius: 2px; display: block; }
+
+      /* ── FORMULA LEGEND ── */
+      .fleg { background: rgba(0,229,255,0.04); border: 1px solid rgba(0,229,255,0.15); border-radius: 3px; padding: 6px 9px; margin-bottom: 8px; }
+      .fleg-title { font-size: 8px; color: var(--a1); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; font-weight: 700; }
+      .fleg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 10px; }
+      .fleg-row { display: flex; align-items: baseline; gap: 5px; font-size: 8px; padding: 1px 0; }
+      .fleg-sym { color: var(--grn); font-size: 10px; min-width: 22px; font-family: "JetBrains Mono", monospace; }
+      .fleg-desc { color: var(--dim); line-height: 1.4; }
+      .fleg-sep { grid-column: 1/-1; height: 1px; background: var(--brd); margin: 3px 0; }
+
+      /* ── CANVAS LEGEND ── */
+      .canvas-legend { position: absolute; bottom: 10px; right: 12px; background: rgba(3,4,8,0.88); border: 1px solid var(--brd); border-radius: 5px; padding: 8px 10px; font-size: 8px; pointer-events: none; min-width: 140px; }
+      .cl-title { color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; font-size: 7px; }
+      .cl-row { display: flex; align-items: center; gap: 6px; margin: 3px 0; color: var(--dim); }
+      .cl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+      .cl-line { width: 18px; height: 3px; flex-shrink: 0; border-radius: 1px; }
+      .cl-badge { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; border: 1px solid currentColor; }
+
+      #cust-wrap { padding: 8px 11px 16px; }
+      .csec { margin-bottom: 4px; border: 1px solid var(--brd); border-radius: 4px; overflow: hidden; }
+      .csech { display: flex; align-items: center; gap: 7px; padding: 7px 10px; cursor: pointer; background: var(--p2); transition: 0.12s; }
+      .csech:hover { background: #0f1222; }
+      .csect { flex: 1; font-family: "Syne", sans-serif; font-size: 10px; font-weight: 600; }
+      .cseca { font-size: 9px; color: var(--dim); transition: transform 0.15s; }
+      .cseca.o { transform: rotate(90deg); }
+      .csecb { display: none; padding: 8px 10px; }
+      .csecb.o { display: block; }
+      .crow { display: flex; align-items: center; gap: 7px; margin: 4px 0; font-size: 9px; }
+      .crow label { flex: 1; color: var(--dim); }
+      .cval { min-width: 38px; text-align: right; color: var(--a1); font-size: 9px; }
+      .crow input[type="range"] { flex: 2; }
+      .crow select { flex: 2; font-size: 9px; padding: 3px 5px; }
+      #test-wrap { padding: 8px 11px 16px; }
+      .test-input-row { display: flex; gap: 5px; align-items: center; margin: 3px 0; }
+      .test-input-row label { font-size: 9px; color: var(--dim); min-width: 55px; }
+      .test-result { background: #020307; border: 1px solid var(--grn); border-radius: 4px; padding: 10px; margin-top: 8px; font-size: 10px; line-height: 1.9; }
+      .test-result .tr-title { color: var(--grn); font-family: "Syne", sans-serif; font-size: 11px; margin-bottom: 6px; }
+      .test-result .tr-row { display: flex; justify-content: space-between; }
+      .tr-key { color: var(--dim); }
+      .tr-val { color: var(--a1); font-weight: 500; }
+      .test-steps { background: #020307; border: 1px solid var(--brd); border-radius: 4px; padding: 10px; margin-top: 7px; font-size: 10px; line-height: 1.9; max-height: 280px; overflow-y: auto; }
+      .ts-layer { color: var(--ylw); font-weight: 700; margin-top: 5px; }
+      .ts-neu { padding-left: 10px; }
+      .ts-z { color: var(--a1); }
+      .ts-a { color: var(--grn); }
+      .ts-step { color: var(--dim); font-size: 9px; padding-left: 18px; }
+      #dsedit-wrap { padding: 8px 11px 16px; }
+      .dse-row { display: flex; gap: 4px; align-items: center; margin: 3px 0; background: #030408; border: 1px solid var(--brd); border-radius: 3px; padding: 4px 6px; font-size: 10px; }
+      .dse-cell { flex: 1; background: transparent; border: none; color: var(--text); font-family: "JetBrains Mono", monospace; font-size: 10px; padding: 2px 4px; text-align: center; outline: none; border-bottom: 1px solid transparent; transition: 0.15s; }
+      .dse-cell:focus { border-bottom-color: var(--a1); color: var(--a1); }
+      .dse-del { color: var(--red); cursor: pointer; padding: 1px 4px; background: none; border: none; font-size: 12px; line-height: 1; opacity: 0.5; transition: 0.15s; }
+      .dse-del:hover { opacity: 1; }
+      .dse-head { display: flex; gap: 4px; margin-bottom: 3px; font-size: 8px; color: var(--dim); text-transform: uppercase; padding: 0 6px; }
+      .dse-hcell { flex: 1; text-align: center; }
+      #tip { position: fixed; background: rgba(3, 4, 8, 0.97); border: 1px solid var(--a1); color: var(--text); padding: 8px 12px; border-radius: 5px; font-size: 9px; pointer-events: none; display: none; box-shadow: var(--glow1); z-index: 9999; line-height: 1.9; min-width: 130px; }
+      #tip .tt { color: var(--a1); font-weight: 700; font-size: 10px; margin-bottom: 3px; }
+      #tip .tr { display: flex; justify-content: space-between; gap: 9px; }
+      #tip .tk { color: var(--dim); }
+      .tv { color: var(--grn); }
+      #modal-bg { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 1000; display: none; align-items: center; justify-content: center; }
+      #modal-bg.show { display: flex; }
+      #modal { background: var(--p1); border: 1px solid var(--a1); border-radius: 6px; padding: 18px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: var(--glow1); }
+      #modal h2 { font-family: "Syne", sans-serif; color: var(--a1); font-size: 14px; margin-bottom: 12px; }
+      .rsz { width: 4px; background: var(--brd); cursor: col-resize; transition: 0.15s; flex-shrink: 0; }
+      .rsz:hover { background: var(--a1); }
+      .hint { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(3, 4, 8, 0.9); border: 1px solid var(--brd); padding: 4px 12px; border-radius: 12px; font-size: 9px; color: var(--dim); pointer-events: none; opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
+      .pbwrap { height: 2px; background: #0a0c14; border-radius: 1px; overflow: hidden; margin-top: 4px; }
+      .pb { height: 100%; background: linear-gradient(90deg, var(--a1), var(--a2)); border-radius: 1px; transition: width 0.2s; }
+      .tog-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-top: 4px; }
+
+      /* ── ADVANCED BUILDER ── */
+      #abld-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1100; display: none; align-items: center; justify-content: center; }
+      #abld-modal-bg.show { display: flex; }
+      #abld-modal { background: var(--p1); border: 1px solid var(--a1); border-radius: 8px; padding: 0; max-width: 700px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 0 40px rgba(0,229,255,0.15); }
+      #abld-header { padding: 14px 18px 10px; border-bottom: 1px solid var(--brd); background: linear-gradient(135deg, var(--p1), var(--p2)); border-radius: 8px 8px 0 0; }
+      #abld-header h2 { font-family: "Syne", sans-serif; color: var(--a1); font-size: 13px; letter-spacing: 0.08em; }
+      #abld-header p { font-size: 9px; color: var(--dim); margin-top: 2px; }
+      #abld-body { flex: 1; overflow-y: auto; padding: 14px 18px; }
+      #abld-footer { padding: 10px 18px; border-top: 1px solid var(--brd); display: flex; gap: 6px; background: var(--p2); border-radius: 0 0 8px 8px; }
+
+      /* Layer config rows */
+      .layer-config { margin-bottom: 6px; background: #030408; border: 1px solid var(--brd); border-radius: 4px; overflow: hidden; transition: 0.15s; }
+      .layer-config:hover { border-color: rgba(0,229,255,0.25); }
+      .layer-config.layer-in { border-left: 3px solid var(--ylw); }
+      .layer-config.layer-hidden { border-left: 3px solid var(--a1); }
+      .layer-config.layer-out { border-left: 3px solid var(--a2); }
+      .lc-header { display: flex; align-items: center; gap: 8px; padding: 7px 10px; cursor: pointer; user-select: none; }
+      .lc-badge { font-size: 8px; padding: 1px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+      .lc-badge.in { background: rgba(255,214,0,0.15); color: var(--ylw); border: 1px solid var(--ylw); }
+      .lc-badge.hidden { background: rgba(0,229,255,0.1); color: var(--a1); border: 1px solid var(--a1); }
+      .lc-badge.out { background: rgba(191,95,255,0.15); color: var(--a2); border: 1px solid var(--a2); }
+      .lc-info { flex: 1; font-size: 10px; color: var(--text); }
+      .lc-summary { font-size: 9px; color: var(--dim); }
+      .lc-toggle { font-size: 9px; color: var(--dim); transition: transform 0.15s; }
+      .lc-toggle.o { transform: rotate(90deg); }
+      .lc-body { display: none; padding: 8px 12px 10px; border-top: 1px solid rgba(25,32,64,0.5); background: rgba(0,0,0,0.2); }
+      .lc-body.o { display: block; animation: fi 0.15s ease; }
+      .lc-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 9px; }
+      .lc-row label { color: var(--dim); min-width: 80px; }
+      .lc-row select, .lc-row input { flex: 1; }
+      .lc-row input[type="number"] { width: 70px; flex: none; }
+      .lc-row input[type="range"] { flex: 1; }
+      .lc-row .cval { min-width: 35px; text-align: right; color: var(--a1); font-size: 9px; }
+
+      /* act chip in layer header */
+      .act-chip { font-size: 8px; padding: 1px 5px; border-radius: 3px; background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.2); color: var(--a1); margin-right: 3px; }
+      .act-chip.out-chip { background: rgba(191,95,255,0.08); border-color: rgba(191,95,255,0.2); color: var(--a2); }
+
+      /* Layer sort controls */
+      .lc-actions { display: flex; gap: 4px; }
+      .lc-del { color: var(--red); cursor: pointer; font-size: 11px; background: none; border: none; padding: 2px 5px; opacity: 0.5; transition: 0.15s; }
+      .lc-del:hover { opacity: 1; }
+      .lc-mv { color: var(--dim); cursor: pointer; font-size: 10px; background: none; border: none; padding: 2px 4px; opacity: 0.6; transition: 0.15s; }
+      .lc-mv:hover { color: var(--a1); opacity: 1; }
+
+      /* Visual net preview inside modal */
+      #abld-preview { width: 100%; height: 80px; background: #020307; border: 1px solid var(--brd); border-radius: 4px; margin-bottom: 12px; display: block; cursor: default; }
+
+      /* Activation info tooltip in builder */
+      .act-info-box { background: #020307; border: 1px solid rgba(0,229,255,0.15); border-radius: 3px; padding: 6px 9px; margin-top: 5px; font-size: 8px; color: var(--dim); line-height: 1.7; }
+      .act-info-box b { color: var(--a1); }
+      .act-info-box .aib-eq { color: var(--grn); font-size: 9px; margin-bottom: 3px; }
+      .act-info-box .aib-range { color: var(--ylw); }
+
+      /* Quick presets in builder */
+      .preset-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+      .preset-chip { font-size: 8px; padding: 3px 8px; border-radius: 3px; border: 1px solid var(--brd); color: var(--dim); cursor: pointer; transition: 0.12s; text-transform: uppercase; letter-spacing: 0.05em; }
+      .preset-chip:hover { border-color: var(--a1); color: var(--a1); background: rgba(0,229,255,0.05); }
+
+      /* init / regularization global section */
+      .abld-sec { background: #030408; border: 1px solid var(--brd); border-radius: 4px; padding: 10px 12px; margin-bottom: 10px; }
+      .abld-sec-title { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; font-weight: 700; }
+
+      /* Legend blobs for formula symbols */
+      .sym-legend { display: inline-flex; align-items: center; gap: 3px; }
+      .sym-legend .sl-s { font-family: "JetBrains Mono", monospace; color: var(--grn); font-size: 9px; }
+      .sym-legend .sl-d { font-size: 8px; color: var(--dim); }
+    </style>
+  </head>
+  <body>
+    <!-- ══════════════ LEFT ══════════════ -->
+    <div id="left">
+      <div class="ph">
+        <h1>⬡ NEURAL LAB <span style="font-size:9px;color:var(--dim)">v5</span></h1>
+        <p>Simulateur pédagogique deep learning</p>
+      </div>
+      <div id="lscroll">
+        <div class="sec">
+          <div class="sh">Architecture</div>
+          <lbl>Couches (ex: 3,5,4,2)</lbl>
+          <input type="text" id="iLayers" value="2,4,3,1"/>
+          <lbl>Activation</lbl>
+          <select id="iAct">
+            <option value="sigmoid">Sigmoid</option>
+            <option value="relu">ReLU</option>
+            <option value="tanh">Tanh</option>
+            <option value="leakyrelu">Leaky ReLU</option>
+            <option value="elu">ELU</option>
+            <option value="swish">Swish</option>
+            <option value="gelu">GELU</option>
+            <option value="selu">SELU</option>
+            <option value="softsign">Softsign</option>
+            <option value="linear">Linéaire</option>
+          </select>
+          <lbl>Activation couche sortie</lbl>
+          <select id="iActOut">
+            <option value="same">Identique (auto)</option>
+            <option value="sigmoid">Sigmoid</option>
+            <option value="linear">Linéaire</option>
+            <option value="relu">ReLU</option>
+            <option value="tanh">Tanh</option>
+            <option value="softmax">Softmax</option>
+          </select>
+          <lbl>Perte</lbl>
+          <select id="iLoss">
+            <option value="mse">MSE</option>
+            <option value="mae">MAE</option>
+            <option value="logloss">Log Loss (BCE)</option>
+            <option value="huber">Huber</option>
+            <option value="hinge">Hinge</option>
+          </select>
+          <lbl>Optimiseur</lbl>
+          <select id="iOpt">
+            <option value="sgd">SGD</option>
+            <option value="momentum">Momentum</option>
+            <option value="rmsprop">RMSProp</option>
+            <option value="adam">Adam</option>
+            <option value="adamw">AdamW</option>
+            <option value="nag">Nesterov AG</option>
+          </select>
+          <lbl>LR</lbl>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="range" id="lrR" min="0.0001" max="5" step="0.0001" value="0.5" oninput="syncLR(this.value)" style="flex:2"/>
+            <input type="number" id="lrN" value="0.5" step="0.001" min="0.0001" max="20" oninput="syncLR(this.value)" style="width:70px"/>
+          </div>
+          <div class="btn-row">
+            <button class="btn ok" onclick="buildNet()" style="flex:1">▶ Créer</button>
+            <button class="btn" onclick="resetW()">↺ Réinit</button>
+            <button class="btn" onclick="showWizard()">⚙ Wizard</button>
+          </div>
+          <div class="btn-row" style="margin-top:4px">
+            <button class="btn on" onclick="showAdvBuilder()" style="flex:1;border-color:var(--a2);color:var(--a2)">⬡ Constructeur avancé</button>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sh">Entraînement</div>
+          <div class="sg">
+            <div class="sb"><div class="v" id="sEpoch">0</div><div class="k">Epoch</div></div>
+            <div class="sb"><div class="v" id="sLoss">—</div><div class="k">Loss</div></div>
+            <div class="sb"><div class="v" id="sAcc">—</div><div class="k">Acc%</div></div>
+            <div class="sb"><div class="v" id="sLR">0.5</div><div class="k">LR</div></div>
+          </div>
+          <canvas id="lossChart" title="Clic = zoom/effacer"></canvas>
+          <div class="btn-row" style="margin-top:6px">
+            <button class="btn go" onclick="doStep()" style="flex:1">▶ Step</button>
+            <button class="btn ok" onclick="doEpoch()" style="flex:1">+Epoch</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="btnAuto" onclick="toggleAuto()" style="flex:1">⚡ Auto</button>
+            <button class="btn" onclick="doN(100)">×100</button>
+            <button class="btn" onclick="doN(1000)">×1k</button>
+            <button class="btn" onclick="doN(10000)">×10k</button>
+          </div>
+          <lbl>Vitesse auto (ms/batch)</lbl>
+          <input type="range" id="autoSpeed" min="0" max="500" value="0" style="width:100%"/>
+          <div class="pbwrap"><div class="pb" id="pb" style="width:0"></div></div>
+        </div>
+
+        <div class="sec">
+          <div class="sh">Affichage</div>
+          <div class="tog-grid">
+            <button class="btn on" id="tW" onclick="tog('W')">Poids</button>
+            <button class="btn on" id="tB" onclick="tog('B')">Biais</button>
+            <button class="btn on" id="tA" onclick="tog('A')">Activ.</button>
+            <button class="btn on" id="tI" onclick="tog('I')">Indices</button>
+            <button class="btn on" id="tG" onclick="tog('G')">Glow</button>
+            <button class="btn on" id="tGrid" onclick="tog('Grid')">Grille</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ CENTER ══════════════ -->
+    <div class="rsz-col" id="rszLeft" title="Redimensionner"></div>
+    <div id="center">
+      <div id="canvasWrap">
+        <canvas id="canvas"></canvas>
+        <div class="hint" id="hint">Clic = détails · Ctrl+clic = forcer une activation</div>
+        <!-- Canvas Legend -->
+        <div class="canvas-legend" id="canvasLegend">
+          <div class="cl-title">Légende</div>
+          <div class="cl-row"><div class="cl-dot" style="background:var(--ylw);border:1px solid var(--ylw)"></div><span>Neurone entrée</span></div>
+          <div class="cl-row"><div class="cl-dot" style="background:rgba(0,229,255,0.3);border:1px solid var(--a1)"></div><span>Neurone caché</span></div>
+          <div class="cl-row"><div class="cl-dot" style="background:rgba(191,95,255,0.3);border:1px solid var(--a2)"></div><span>Neurone sortie</span></div>
+          <div class="cl-row"><div class="cl-line" style="background:var(--grn)"></div><span>Poids positif</span></div>
+          <div class="cl-row"><div class="cl-line" style="background:var(--red)"></div><span>Poids négatif</span></div>
+          <div style="margin-top:5px;padding-top:5px;border-top:1px solid var(--brd);font-size:7px;color:var(--dim)">
+            Épaisseur ∝ |w| · Luminosité ∝ activation
+          </div>
+        </div>
+      </div>
+        <div class="rsz-row" id="rszLog" title="Redimensionner le log"></div>
+      <div id="logPanel">
+        <div class="lh">
+          <div class="dot"></div>
+          <h3>Calculs détaillés</h3>
+          <select id="logLevel" style="width:auto;font-size:9px;padding:2px 5px;margin-right:4px">
+            <option value="full">Complet</option>
+            <option value="medium">Moyen</option>
+            <option value="epoch">Par epoch</option>
+            <option value="off">Silencieux</option>
+          </select>
+          <button class="btn" onclick="clearLog()" style="padding:2px 6px;font-size:9px">✕ Effacer</button>
+          <button class="btn" onclick="copyLog()" style="padding:2px 6px;font-size:9px;margin-left:3px">⎘ Copier</button>
+        </div>
+        <div id="log"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════ RIGHT ══════════════ -->
+    <div class="rsz-col" id="rszRight" title="Redimensionner"></div>
+    <div id="right">
+      <div class="tabs">
+        <div class="tab active" id="tab-details" onclick="showTab('details')">Détails</div>
+        <div class="tab" id="tab-test" onclick="showTab('test')">Test</div>
+        <div class="tab" id="tab-data" onclick="showTab('data')">Dataset</div>
+        <div class="tab" id="tab-flib" onclick="showTab('flib')">Formules</div>
+        <div class="tab" id="tab-cust" onclick="showTab('cust')">Options</div>
+        <div class="tab" id="tab-guide" onclick="showTab('guide')">Guide</div>
+      </div>
+      <div id="rpbody">
+        <!-- ── DETAILS ── -->
+        <div id="tc-details" class="tc show">
+          <div id="detail-inner" style="padding-bottom:12px">
+            <div style="padding:28px 16px;text-align:center;color:var(--dim);font-size:10px;line-height:2.2">
+              Clic sur un <span style="color:var(--a1)">neurone ●</span> ou une <span style="color:var(--a2)">connexion ─</span><br>pour voir tous ses détails et calculs
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TEST ── -->
+        <div id="tc-test" class="tc">
+          <div id="test-wrap">
+            <div class="sh">Tester le réseau</div>
+            <div id="testInputs"></div>
+            <div class="btn-row" style="margin-top:8px">
+              <button class="btn go" onclick="runTest()" style="flex:1">▶ Prédire</button>
+              <button class="btn" onclick="runAllTest()">Tester tout</button>
+            </div>
+            <div id="testResult"></div>
+            <div id="testSteps"></div>
+          </div>
+        </div>
+
+        <!-- ── DATASET ── -->
+        <div id="tc-data" class="tc">
+          <div id="dsedit-wrap">
+            <div class="sh">Dataset</div>
+            <lbl>Préréglage</lbl>
+            <select id="dsPreset" onchange="loadPreset()">
+              <option value="xor">XOR (2→1)</option>
+              <option value="and">AND (2→1)</option>
+              <option value="or">OR (2→1)</option>
+              <option value="nand">NAND (2→1)</option>
+              <option value="xnor">XNOR (2→1)</option>
+              <option value="half_adder">Half Adder (2→2)</option>
+              <option value="4bit">4bit Identity (4→4)</option>
+              <option value="custom">Personnalisé</option>
+            </select>
+            <div style="margin-top:8px;display:flex;gap:5px;align-items:center">
+              <div style="flex:1"><lbl>Entrées (n)</lbl><input type="number" id="dsIn" value="2" min="1" max="20" oninput="rebuildDSEditor()"/></div>
+              <div style="flex:1"><lbl>Sorties (n)</lbl><input type="number" id="dsOut" value="1" min="1" max="20" oninput="rebuildDSEditor()"/></div>
+            </div>
+            <div style="margin-top:7px" id="dseRows"></div>
+            <div class="btn-row" style="margin-top:6px">
+              <button class="btn go" onclick="addDSRow()" style="flex:1">+ Ajouter ligne</button>
+              <button class="btn ok" onclick="applyDS()">✓ Appliquer</button>
+            </div>
+            <div style="margin-top:8px">
+              <lbl>Import JSON rapide (tableau de {i:[],o:[]})</lbl>
+              <textarea id="dsJSON" rows="3" placeholder='[{"i":[0,1],"o":[1]},...]'></textarea>
+              <div class="btn-row">
+                <button class="btn" onclick="importDSJSON()" style="flex:1">Importer JSON</button>
+                <button class="btn" onclick="exportDSJSON()">Exporter</button>
+              </div>
+            </div>
+            <div id="dsPreview" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+        <!-- ── FORMULA LIB ── -->
+        <div id="tc-flib" class="tc">
+          <div id="flib-wrap">
+            <div class="fs-box">
+              <span class="fs-icon">⌕</span>
+              <input type="text" id="fsearch" placeholder="Rechercher..." oninput="filterF(this.value)"/>
+            </div>
+            <div class="ftags" id="ftags"></div>
+
+            <!-- FORMULA LEGEND (always visible) -->
+            <div class="fleg" id="flegend">
+              <div class="fleg-title">📖 Légende des symboles</div>
+              <div class="fleg-grid">
+                <div class="fleg-row"><span class="fleg-sym">z</span><span class="fleg-desc">Pré-activation (Σ poids×entrées + biais)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">a</span><span class="fleg-desc">Activation post-f (sortie neurone)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">w</span><span class="fleg-desc">Poids synaptique (connexion)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">b</span><span class="fleg-desc">Biais (décalage appris)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">δ</span><span class="fleg-desc">Delta — erreur locale (backprop)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">∂L/∂w</span><span class="fleg-desc">Gradient de la loss par rapport à w</span></div>
+                <div class="fleg-row"><span class="fleg-sym">lr</span><span class="fleg-desc">Learning rate (taux d'apprentissage)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">ŷ</span><span class="fleg-desc">Prédiction du réseau (sortie)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">y</span><span class="fleg-desc">Cible réelle (label du dataset)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">σ</span><span class="fleg-desc">Fonction sigmoid 1/(1+e⁻ᶻ)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">β₁,β₂</span><span class="fleg-desc">Hyperparamètres Adam (moments)</span></div>
+                <div class="fleg-row"><span class="fleg-sym">λ</span><span class="fleg-desc">Coefficient de régularisation L1/L2</span></div>
+                <div class="fleg-row"><span class="fleg-sym">Σ</span><span class="fleg-desc">Somme sur tous les termes</span></div>
+                <div class="fleg-row"><span class="fleg-sym">f'(z)</span><span class="fleg-desc">Dérivée de l'activation (pour backprop)</span></div>
+                <div class="fleg-sep"></div>
+                <div class="fleg-row"><span class="fleg-sym" style="color:var(--ylw)">L</span><span class="fleg-desc">Loss totale (à minimiser)</span></div>
+                <div class="fleg-row"><span class="fleg-sym" style="color:var(--org)">n</span><span class="fleg-desc">Nombre de sorties / exemples</span></div>
+              </div>
+            </div>
+
+            <div id="fdsel"></div>
+            <div id="ftree"></div>
+          </div>
+        </div>
+
+        <!-- ── CUSTOM OPTIONS ── -->
+        <div id="tc-cust" class="tc">
+          <div id="cust-wrap">
+            <div class="csec">
+              <div class="csech" onclick="togC(this)"><span>🎨</span><span class="csect">Thème & Couleurs</span><span class="cseca">▶</span></div>
+              <div class="csecb">
+                <div class="crow"><label>Neurone entrée</label><input type="color" id="cNI" value="#ffd600" oninput="redraw()"/></div>
+                <div class="crow"><label>Neurone caché</label><input type="color" id="cNH" value="#00e5ff" oninput="redraw()"/></div>
+                <div class="crow"><label>Neurone sortie</label><input type="color" id="cNO" value="#bf5fff" oninput="redraw()"/></div>
+                <div class="crow"><label>Poids positif</label><input type="color" id="cWP" value="#00ff9d" oninput="redraw()"/></div>
+                <div class="crow"><label>Poids négatif</label><input type="color" id="cWN" value="#ff3d5a" oninput="redraw()"/></div>
+                <div class="crow"><label>Fond</label><input type="color" id="cBG" value="#05060c" oninput="redraw()"/></div>
+                <div class="btn-row" style="margin-top:6px">
+                  <button class="btn" onclick="applyTheme('dark')">Dark</button>
+                  <button class="btn" onclick="applyTheme('neon')">Neon</button>
+                  <button class="btn" onclick="applyTheme('ocean')">Ocean</button>
+                  <button class="btn" onclick="applyTheme('fire')">Fire</button>
+                  <button class="btn" onclick="applyTheme('matrix')">Matrix</button>
+                  <button class="btn" onclick="applyTheme('pastel')">Pastel</button>
+                </div>
+              </div>
+            </div>
+            <div class="csec">
+              <div class="csech" onclick="togC(this)"><span>📐</span><span class="csect">Géométrie</span><span class="cseca">▶</span></div>
+              <div class="csecb">
+                <div class="crow"><label>Rayon neurones</label><input type="range" id="cR" min="6" max="40" value="18" oninput="this.nextElementSibling.textContent=this.value+'px';redraw()"/><span class="cval">18px</span></div>
+                <div class="crow"><label>Épaisseur connexions</label><input type="range" id="cLW" min="0.2" max="8" step="0.1" value="1.5" oninput="this.nextElementSibling.textContent=this.value;redraw()"/><span class="cval">1.5</span></div>
+                <div class="crow"><label>Police labels</label><input type="range" id="cFS" min="6" max="18" value="10" oninput="this.nextElementSibling.textContent=this.value+'px';redraw()"/><span class="cval">10px</span></div>
+                <div class="crow"><label>Espacement H</label><input type="range" id="cSH" min="0.4" max="2.5" step="0.05" value="1" oninput="this.nextElementSibling.textContent=this.value+'×';redraw()"/><span class="cval">1×</span></div>
+                <div class="crow"><label>Espacement V</label><input type="range" id="cSV" min="0.4" max="2.5" step="0.05" value="1" oninput="this.nextElementSibling.textContent=this.value+'×';redraw()"/><span class="cval">1×</span></div>
+              </div>
+            </div>
+            <div class="csec">
+              <div class="csech" onclick="togC(this)"><span>✨</span><span class="csect">Effets visuels</span><span class="cseca">▶</span></div>
+              <div class="csecb">
+                <div class="crow"><label>Intensité glow</label><input type="range" id="cGI" min="0" max="1.5" step="0.05" value="0.5" oninput="this.nextElementSibling.textContent=Math.round(this.value*100)+'%';redraw()"/><span class="cval">50%</span></div>
+                <div class="crow"><label>Opacité connexions</label><input type="range" id="cLA" min="0.05" max="1" step="0.05" value="0.7" oninput="this.nextElementSibling.textContent=Math.round(this.value*100)+'%';redraw()"/><span class="cval">70%</span></div>
+                <div class="crow"><label>Courbes Bézier</label><input type="checkbox" id="cCurve" onchange="redraw()"/><span style="color:var(--text);font-size:9px">Activer</span></div>
+                <div class="crow"><label>Flèches direction</label><input type="checkbox" id="cArrow" onchange="redraw()"/><span style="color:var(--text);font-size:9px">Activer</span></div>
+                <div class="crow"><label>Neurones colorés par val.</label><input type="checkbox" id="cColorNode" checked onchange="redraw()"/><span style="color:var(--text);font-size:9px">Activer</span></div>
+                <div class="crow"><label>Grille fond</label><select id="cGridMode" onchange="redraw()" style="flex:2;font-size:9px;padding:3px 5px"><option value="cross">Croisillons</option><option value="dot">Points</option><option value="none">Aucun</option></select></div>
+                <div class="crow"><label>Légende canvas</label><input type="checkbox" id="cShowLeg" checked onchange="document.getElementById('canvasLegend').style.display=this.checked?'block':'none'"/><span style="color:var(--text);font-size:9px">Afficher</span></div>
+              </div>
+            </div>
+            <div class="csec">
+              <div class="csech" onclick="togC(this)"><span>⚙</span><span class="csect">Algorithme avancé</span><span class="cseca">▶</span></div>
+              <div class="csecb">
+                <div class="crow"><label>Init. poids</label><select id="cInit" style="flex:2;font-size:9px;padding:3px 5px"><option value="xavier">Xavier/Glorot</option><option value="he">He/Kaiming</option><option value="uniform">Uniforme [-1,1]</option><option value="normal">Normal σ=0.1</option><option value="small">Petit (-0.1,0.1)</option><option value="zero">Zéros (debug)</option></select></div>
+                <div class="crow"><label>Momentum β</label><input type="range" id="cMom" min="0" max="0.999" step="0.001" value="0.9" oninput="this.nextElementSibling.textContent=this.value"/><span class="cval">0.90</span></div>
+                <div class="crow"><label>Adam β₁</label><input type="range" id="cB1" min="0.5" max="0.999" step="0.001" value="0.9" oninput="this.nextElementSibling.textContent=this.value"/><span class="cval">0.90</span></div>
+                <div class="crow"><label>Adam β₂</label><input type="range" id="cB2" min="0.5" max="0.9999" step="0.0001" value="0.999" oninput="this.nextElementSibling.textContent=this.value"/><span class="cval">0.999</span></div>
+                <div class="crow"><label>Epsilon ε</label><input type="range" id="cEps" min="-12" max="-4" step="0.1" value="-8" oninput="this.nextElementSibling.textContent='1e'+Math.round(this.value)"/><span class="cval">1e-8</span></div>
+                <div class="crow"><label>L2 λ</label><input type="range" id="cL2" min="0" max="0.5" step="0.001" value="0" oninput="this.nextElementSibling.textContent=this.value"/><span class="cval">0</span></div>
+                <div class="crow"><label>Dropout</label><input type="range" id="cDrop" min="0" max="0.9" step="0.05" value="0" oninput="this.nextElementSibling.textContent=Math.round(this.value*100)+'%'"/><span class="cval">0%</span></div>
+                <div class="crow"><label>Huber δ</label><input type="range" id="cHD" min="0.1" max="5" step="0.1" value="1" oninput="this.nextElementSibling.textContent=this.value"/><span class="cval">1.0</span></div>
+                <div class="crow"><label>Grad clipping</label><input type="range" id="cGC" min="0" max="10" step="0.1" value="0" oninput="this.nextElementSibling.textContent=this.value==0?'OFF':this.value"/><span class="cval">OFF</span></div>
+                <div class="crow"><label>LR decay (×/100 ep.)</label><input type="range" id="cLRD" min="0.5" max="1" step="0.01" value="1" oninput="this.nextElementSibling.textContent=this.value"/><span class="cval">1.0</span></div>
+              </div>
+            </div>
+            <div class="csec">
+              <div class="csech" onclick="togC(this)"><span>💾</span><span class="csect">Sauvegarde / Export</span><span class="cseca">▶</span></div>
+              <div class="csecb">
+                <div class="btn-row">
+                  <button class="btn ok" onclick="exportNet()" style="flex:1">📤 Export JSON</button>
+                  <button class="btn" onclick="document.getElementById('importF').click()" style="flex:1">📥 Import</button>
+                </div>
+                <input type="file" id="importF" accept=".json" onchange="importNet(event)" style="display:none"/>
+                <div class="btn-row" style="margin-top:4px">
+                  <button class="btn" onclick="exportCode('py')" style="flex:1">🐍 Code Python</button>
+                  <button class="btn" onclick="exportCode('js')" style="flex:1">JS</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── GUIDE ── -->
+        <div id="tc-guide" class="tc">
+          <div style="padding:12px 13px 20px;font-size:9px;line-height:1.9;color:var(--text)">
+            <div style="color:var(--a2);font-size:13px;font-weight:700;margin-bottom:10px;font-family:'Syne',sans-serif">Guide complet</div>
+            <p style="color:var(--dim);margin-bottom:10px">Ce simulateur montre TOUS les calculs internes d'un réseau de neurones, étape par étape.</p>
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">① Forward Pass</div>
+            <p style="color:var(--dim);margin-bottom:7px">Pour chaque neurone : <span style="color:var(--a1)">z = Σ(wᵢ×aᵢ) + b</span> puis <span style="color:var(--grn)">a = f(z)</span>. L'info circule gauche→droite.</p>
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">② Loss</div>
+            <p style="color:var(--dim);margin-bottom:7px">Mesure l'erreur entre prédiction et cible. MSE = <span style="color:var(--red)">(1/n)Σ(ŷ−y)²</span></p>
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">③ Backprop</div>
+            <p style="color:var(--dim);margin-bottom:7px">Règle de chaîne : <span style="color:var(--a1)">∂L/∂w = ∂L/∂a · ∂a/∂z · ∂z/∂w</span></p>
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">④ Descente gradient</div>
+            <p style="color:var(--dim);margin-bottom:7px"><span style="color:var(--a1)">w ← w − lr × ∂L/∂w</span> — Adam ajoute correction de biais + moments adaptatifs.</p>
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">⑤ Constructeur avancé</div>
+            <p style="color:var(--dim);margin-bottom:7px">Le bouton <span style="color:var(--a2)">⬡ Constructeur avancé</span> permet de configurer chaque couche individuellement : activation propre, nombre de neurones, dropout par couche.</p>
+            <div style="background:#030408;border:1px solid var(--brd);border-radius:3px;padding:9px;margin-top:10px">
+              <div style="color:var(--a1);font-size:9px;margin-bottom:5px">💡 Expériences</div>
+              <div style="color:var(--dim);font-size:8px;line-height:2">
+                • <b style="color:var(--text)">XOR avec 1 couche cachée</b> : impossible sans couches<br>
+                • <b style="color:var(--text)">ReLU vs Sigmoid</b> sur réseau profond (5+ couches)<br>
+                • <b style="color:var(--text)">lr=5</b> : divergence / <b style="color:var(--text)">lr=0.001</b> : lenteur<br>
+                • <b style="color:var(--text)">Adam vs SGD</b> sur même tâche<br>
+                • Couches mixtes via le <b style="color:var(--text)">Constructeur avancé</b><br>
+                • Observe le <b style="color:var(--text)">vanishing gradient</b> en mode complet<br>
+                • Utilise <b style="color:var(--text)">Test</b> pour prédire des valeurs arbitraires
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ WIZARD MODAL ══ -->
+    <div id="modal-bg">
+      <div id="modal">
+        <h2>⚙ Wizard de création</h2>
+        <lbl>Type de problème</lbl>
+        <select id="wType">
+          <option value="bin">Classification binaire (1 sortie)</option>
+          <option value="multi">Classification multiclasse (N sorties)</option>
+          <option value="reg">Régression</option>
+        </select>
+        <lbl>Nombre d'entrées</lbl>
+        <input type="number" id="wIn" value="2" min="1" max="50"/>
+        <lbl>Nombre de sorties</lbl>
+        <input type="number" id="wOut" value="1" min="1" max="50"/>
+        <lbl>Couches cachées (ex: 4,4 ou auto)</lbl>
+        <input type="text" id="wHidden" value="auto"/>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn ok" onclick="applyWizard()" style="flex:1">✓ Appliquer</button>
+          <button class="btn" onclick="closeModal()">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ADVANCED BUILDER MODAL ══ -->
+    <div id="abld-modal-bg">
+      <div id="abld-modal">
+        <div id="abld-header">
+          <h2>⬡ Constructeur de réseau avancé</h2>
+          <p>Configurez chaque couche individuellement — activation, taille, dropout, etc.</p>
+        </div>
+        <div id="abld-body">
+          <!-- Preview canvas -->
+          <canvas id="abld-preview"></canvas>
+
+          <!-- Quick presets -->
+          <div style="margin-bottom:8px">
+            <div class="sh">Préréglages rapides</div>
+            <div class="preset-row">
+              <div class="preset-chip" onclick="abldPreset('xor')">XOR 2→4→1</div>
+              <div class="preset-chip" onclick="abldPreset('deep')">Deep 3→8→8→4→1</div>
+              <div class="preset-chip" onclick="abldPreset('autoenc')">Autoencodeur 4→2→4</div>
+              <div class="preset-chip" onclick="abldPreset('cls3')">Classif 3 classes</div>
+              <div class="preset-chip" onclick="abldPreset('reg')">Régression</div>
+              <div class="preset-chip" onclick="abldPreset('wide')">Large 2→16→1</div>
+            </div>
+          </div>
+
+          <!-- Add layer controls -->
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">
+            <button class="btn go" onclick="abldAddLayer()" style="flex:1">+ Ajouter couche cachée</button>
+            <select id="abld-add-act" style="width:130px;font-size:10px">
+              <option value="relu">ReLU</option>
+              <option value="sigmoid">Sigmoid</option>
+              <option value="tanh">Tanh</option>
+              <option value="leakyrelu">Leaky ReLU</option>
+              <option value="elu">ELU</option>
+              <option value="swish">Swish</option>
+              <option value="gelu">GELU</option>
+              <option value="selu">SELU</option>
+              <option value="linear">Linéaire</option>
+            </select>
+            <input type="number" id="abld-add-n" value="4" min="1" max="64" style="width:55px" title="Neurones"/>
+          </div>
+
+          <!-- Layers list -->
+          <div id="abld-layers"></div>
+
+          <!-- Global config -->
+          <div class="abld-sec" style="margin-top:10px">
+            <div class="abld-sec-title">⚙ Config globale</div>
+            <div class="lc-row" style="margin:5px 0">
+              <label>Optimiseur</label>
+              <select id="abld-opt" style="flex:1;font-size:10px">
+                <option value="sgd">SGD</option>
+                <option value="momentum">Momentum</option>
+                <option value="rmsprop">RMSProp</option>
+                <option value="adam" selected>Adam</option>
+                <option value="adamw">AdamW</option>
+                <option value="nag">Nesterov AG</option>
+              </select>
+            </div>
+            <div class="lc-row" style="margin:5px 0">
+              <label>Loss</label>
+              <select id="abld-loss" style="flex:1;font-size:10px">
+                <option value="mse">MSE</option>
+                <option value="mae">MAE</option>
+                <option value="logloss">Log Loss (BCE)</option>
+                <option value="huber">Huber</option>
+                <option value="hinge">Hinge</option>
+              </select>
+            </div>
+            <div class="lc-row" style="margin:5px 0">
+              <label>Learning rate</label>
+              <input type="number" id="abld-lr" value="0.5" step="0.001" min="0.0001" max="20" style="width:80px;flex:none"/>
+            </div>
+            <div class="lc-row" style="margin:5px 0">
+              <label>Init. poids</label>
+              <select id="abld-init" style="flex:1;font-size:10px">
+                <option value="xavier">Xavier/Glorot</option>
+                <option value="he" selected>He/Kaiming</option>
+                <option value="uniform">Uniforme [-1,1]</option>
+                <option value="normal">Normal σ=0.1</option>
+                <option value="small">Petit</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="abld-footer">
+          <button class="btn ok" onclick="applyAdvBuilder()" style="flex:1">✓ Créer le réseau</button>
+          <button class="btn" onclick="closeAdvBuilder()">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tip"></div>
+
+    <script>
+      // ══════════════════════════════════════════
+      // CORE STATE
+      // ══════════════════════════════════════════
+      let NET = null, POS = [], LINES = [];
+      let LOSS_H = [], EPOCH = 0, autoRunning = false;
+      let LAST_ACT = [], LAST_Z = [], LAST_DELTAS = [];
+      let VEL = {w:[],b:[]}, MA = {w:[],b:[]}, MV = {w:[],b:[]}, ADAM_T = 0;
+      let DISP = {W:true,B:true,A:true,I:true,G:true,Grid:true};
+      let DS = {inputs:[],outputs:[],inN:2,outN:1};
+      let RAF_ID = null;
+
+      // Per-layer activations (advanced builder)
+      let LAYER_ACTS = []; // array of activation per layer (length = L-1 layers, index l=0 is hidden1, last is output)
+
+      // ══════════════════════════════════════════
+      // UTILS
+      // ══════════════════════════════════════════
+      const ε = 1e-15;
+      const h2r = h => { let r=parseInt(h.slice(1,3),16)||0,g=parseInt(h.slice(3,5),16)||0,b=parseInt(h.slice(5,7),16)||0; return {r,g,b}; };
+      const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+      const gauss = () => { let u=0,v=0; while(!u) u=Math.random(); while(!v) v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); };
+      function getLR() { return parseFloat(document.getElementById("lrN").value)||0.5; }
+      function getAct() { return document.getElementById("iAct").value; }
+      function getActOut() { let v=document.getElementById("iActOut").value; return v==="same"?getAct():v; }
+      function getLoss() { return document.getElementById("iLoss").value; }
+      function getOpt() { return document.getElementById("iOpt").value; }
+      function getV(id) { return parseFloat(document.getElementById(id).value)||0; }
+      function getDec() { return 5; }
+      function fmt(v) { return isNaN(v)?"NaN":(+v).toFixed(getDec()); }
+      function syncLR(v) { document.getElementById("lrR").value=v; document.getElementById("lrN").value=v; document.getElementById("sLR").textContent=parseFloat(v).toFixed(4); }
+
+      // Get activation for layer index (using per-layer if available)
+      function getActForLayer(l) {
+        const L = NET.W.length;
+        const isLast = l === L - 1;
+        if (LAYER_ACTS.length > 0 && l < LAYER_ACTS.length) {
+          return LAYER_ACTS[l];
+        }
+        return isLast ? getActOut() : getAct();
+      }
+
+      // ══════════════════════════════════════════
+      // ACTIVATION FUNCTIONS
+      // ══════════════════════════════════════════
+      function act(z, fn) {
+        switch(fn) {
+          case "sigmoid": return 1/(1+Math.exp(-clamp(z,-500,500)));
+          case "relu": return Math.max(0,z);
+          case "tanh": return Math.tanh(z);
+          case "leakyrelu": return z>0?z:0.01*z;
+          case "elu": return z>=0?z:Math.exp(clamp(z,-50,0))-1;
+          case "swish": return z/(1+Math.exp(-clamp(z,-500,500)));
+          case "gelu": return 0.5*z*(1+Math.tanh(Math.sqrt(2/Math.PI)*(z+0.044715*z*z*z)));
+          case "selu": { const a=1.6732632,sc=1.0507009; return z>=0?sc*z:sc*a*(Math.exp(clamp(z,-50,0))-1); }
+          case "softsign": return z/(1+Math.abs(z));
+          case "linear": return z;
+          case "softmax": return z;
+          default: return 1/(1+Math.exp(-z));
+        }
+      }
+      function actD(a, z, fn) {
+        switch(fn) {
+          case "sigmoid": return a*(1-a);
+          case "relu": return z>0?1:0;
+          case "tanh": return 1-a*a;
+          case "leakyrelu": return z>0?1:0.01;
+          case "elu": return z>=0?1:a+1;
+          case "swish": { const s=1/(1+Math.exp(-z)); return s+z*s*(1-s); }
+          case "gelu": { const t=Math.tanh(Math.sqrt(2/Math.PI)*(z+0.044715*z*z*z)); return 0.5*(1+t)+0.5*z*(1-t*t)*Math.sqrt(2/Math.PI)*(1+3*0.044715*z*z); }
+          case "selu": { const a=1.6732632,sc=1.0507009; return z>=0?sc:sc*a*Math.exp(clamp(z,-50,0)); }
+          case "softsign": return 1/Math.pow(1+Math.abs(z),2);
+          case "linear": return 1;
+          default: return a*(1-a);
+        }
+      }
+      function softmax(arr) { const m=Math.max(...arr); const e=arr.map(v=>Math.exp(v-m)); const s=e.reduce((a,b)=>a+b,0); return e.map(v=>v/s); }
+
+      // ══════════════════════════════════════════
+      // LOSS FUNCTIONS
+      // ══════════════════════════════════════════
+      function computeLoss(pred, y) {
+        const fn=getLoss(), n=pred.length, hd=getV("cHD")||1;
+        switch(fn) {
+          case "mse": return pred.reduce((s,p,i)=>s+(p-y[i])**2,0)/n;
+          case "mae": return pred.reduce((s,p,i)=>s+Math.abs(p-y[i]),0)/n;
+          case "logloss": return -pred.reduce((s,p,i)=>{const c=clamp(p,ε,1-ε);return s+(y[i]*Math.log(c)+(1-y[i])*Math.log(1-c));},0)/n;
+          case "huber": return pred.reduce((s,p,i)=>{const e=Math.abs(p-y[i]);return s+(e<=hd?0.5*e*e:hd*(e-0.5*hd));},0)/n;
+          case "hinge": return pred.reduce((s,p,i)=>{const t=y[i]===0?-1:1;return s+Math.max(0,1-t*p);},0)/n;
+          default: return pred.reduce((s,p,i)=>s+(p-y[i])**2,0)/n;
+        }
+      }
+      function computeLossGrad(pred, y) {
+        const fn=getLoss(), n=pred.length, hd=getV("cHD")||1;
+        return pred.map((p,i)=>{
+          switch(fn) {
+            case "mse": return 2*(p-y[i])/n;
+            case "mae": return (p>y[i]?1:p<y[i]?-1:0)/n;
+            case "logloss": { const c=clamp(p,ε,1-ε); return (-y[i]/c+(1-y[i])/(1-c))/n; }
+            case "huber": { const e=p-y[i]; return (Math.abs(e)<=hd?e:hd*Math.sign(e))/n; }
+            case "hinge": { const t=y[i]===0?-1:1; return 1-t*p>0?-t/n:0; }
+            default: return 2*(p-y[i])/n;
+          }
+        });
+      }
+
+      // ══════════════════════════════════════════
+      // WEIGHT INIT
+      // ══════════════════════════════════════════
+      function initW(nIn, nOut, method) {
+        const m = method || document.getElementById("cInit").value;
+        switch(m) {
+          case "xavier": return (Math.random()*2-1)*Math.sqrt(6/(nIn+nOut));
+          case "he": return gauss()*Math.sqrt(2/nIn);
+          case "uniform": return Math.random()*2-1;
+          case "normal": return gauss()*0.1;
+          case "small": return (Math.random()*2-1)*0.1;
+          case "zero": return 0;
+          default: return (Math.random()*2-1)*0.8;
+        }
+      }
+
+      // ══════════════════════════════════════════
+      // BUILD NETWORK
+      // ══════════════════════════════════════════
+      function buildNet(customLayers, customActs, customInitMethod) {
+        let ls = customLayers || document.getElementById("iLayers").value.split(",").map(Number).filter(n=>n>0&&!isNaN(n));
+        if (ls.length < 2) ls = [2,4,1];
+
+        if (!customLayers) {
+          // Clear per-layer acts when using simple builder
+          LAYER_ACTS = [];
+        } else {
+          LAYER_ACTS = customActs || [];
+        }
+
+        if (ls[0] !== DS.inN || ls[ls.length-1] !== DS.outN) {
+          document.getElementById("dsIn").value = ls[0];
+          document.getElementById("dsOut").value = ls[ls.length-1];
+          DS.inN = ls[0];
+          DS.outN = ls[ls.length-1];
+          buildDSEditorFromCurrent();
+        }
+        NET = {L:ls, W:[], B:[]};
+        VEL = {w:[],b:[]}; MA = {w:[],b:[]}; MV = {w:[],b:[]}; ADAM_T = 0;
+        const initMethod = customInitMethod || document.getElementById("cInit").value;
+        for (let l=0; l<ls.length-1; l++) {
+          const W=[],B=[],vw=[],mw=[],vb=[],mb=[];
+          for (let j=0; j<ls[l+1]; j++) {
+            const row=[],vrow=[],mrow=[];
+            for (let k=0; k<ls[l]; k++) { row.push(initW(ls[l],ls[l+1],initMethod)); vrow.push(0); mrow.push(0); }
+            W.push(row); B.push(Math.random()*0.4-0.2);
+            vw.push(vrow); mw.push(mrow); vb.push(0); mb.push(0);
+          }
+          NET.W.push(W); NET.B.push(B);
+          VEL.w.push(vw); VEL.b.push(vb);
+          MA.w.push(mw); MA.b.push(mb);
+          MV.w.push(vw.map(r=>r.map(()=>0))); MV.b.push(vb.map(()=>0));
+        }
+        EPOCH = 0; LOSS_H = []; LAST_ACT = []; LAST_Z = []; LAST_DELTAS = [];
+        document.getElementById("sEpoch").textContent = "0";
+        document.getElementById("sLoss").textContent = "—";
+        document.getElementById("sAcc").textContent = "—";
+        clearLog(); resizeCvs(); redraw(); showTestInputs(); showHint();
+
+        const actDesc = LAYER_ACTS.length > 0
+          ? "mixte["+LAYER_ACTS.join(",")+"]"
+          : getAct();
+        log(`<span class="ls">▶ RÉSEAU CRÉÉ</span> — Couches:[${ls.join("→")}] Act:${actDesc} Opt:${getOpt()} Loss:${getLoss()}`);
+      }
+
+      function resetW() {
+        if (!NET) return;
+        for (let l=0; l<NET.W.length; l++) {
+          for (let j=0; j<NET.W[l].length; j++) {
+            for (let k=0; k<NET.W[l][j].length; k++) NET.W[l][j][k]=initW(NET.L[l],NET.L[l+1]);
+            NET.B[l][j]=Math.random()*0.4-0.2;
+          }
+        }
+        VEL={w:[],b:[]}; MA={w:[],b:[]}; MV={w:[],b:[]}; ADAM_T=0;
+        EPOCH=0; LOSS_H=[]; LAST_ACT=[]; LAST_Z=[]; LAST_DELTAS=[];
+        redraw(); log(`<span class="ls">↺ Poids réinitialisés</span>`);
+      }
+
+      // ══════════════════════════════════════════
+      // FORWARD
+      // ══════════════════════════════════════════
+      function forward(input) {
+        const drop = getV("cDrop");
+        let a = input.slice(), activations = [a.slice()], zs = [];
+        for (let l=0; l<NET.W.length; l++) {
+          const fnL = getActForLayer(l);
+          const zL=[],aL=[];
+          for (let j=0; j<NET.W[l].length; j++) {
+            let z=NET.B[l][j];
+            for (let k=0; k<a.length; k++) z+=NET.W[l][j][k]*a[k];
+            zL.push(z); aL.push(act(z,fnL));
+          }
+          let aLF=aL.slice();
+          const isLast = l===NET.W.length-1;
+          if (isLast && fnL==="softmax") aLF=softmax(aL);
+          if (!isLast && drop>0) aLF=aLF.map(v=>Math.random()<drop?0:v);
+          zs.push(zL); activations.push(aLF); a=aLF;
+        }
+        return {activations,zs};
+      }
+
+      // ══════════════════════════════════════════
+      // BACKWARD
+      // ══════════════════════════════════════════
+      function backward(activations, zs, y) {
+        const L = NET.W.length-1;
+        const deltas = Array.from({length:NET.W.length},()=>[]);
+        const gOut = computeLossGrad(activations[L+1],y);
+        const fnOut = getActForLayer(L);
+        for (let j=0; j<NET.W[L].length; j++) {
+          const da=gOut[j];
+          const dz=fnOut==="softmax"?activations[L+1][j]*(1-activations[L+1][j]):actD(activations[L+1][j],zs[L][j],fnOut);
+          deltas[L].push(da*dz);
+        }
+        for (let l=L-1; l>=0; l--) {
+          const fnL = getActForLayer(l);
+          for (let k=0; k<NET.W[l].length; k++) {
+            let err=0;
+            for (let j=0; j<NET.W[l+1].length; j++) err+=deltas[l+1][j]*NET.W[l+1][j][k];
+            deltas[l].push(err*actD(activations[l+1][k],zs[l][k],fnL));
+          }
+        }
+        return deltas;
+      }
+
+      // ══════════════════════════════════════════
+      // APPLY GRADIENTS
+      // ══════════════════════════════════════════
+      function applyGrad(activations, deltas) {
+        const lr=getLR(),opt=getOpt();
+        const mom=getV("cMom")||0.9,b1=getV("cB1")||0.9,b2=getV("cB2")||0.999;
+        const eps=Math.pow(10,getV("cEps")||-8);
+        const l2=getV("cL2")||0,gc=getV("cGC")||0;
+        ADAM_T++;
+        if (gc>0) {
+          let norm=0;
+          for (let l=0;l<deltas.length;l++) for (let j=0;j<deltas[l].length;j++) norm+=deltas[l][j]**2;
+          norm=Math.sqrt(norm);
+          if (norm>gc) { const s=gc/norm; for (let l=0;l<deltas.length;l++) for (let j=0;j<deltas[l].length;j++) deltas[l][j]*=s; }
+        }
+        const lrd=getV("cLRD")||1;
+        const effLR=lr*Math.pow(lrd,Math.floor(EPOCH/100));
+        for (let l=0;l<NET.W.length;l++) {
+          for (let j=0;j<NET.W[l].length;j++) {
+            const dj=deltas[l][j];
+            for (let k=0;k<NET.W[l][j].length;k++) {
+              const g=dj*activations[l][k]+l2*NET.W[l][j][k];
+              NET.W[l][j][k]=updateParam(NET.W[l][j][k],g,effLR,opt,mom,b1,b2,eps,VEL.w[l][j][k],MA.w[l][j][k],MV.w[l][j][k]);
+              if (opt==="momentum"||opt==="nag") VEL.w[l][j][k]=mom*VEL.w[l][j][k]+effLR*g;
+              else if (opt==="rmsprop") VEL.w[l][j][k]=b2*VEL.w[l][j][k]+(1-b2)*g*g;
+              else if (opt==="adam"||opt==="adamw") { MA.w[l][j][k]=b1*MA.w[l][j][k]+(1-b1)*g; MV.w[l][j][k]=b2*MV.w[l][j][k]+(1-b2)*g*g; }
+            }
+            const gb=dj;
+            NET.B[l][j]=updateParam(NET.B[l][j],gb,effLR,opt,mom,b1,b2,eps,VEL.b[l][j],MA.b[l][j],MV.b[l][j]);
+            if (opt==="momentum"||opt==="nag") VEL.b[l][j]=mom*VEL.b[l][j]+effLR*gb;
+            else if (opt==="rmsprop") VEL.b[l][j]=b2*VEL.b[l][j]+(1-b2)*gb*gb;
+            else if (opt==="adam"||opt==="adamw") { MA.b[l][j]=b1*MA.b[l][j]+(1-b1)*gb; MV.b[l][j]=b2*MV.b[l][j]+(1-b2)*gb*gb; }
+          }
+        }
+      }
+      function updateParam(w,g,lr,opt,mom,b1,b2,eps,v,m,mv) {
+        switch(opt) {
+          case "sgd": return w-lr*g;
+          case "momentum": return w-(mom*(v||0)+lr*g);
+          case "nag": return w-(mom*(v||0)+lr*g);
+          case "rmsprop": { const vn=b2*(v||0)+(1-b2)*g*g; return w-(lr*g)/(Math.sqrt(vn)+eps); }
+          case "adam": case "adamw": { const mn=b1*(m||0)+(1-b1)*g,vn=b2*(mv||0)+(1-b2)*g*g; const mc=mn/(1-b1**ADAM_T),vc=vn/(1-b2**ADAM_T); const wd=opt==="adamw"?lr*0.01*w:0; return w-(lr*mc)/(Math.sqrt(vc)+eps)-wd; }
+          default: return w-lr*g;
+        }
+      }
+
+      // ══════════════════════════════════════════
+      // TRAIN
+      // ══════════════════════════════════════════
+      function trainSample(x, y, verbose) {
+        const {activations,zs}=forward(x);
+        LAST_ACT=[...activations.map(a=>[...a])];
+        LAST_Z=[...zs.map(z=>[...z])];
+        const deltas=backward(activations,zs,y);
+        LAST_DELTAS=[...deltas.map(d=>[...d])];
+        const ll=document.getElementById("logLevel").value;
+        if (verbose&&ll!=="off") logFull(x,y,activations,zs,deltas,ll);
+        applyGrad(activations,deltas);
+        return computeLoss(activations[activations.length-1],y);
+      }
+      function doStep() {
+        if (!NET||!DS.inputs.length) return;
+        const idx=(EPOCH*DS.inputs.length+Math.floor(Math.random()*DS.inputs.length))%DS.inputs.length;
+        const loss=trainSample(DS.inputs[idx],DS.outputs[idx],true);
+        EPOCH++; LOSS_H.push(loss); updateStats(loss); redraw();
+      }
+      function doEpoch() {
+        if (!NET||!DS.inputs.length) return;
+        let tot=0;
+        for (let i=0;i<DS.inputs.length;i++) tot+=trainSample(DS.inputs[i],DS.outputs[i],false);
+        EPOCH++;
+        const avg=tot/DS.inputs.length; LOSS_H.push(avg);
+        const ll=document.getElementById("logLevel").value;
+        if (ll!=="off") logEpoch(avg);
+        updateStats(avg); redraw();
+      }
+      function doN(n) {
+        if (!NET||!DS.inputs.length) return;
+        for (let e=0;e<n;e++) {
+          let tot=0;
+          for (let i=0;i<DS.inputs.length;i++) tot+=trainSample(DS.inputs[i],DS.outputs[i],false);
+          EPOCH++; LOSS_H.push(tot/DS.inputs.length);
+        }
+        updateStats(LOSS_H[LOSS_H.length-1]); redraw();
+        log(`<span class="ls">×${n} epochs</span> — E:${EPOCH} Loss:<span class="ll">${fmt(LOSS_H[LOSS_H.length-1])}</span> Acc:<span class="lv">${acc().toFixed(1)}%</span>`);
+      }
+      function toggleAuto() {
+        autoRunning=!autoRunning;
+        const btn=document.getElementById("btnAuto");
+        if (autoRunning) { btn.className="btn on pulse"; btn.textContent="⏹ Stop"; runAuto(); }
+        else { btn.className="btn"; btn.textContent="⚡ Auto"; }
+      }
+      function runAuto() {
+        if (!autoRunning) return;
+        doEpoch();
+        const spd=parseInt(document.getElementById("autoSpeed").value)||0;
+        if (spd>0) setTimeout(runAuto,spd); else RAF_ID=requestAnimationFrame(runAuto);
+      }
+      function acc() {
+        if (!NET||!DS.inputs.length) return 0;
+        let ok=0;
+        for (let i=0;i<DS.inputs.length;i++) {
+          const {activations:ac}=forward(DS.inputs[i]);
+          const pred=ac[ac.length-1];
+          if (pred.every((p,j)=>Math.round(p)===DS.outputs[i][j])) ok++;
+        }
+        return (ok/DS.inputs.length)*100;
+      }
+      function updateStats(loss) {
+        document.getElementById("sEpoch").textContent=EPOCH;
+        document.getElementById("sLoss").textContent=loss.toFixed(4);
+        document.getElementById("sAcc").textContent=acc().toFixed(0);
+        document.getElementById("sLR").textContent=getLR().toFixed(4);
+        drawLossChart();
+      }
+
+      // ══════════════════════════════════════════
+      // LOGGING
+      // ══════════════════════════════════════════
+      const logEl=()=>document.getElementById("log");
+      function log(html) {
+        const el=logEl(),max=800;
+        while(el.children.length>max) el.removeChild(el.firstChild);
+        const d=document.createElement("div"); d.innerHTML=html; el.appendChild(d); el.scrollTop=el.scrollHeight;
+      }
+      function clearLog() { logEl().innerHTML=""; }
+      function copyLog() { navigator.clipboard.writeText(logEl().innerText); }
+
+      function logFull(x, y, activations, zs, deltas, ll) {
+        const lf=getLoss();
+        log(`<span class="lsep">──────────────────────────────────────────</span>`);
+        log(`<span class="ls">▶ FORWARD PASS</span> — X:[<span class="lv">${x.map(v=>fmt(+v)).join(", ")}</span>] → Y:[<span class="lb">${y.join(", ")}</span>]`);
+        for (let l=0;l<NET.W.length;l++) {
+          const fnL=getActForLayer(l);
+          log(`<span class="ln">  ▸ Couche ${l+1}/${NET.W.length} [${fnL}] — ${NET.L[l+1]} neurone(s)</span>`);
+          for (let j=0;j<NET.W[l].length;j++) {
+            log(`<span class="ln">    ◉ Neurone [${l+1},${j}]</span>`);
+            if (ll==="full") {
+              log(`<span class="lf">      z = Σ(w×a) + b</span>`);
+              for (let k=0;k<activations[l].length;k++) {
+                const w=NET.W[l][j][k],av=activations[l][k],prod=w*av;
+                log(`<span class="lf">        w[${l},${k}→${j}]</span>=<span class="lw">${fmt(w)}</span> × a[${l},${k}]=<span class="lv">${fmt(av)}</span> → <span class="lv">${fmt(prod)}</span>`);
+              }
+              log(`<span class="lf">        + biais b=<span class="lb">${fmt(NET.B[l][j])}</span></span>`);
+              log(`<span class="lf">        z[${l+1},${j}] = <span class="ls">${fmt(zs[l][j])}</span></span>`);
+              log(`<span class="lf">        a[${l+1},${j}] = ${fnL}(<span class="ls">${fmt(zs[l][j])}</span>) = <span class="lv">${fmt(activations[l+1][j])}</span></span>`);
+            } else {
+              log(`<span class="lf">      z=${fmt(zs[l][j])} → ${fnL}(z) = <span class="lv">${fmt(activations[l+1][j])}</span></span>`);
+            }
+          }
+        }
+        const pred=activations[activations.length-1];
+        const loss=computeLoss(pred,y);
+        log(`<span class="ls">◈ LOSS [${lf.toUpperCase()}]</span>`);
+        if (ll==="full") {
+          pred.forEach((p,i)=>{
+            let lterm="";
+            switch(lf) {
+              case "mse": lterm=`(${fmt(p)}−${y[i]})² = <span class="ll">${fmt((p-y[i])**2)}</span>`; break;
+              case "mae": lterm=`|${fmt(p)}−${y[i]}| = <span class="ll">${fmt(Math.abs(p-y[i]))}</span>`; break;
+              case "logloss": { const c=clamp(p,ε,1-ε); lterm=`−[${y[i]}·log(${fmt(c)}) + ${1-y[i]}·log(${fmt(1-c)})] = <span class="ll">${fmt(-(y[i]*Math.log(c)+(1-y[i])*Math.log(1-c)))}</span>`; break; }
+              case "huber": { const e=Math.abs(p-y[i]),hd=getV("cHD")||1; lterm=e<=hd?`½·${fmt(e)}² = <span class="ll">${fmt(0.5*e*e)}</span>`:`δ·(${fmt(e)}−½δ) = <span class="ll">${fmt(hd*(e-0.5*hd))}</span>`; break; }
+              case "hinge": { const t=y[i]===0?-1:1; lterm=`max(0,1−${t}·${fmt(p)}) = <span class="ll">${fmt(Math.max(0,1-t*p))}</span>`; break; }
+            }
+            log(`<span class="lf">    Sortie[${i}]: ŷ=${fmt(p)} y=${y[i]} → ${lterm}</span>`);
+          });
+        }
+        log(`<span class="lf">    <b>Loss totale = <span class="ll">${fmt(loss)}</span></b></span>`);
+        if (ll==="full") {
+          log(`<span class="ls">◀ BACKPROP — Règle de chaîne</span>`);
+          const L=NET.W.length-1;
+          log(`<span class="lf">  Couche sortie (L=${L+1}) :</span>`);
+          const fnOut=getActForLayer(L);
+          for (let j=0;j<NET.W[L].length;j++) {
+            const dLda=computeLossGrad(pred,y)[j];
+            const dadz=actD(activations[L+1][j],zs[L][j],fnOut);
+            const dz=dLda*dadz;
+            log(`<span class="lf">    δ[${L},${j}]: ∂L/∂a=<span class="lu">${fmt(dLda)}</span> × ∂a/∂z=<span class="lu">${fmt(dadz)}</span> = <span class="lu">${fmt(dz)}</span></span>`);
+          }
+          for (let l=L-1;l>=0;l--) {
+            const fnL=getActForLayer(l);
+            log(`<span class="lf">  Couche cachée ${l+1}:</span>`);
+            for (let k=0;k<NET.W[l].length;k++) {
+              let err=0;
+              const terms=NET.W[l+1].map((row,j)=>{err+=deltas[l+1][j]*row[k];return `δ[${l+1},${j}]·w=${fmt(deltas[l+1][j]*row[k])}`;}).join(" + ");
+              const dadz=actD(activations[l+1][k],zs[l][k],fnL);
+              log(`<span class="lf">    δ[${l},${k}]: (${terms}) × f'(z)=${fmt(dadz)} = <span class="lu">${fmt(deltas[l][k])}</span></span>`);
+            }
+          }
+          log(`<span class="ls">⟳ UPDATE [${getOpt()}] lr=${getLR()}</span>`);
+          for (let l=0;l<NET.W.length;l++) {
+            for (let j=0;j<NET.W[l].length;j++) {
+              for (let k=0;k<NET.W[l][j].length;k++) {
+                const g=deltas[l][j]*activations[l][k];
+                log(`<span class="lf">    w[${l},${k}→${j}] ∂L/∂w=<span class="lu">${fmt(g)}</span> → w=<span class="lw">${fmt(NET.W[l][j][k])}</span></span>`);
+              }
+              log(`<span class="lf">    b[${l},${j}] δ=<span class="lu">${fmt(deltas[l][j])}</span> → b=<span class="lb">${fmt(NET.B[l][j])}</span></span>`);
+            }
+          }
+        }
+      }
+      function logEpoch(avg) {
+        log(`<span class="ls">Epoch ${EPOCH}</span> Loss:<span class="ll">${fmt(avg)}</span> Acc:<span class="lv">${acc().toFixed(1)}%</span> Opt:${getOpt()} lr:${getLR().toFixed(4)}`);
+      }
+
+      // ══════════════════════════════════════════
+      // CANVAS & DRAW
+      // ══════════════════════════════════════════
+      const cvs=()=>document.getElementById("canvas");
+      const ctx=()=>cvs().getContext("2d");
+      function resizeCvs() { const w=document.getElementById("canvasWrap"); const c=cvs(); c.width=w.clientWidth; c.height=w.clientHeight; }
+      window.addEventListener("resize",()=>{ resizeCvs(); redraw(); });
+      function getR() { return parseInt(document.getElementById("cR").value)||18; }
+
+      function redraw() {
+        if (!NET) return;
+        const c=cvs(),g=ctx();
+        const W=c.width,H=c.height;
+        g.clearRect(0,0,W,H);
+        const bgCol=document.getElementById("cBG").value;
+        g.fillStyle=bgCol; g.fillRect(0,0,W,H);
+        const gm=document.getElementById("cGridMode")?.value||"cross";
+        if (DISP.Grid&&gm!=="none") {
+          g.strokeStyle="rgba(25,32,64,0.3)"; g.lineWidth=1;
+          if (gm==="cross") {
+            for (let x=0;x<W;x+=40) { g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke(); }
+            for (let y=0;y<H;y+=40) { g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke(); }
+          } else {
+            for (let x=0;x<W;x+=40) for (let y=0;y<H;y+=40) { g.beginPath();g.arc(x,y,1.5,0,Math.PI*2);g.fillStyle="rgba(25,32,64,0.5)";g.fill(); }
+          }
+        }
+        const ls=NET.L,nr=getR();
+        const shV=parseFloat(document.getElementById("cSV").value)||1;
+        const shH=parseFloat(document.getElementById("cSH").value)||1;
+        POS=[]; LINES=[];
+        const colW=(W/(ls.length+1))*shH;
+        const offX=(W-colW*(ls.length-1))/2;
+        for (let l=0;l<ls.length;l++) {
+          const rowH=(H/(ls[l]+1))*shV;
+          const offY=(H-rowH*(ls[l]-1))/2;
+          for (let j=0;j<ls[l];j++) {
+            const x=offX+l*colW,y=offY+j*rowH;
+            const av=LAST_ACT.length>0&&LAST_ACT[l]?LAST_ACT[l][j]:undefined;
+            POS.push({x,y,l,j,av});
+          }
+        }
+        const lw=parseFloat(document.getElementById("cLW").value)||1.5;
+        const la=parseFloat(document.getElementById("cLA").value)||0.7;
+        const curved=document.getElementById("cCurve").checked;
+        const arrows=document.getElementById("cArrow").checked;
+        const wp=document.getElementById("cWP").value,wn=document.getElementById("cWN").value;
+        const fs=parseInt(document.getElementById("cFS").value)||10;
+        for (let l=0;l<ls.length-1;l++) {
+          const p1=POS.filter(p=>p.l===l),p2=POS.filter(p=>p.l===l+1);
+          for (let i=0;i<p1.length;i++) {
+            for (let j=0;j<p2.length;j++) {
+              const wv=NET.W[l][j][i];
+              const col=wv>=0?h2r(wp):h2r(wn);
+              const alpha=Math.min(la,Math.abs(wv)*la*0.8+0.08);
+              g.strokeStyle=`rgba(${col.r},${col.g},${col.b},${alpha})`;
+              g.lineWidth=Math.min(lw*2.5,Math.abs(wv)*lw*0.8+0.3);
+              g.beginPath();
+              if (curved) { const cx=(p1[i].x+p2[j].x)/2; g.moveTo(p1[i].x,p1[i].y); g.bezierCurveTo(cx,p1[i].y,cx,p2[j].y,p2[j].x,p2[j].y); }
+              else { g.moveTo(p1[i].x,p1[i].y); g.lineTo(p2[j].x,p2[j].y); }
+              g.stroke();
+              if (arrows) {
+                const mx=(p1[i].x+p2[j].x)/2,my=(p1[i].y+p2[j].y)/2;
+                const ang=Math.atan2(p2[j].y-p1[i].y,p2[j].x-p1[i].x);
+                g.save(); g.translate(mx,my); g.rotate(ang);
+                g.beginPath(); g.moveTo(0,0); g.lineTo(-7,-3); g.lineTo(-7,3); g.closePath();
+                g.fillStyle=`rgba(${col.r},${col.g},${col.b},${alpha*1.5})`; g.fill(); g.restore();
+              }
+              if (DISP.W&&ls.length<=7) {
+                const mx=(p1[i].x+p2[j].x)/2,my=(p1[i].y+p2[j].y)/2;
+                g.fillStyle=`rgba(${col.r},${col.g},${col.b},0.9)`;
+                g.font=`bold ${Math.max(7,fs*0.9)}px JetBrains Mono,monospace`;
+                g.textAlign="center"; g.fillText(wv.toFixed(2),mx,my-4);
+              }
+              LINES.push({x1:p1[i].x,y1:p1[i].y,x2:p2[j].x,y2:p2[j].y,w:wv,l,i,j});
+            }
+          }
+        }
+        const gi=parseFloat(document.getElementById("cGI").value)||0.5;
+        const cn=document.getElementById("cColorNode").checked;
+        for (let p of POS) {
+          const isIn=p.l===0,isOut=p.l===ls.length-1;
+          const colStr=isIn?document.getElementById("cNI").value:isOut?document.getElementById("cNO").value:document.getElementById("cNH").value;
+          const col=h2r(colStr);
+          const av=p.av;
+          if (DISP.G&&av!==undefined) {
+            const gi2=Math.abs(av)*gi;
+            const gr=g.createRadialGradient(p.x,p.y,0,p.x,p.y,nr*3);
+            gr.addColorStop(0,`rgba(${col.r},${col.g},${col.b},${Math.min(0.6,gi2*0.5)})`);
+            gr.addColorStop(1,"transparent");
+            g.beginPath(); g.arc(p.x,p.y,nr*3,0,Math.PI*2); g.fillStyle=gr; g.fill();
+          }
+          g.beginPath(); g.arc(p.x,p.y,nr+2,0,Math.PI*2);
+          g.strokeStyle=`rgba(${col.r},${col.g},${col.b},0.35)`; g.lineWidth=1; g.stroke();
+          let fill;
+          if (cn&&av!==undefined) {
+            const ia=clamp((av+1)/2,0,1);
+            fill=`rgba(${Math.floor(col.r*ia*0.5)},${Math.floor(col.g*ia*0.5)},${Math.floor(col.b*ia*0.5)},0.92)`;
+          } else {
+            fill=`rgba(${Math.floor(col.r*0.07)},${Math.floor(col.g*0.07)},${Math.floor(col.b*0.07)},0.92)`;
+          }
+          g.beginPath(); g.arc(p.x,p.y,nr,0,Math.PI*2); g.fillStyle=fill; g.fill();
+          g.strokeStyle=`rgba(${col.r},${col.g},${col.b},0.85)`; g.lineWidth=1.5; g.stroke();
+
+          // Layer label with activation name
+          if (p.j===0) {
+            g.fillStyle=`rgba(${col.r},${col.g},${col.b},0.55)`;
+            g.font=`${fs}px Syne,sans-serif`; g.textAlign="center";
+            const ln=isIn?"Entrée":isOut?"Sortie":`Cachée ${p.l}`;
+            g.fillText(ln,p.x,p.y-nr-10);
+            // Show activation fn below layer name
+            if (!isIn && LAYER_ACTS.length > 0) {
+              const layerIdx = p.l - 1; // l=0 is input, l=1 is hidden1 etc
+              const fnName = getActForLayer(p.l > 0 ? p.l - 1 : 0);
+              g.font=`${Math.max(6,fs*0.8)}px JetBrains Mono,monospace`;
+              g.fillStyle=`rgba(${col.r},${col.g},${col.b},0.35)`;
+              g.fillText(`[${fnName}]`,p.x,p.y-nr-22);
+            }
+          }
+          g.textAlign="center";
+          if (DISP.A&&av!==undefined) {
+            g.fillStyle="rgba(255,255,255,0.92)";
+            g.font=`bold ${Math.max(7,fs*0.9)}px JetBrains Mono,monospace`;
+            g.fillText(av.toFixed(2),p.x,p.y+nr*0.22);
+          } else if (DISP.I) {
+            g.fillStyle=`rgba(${col.r},${col.g},${col.b},0.8)`;
+            g.font=`bold ${Math.max(7,fs*0.9)}px JetBrains Mono,monospace`;
+            g.fillText(`${p.l}-${p.j}`,p.x,p.y+nr*0.22);
+          }
+          if (DISP.B&&p.l<NET.B.length&&NET.B[p.l]?.[p.j]!==undefined) {
+            const bv=NET.B[p.l][p.j];
+            const bc=h2r(document.getElementById("cNO").value);
+            g.fillStyle=`rgba(${bc.r},${bc.g},${bc.b},0.75)`;
+            g.font=`${Math.max(7,fs*0.8)}px JetBrains Mono,monospace`;
+            g.fillText(`b:${bv.toFixed(2)}`,p.x,p.y+nr+13);
+          }
+        }
+        drawLossChart();
+      }
+
+      // ══════════════════════════════════════════
+      // LOSS CHART
+      // ══════════════════════════════════════════
+      function drawLossChart() {
+        const c=document.getElementById("lossChart"),g=c.getContext("2d");
+        const dpr=window.devicePixelRatio||1;
+        c.width=c.clientWidth*dpr; c.height=66*dpr; g.scale(dpr,dpr);
+        const cw=c.clientWidth,ch=66;
+        g.clearRect(0,0,cw,ch);
+        if (LOSS_H.length<2) {
+          g.fillStyle="rgba(68,85,119,.3)"; g.font="9px JetBrains Mono,monospace"; g.textAlign="center";
+          g.fillText("Lancer l'entraînement…",cw/2,ch/2); return;
+        }
+        const pts=LOSS_H.slice(-400);
+        const mx=Math.max(...pts),mn=Math.min(...pts),rng=mx-mn||1;
+        g.strokeStyle="rgba(25,32,64,.5)"; g.lineWidth=1;
+        for (let i=0;i<=3;i++) { const y=ch*0.1+ch*0.8*(i/3); g.beginPath();g.moveTo(0,y);g.lineTo(cw,y);g.stroke(); }
+        g.beginPath();
+        for (let i=0;i<pts.length;i++) { const x=(i/(pts.length-1))*cw,y=ch-ch*0.1-((pts[i]-mn)/rng)*ch*0.8; i===0?g.moveTo(x,y):g.lineTo(x,y); }
+        g.lineTo(cw,ch); g.lineTo(0,ch); g.closePath();
+        const grad=g.createLinearGradient(0,0,0,ch);
+        grad.addColorStop(0,"rgba(0,229,255,.2)"); grad.addColorStop(1,"rgba(0,229,255,.02)");
+        g.fillStyle=grad; g.fill();
+        g.beginPath();
+        for (let i=0;i<pts.length;i++) { const x=(i/(pts.length-1))*cw,y=ch-ch*0.1-((pts[i]-mn)/rng)*ch*0.8; i===0?g.moveTo(x,y):g.lineTo(x,y); }
+        g.strokeStyle="#00e5ff"; g.lineWidth=1.5; g.stroke();
+        const last=pts[pts.length-1];
+        g.fillStyle="rgba(0,229,255,.8)"; g.font="8px JetBrains Mono,monospace"; g.textAlign="right";
+        g.fillText(last.toFixed(6),cw-2,10);
+      }
+      document.getElementById("lossChart").addEventListener("click",()=>{ LOSS_H=[]; redraw(); });
+
+      // ══════════════════════════════════════════
+      // TOOLTIP & CLICK
+      // ══════════════════════════════════════════
+      const tip=()=>document.getElementById("tip");
+      function cpToCanvas(e) { const r=cvs().getBoundingClientRect(); return {x:(e.clientX-r.left)*(cvs().width/r.width),y:(e.clientY-r.top)*(cvs().height/r.height)}; }
+      function lpd(x1,y1,x2,y2,px,py) {
+        const len=Math.hypot(x2-x1,y2-y1);
+        if (!len) return Math.hypot(px-x1,py-y1);
+        const t=clamp(((px-x1)*(x2-x1)+(py-y1)*(y2-y1))/(len*len),0,1);
+        return Math.hypot(px-(x1+t*(x2-x1)),py-(y1+t*(y2-y1)));
+      }
+      cvs().addEventListener("mousemove",e=>{
+        if (!NET) return;
+        const {x,y}=cpToCanvas(e),nr=getR()+5,t=tip();
+        t.style.display="none";
+        for (const p of POS) {
+          if (Math.hypot(p.x-x,p.y-y)<nr) {
+            const lname=p.l===0?"Entrée":p.l===NET.L.length-1?"Sortie":"Cachée";
+            const bv=p.l<NET.B.length?NET.B[p.l]?.[p.j]:undefined;
+            const zv=LAST_Z[p.l>0?p.l-1:0]?.[p.j];
+            const fnL = p.l > 0 ? getActForLayer(p.l-1) : "—";
+            t.innerHTML=`<div class="tt">● [${lname} ${p.l}-${p.j}]</div>
+              ${p.av!==undefined?`<div class="tr"><span class="tk">a</span><span class="tv">${fmt(p.av)}</span></div>`:""}
+              ${zv!==undefined&&p.l>0?`<div class="tr"><span class="tk">z</span><span class="tv">${fmt(zv)}</span></div>`:""}
+              ${bv!==undefined?`<div class="tr"><span class="tk">b</span><span class="tv">${fmt(bv)}</span></div>`:""}
+              <div class="tr"><span class="tk">activation</span><span class="tv">${p.l>0?fnL:"input"}</span></div>
+              <div class="tr"><span class="tk">n_entrées</span><span class="tv">${NET.L[p.l]}</span></div>`;
+            t.style.display="block"; t.style.left=e.clientX+12+"px"; t.style.top=e.clientY-8+"px"; return;
+          }
+        }
+        for (const ln of LINES) {
+          if (lpd(ln.x1,ln.y1,ln.x2,ln.y2,x,y)<8) {
+            const c=ln.w>=0?"#00ff9d":"#ff3d5a";
+            t.innerHTML=`<div class="tt">— Connexion [${ln.l},${ln.i}→${ln.j}]</div>
+              <div class="tr"><span class="tk">w</span><span class="tv" style="color:${c}">${fmt(ln.w)}</span></div>
+              <div class="tr"><span class="tk">|w|</span><span class="tv">${fmt(Math.abs(ln.w))}</span></div>
+              <div class="tr"><span class="tk">type</span><span class="tv ${ln.w>=0?"p":"n"}">${ln.w>=0?"+ excitateur":"− inhibiteur"}</span></div>`;
+            t.style.display="block"; t.style.left=e.clientX+12+"px"; t.style.top=e.clientY-8+"px"; return;
+          }
+        }
+      });
+      cvs().addEventListener("mouseleave",()=>tip().style.display="none");
+      cvs().addEventListener("click",e=>{
+        if (!NET) return;
+        const {x,y}=cpToCanvas(e),nr=getR()+5;
+        for (const p of POS) { if (Math.hypot(p.x-x,p.y-y)<nr) { showNodeDetail(p); return; } }
+        for (const ln of LINES) { if (lpd(ln.x1,ln.y1,ln.x2,ln.y2,x,y)<8) { showLineDetail(ln); return; } }
+      });
+
+      // ══════════════════════════════════════════
+      // DETAIL PANELS
+      // ══════════════════════════════════════════
+      function showNodeDetail(p) {
+        showTab("details");
+        const isIn=p.l===0,isOut=p.l===NET.L.length-1;
+        const lname=isIn?"Entrée":isOut?"Sortie":`Cachée ${p.l}`;
+        const bv=p.l<NET.B.length?NET.B[p.l][p.j]:undefined;
+        const av=LAST_ACT[p.l]?.[p.j];
+        const zv=p.l>0&&LAST_Z[p.l-1]?LAST_Z[p.l-1][p.j]:undefined;
+        const fn = p.l > 0 ? getActForLayer(p.l-1) : "input";
+        const dv=av!==undefined?LAST_DELTAS[p.l]?.[p.j]:undefined;
+        let inW="",comp="",actVis="",deltaBlock="";
+        if (av!==undefined) {
+          const pct=clamp(av*100,0,100);
+          const col=av>0.5?"#00ff9d":"#ff3d5a";
+          actVis=`<div class="card"><h3>Activation</h3>
+            <div class="abar-wrap"><span style="color:var(--dim);min-width:22px">0</span>
+              <div class="abar-bg"><div class="abar" style="width:${pct}%;background:${col}"></div></div>
+              <span style="color:var(--dim);min-width:22px">1</span>
+              <span style="color:${col};font-weight:700">${fmt(av)}</span></div></div>`;
+        }
+        if (p.l>0&&p.l<=NET.W.length) {
+          const rows=NET.W[p.l-1][p.j].map((w,k)=>{
+            const c=w>=0?"p":"n",bw=Math.min(48,Math.abs(w)*28),bc=w>=0?"#00ff9d":"#ff3d5a";
+            const prevAct=LAST_ACT[p.l-1]?.[k];
+            return `<tr><td>[${p.l-1},${k}]</td><td class="${c}">${fmt(w)}</td><td>${prevAct!==undefined?fmt(prevAct):"—"}</td><td class="${c}">${prevAct!==undefined?fmt(w*prevAct):"—"}</td><td><span class="wbar" style="width:${bw}px;background:${bc}"></span></td></tr>`;
+          }).join("");
+          inW=`<div class="card"><h3>Poids entrants</h3>
+            <table class="wt"><tr><th>De</th><th>w</th><th>a_prev</th><th>w×a</th><th>Force</th></tr>${rows}</table>
+            ${bv!==undefined?`<div class="dr" style="margin-top:5px"><span class="dk">Biais b</span><span class="dv ${bv>=0?"p":"n"}">${fmt(bv)}</span></div>`:""}</div>`;
+        }
+        if (p.l>0&&av!==undefined&&zv!==undefined&&p.l<=NET.W.length) {
+          const terms=NET.W[p.l-1][p.j].map((w,k)=>{
+            const ai=LAST_ACT[p.l-1]?.[k]??0;
+            return `<div class="fs"><span class="fe">w[${k}]×a[${k}]</span>=<span class="fvar">${fmt(w)}</span>×<span class="fval">${fmt(ai)}</span>=<span class="fval">${fmt(w*ai)}</span></div>`;
+          }).join("");
+          comp=`<div class="card"><h3>Calcul complet</h3>
+            <div class="fb"><div class="ft">z = Σ(wᵢ×aᵢ) + b</div>
+            ${terms}
+            <div class="fs" style="margin-top:5px;padding-top:5px;border-top:1px solid var(--brd)"><span class="fe">+ biais</span><span class="fvar">${fmt(bv)}</span></div>
+            <div class="fs" style="color:var(--ylw);margin-top:4px"><span class="fe">z =</span><span class="fval">${fmt(zv)}</span></div></div>
+            <div class="fb" style="margin-top:6px"><div class="ft">a = ${fn}(z)</div>
+            <div class="fs"><span class="fe">a =</span><span class="fvar">${fn}</span>(<span class="fval">${fmt(zv)}</span>) = <span class="fval">${fmt(av)}</span></div></div>
+            <div class="fb" style="margin-top:6px"><div class="ft">Dérivée ∂a/∂z (pour backprop)</div>
+            <div class="fs"><span class="fe">f'(z) =</span><span class="fval">${fmt(actD(av,zv,fn))}</span></div></div></div>`;
+        }
+        if (dv!==undefined) {
+          deltaBlock=`<div class="card"><h3>Gradient local δ</h3>
+            <div class="fb"><div class="ft">δ = ∂L/∂z (contribution à l'erreur)</div>
+            <div class="fs"><span class="fe">δ[${p.l},${p.j}] =</span><span class="fval" style="color:var(--org)">${fmt(dv)}</span></div>
+            <div class="fs" style="margin-top:4px;font-size:9px;color:var(--dim)">${Math.abs(dv)<0.001?"⚠ Vanishing gradient possible":Math.abs(dv)>10?"⚠ Gradient élevé":""}</div></div></div>`;
+        }
+        document.getElementById("detail-inner").innerHTML=`
+          <div class="card"><h3>Neurone [${lname} — ${p.l},${p.j}]</h3>
+            <div class="dr"><span class="dk">Couche</span><span class="dv">${lname}</span></div>
+            <div class="dr"><span class="dk">Index</span><span class="dv">[${p.l}, ${p.j}]</span></div>
+            <div class="dr"><span class="dk">Activation fn</span><span class="dv">${fn}</span></div>
+            <div class="dr"><span class="dk">Entrées</span><span class="dv">${NET.L[p.l]}</span></div>
+            ${av!==undefined?`<div class="dr"><span class="dk">a (sortie)</span><span class="dv ${av>=0.5?"p":"n"}">${fmt(av)}</span></div>`:""}
+            ${zv!==undefined?`<div class="dr"><span class="dk">z (pré-activ.)</span><span class="dv">${fmt(zv)}</span></div>`:""}
+            ${bv!==undefined?`<div class="dr"><span class="dk">Biais b</span><span class="dv ${bv>=0?"p":"n"}">${fmt(bv)}</span></div>`:""}
+          </div>
+          ${actVis}${inW}${comp}${deltaBlock}`;
+      }
+
+      function showLineDetail(ln) {
+        showTab("details");
+        const c=ln.w>=0?"p":"n";
+        const ap=LAST_ACT[ln.l]?.[ln.i],an=LAST_ACT[ln.l+1]?.[ln.j];
+        const delt=LAST_DELTAS[ln.l]?.[ln.j];
+        const grad=delt!==undefined&&ap!==undefined?delt*ap:undefined;
+        document.getElementById("detail-inner").innerHTML=`
+          <div class="card"><h3>Connexion [${ln.l},${ln.i}] → [${ln.l+1},${ln.j}]</h3>
+            <div class="dr"><span class="dk">Poids w</span><span class="dv ${c}">${fmt(ln.w)}</span></div>
+            <div class="dr"><span class="dk">|w|</span><span class="dv">${fmt(Math.abs(ln.w))}</span></div>
+            <div class="dr"><span class="dk">Type</span><span class="dv ${c}">${ln.w>=0?"+ Excitateur":"− Inhibiteur"}</span></div>
+            <div class="dr"><span class="dk">Couche source</span><span class="dv">L${ln.l}, N${ln.i}</span></div>
+            <div class="dr"><span class="dk">Couche cible</span><span class="dv">L${ln.l+1}, N${ln.j}</span></div>
+          </div>
+          ${ap!==undefined?`<div class="card"><h3>Signal propagé</h3>
+            <div class="fb"><div class="ft">Contribution à la pré-activation z</div>
+            <div class="fs"><span class="fe">w × a_source =</span><span class="fvar">${fmt(ln.w)}</span> × <span class="fval">${fmt(ap)}</span> = <span class="fval">${fmt(ln.w*ap)}</span></div>
+            ${an!==undefined?`<div class="fs" style="margin-top:3px"><span class="fe">a_cible =</span><span class="fval">${fmt(an)}</span></div>`:""}</div></div>`:""}
+          ${grad!==undefined?`<div class="card"><h3>Gradient ∂L/∂w</h3>
+            <div class="fb"><div class="ft">Calcul du gradient du poids</div>
+            <div class="fs"><span class="fe">∂L/∂w =</span><span class="fvar">δ_cible</span> × <span class="fvar">a_source</span></div>
+            <div class="fs"><span class="fe">=</span><span class="fval" style="color:var(--org)">${fmt(delt)}</span> × <span class="fval">${fmt(ap)}</span> = <span class="fval" style="color:var(--org)">${fmt(grad)}</span></div></div>
+            <div class="fb" style="margin-top:6px"><div class="ft">Mise à jour (${getOpt()}, lr=${getLR()})</div>
+            <div class="fs"><span class="fe">w_nouveau ←</span><span class="fvar">${fmt(ln.w)}</span> − ${getLR()} × <span class="fval" style="color:var(--org)">${fmt(grad)}</span></div>
+            <div class="fs" style="margin-top:3px"><span class="fe">w_nouveau =</span><span class="fval">${fmt(ln.w-getLR()*grad)}</span></div></div></div>`:""}`;
+      }
+
+      // ══════════════════════════════════════════
+      // TABS
+      // ══════════════════════════════════════════
+      function showTab(name) {
+        ["details","test","data","flib","cust","guide"].forEach(t=>{
+          document.getElementById(`tab-${t}`).className="tab"+(t===name?" active":"");
+          document.getElementById(`tc-${t}`).className="tc"+(t===name?" show":"");
+        });
+      }
+
+      // ══════════════════════════════════════════
+      // TOGGLE OPTIONS
+      // ══════════════════════════════════════════
+      function tog(key) {
+        DISP[key]=!DISP[key];
+        const btn=document.getElementById("t"+key);
+        if (btn) btn.className="btn"+(DISP[key]?" on":"");
+        redraw();
+      }
+      function togC(header) {
+        const body=header.nextElementSibling,arrow=header.querySelector(".cseca");
+        const o=body.classList.toggle("o"); arrow.classList.toggle("o",o);
+      }
+
+      // ══════════════════════════════════════════
+      // TEST TAB
+      // ══════════════════════════════════════════
+      function showTestInputs() {
+        if (!NET) return;
+        const nIn=NET.L[0];
+        let html='<div class="sh">Valeurs d\'entrée</div>';
+        for (let i=0;i<nIn;i++) {
+          html+=`<div class="test-input-row"><label>Entrée [${i}]</label><input type="number" id="tinp_${i}" value="${i<DS.inputs[0]?.length?DS.inputs[0][i]:0}" step="0.01" style="width:100px"></div>`;
+        }
+        document.getElementById("testInputs").innerHTML=html;
+      }
+      function runTest() {
+        if (!NET) return;
+        const nIn=NET.L[0];
+        const inp=Array.from({length:nIn},(_,i)=>parseFloat(document.getElementById(`tinp_${i}`)?.value||0));
+        const {activations,zs}=forward(inp);
+        LAST_ACT=[...activations.map(a=>[...a])]; LAST_Z=[...zs.map(z=>[...z])];
+        redraw();
+        const pred=activations[activations.length-1];
+        let resHtml=`<div class="test-result"><div class="tr-title">Résultat de la prédiction</div>
+          <div class="tr-row"><span class="tr-key">Entrée</span><span class="tr-val">[${inp.map(v=>v.toFixed(4)).join(", ")}]</span></div>
+          <div class="tr-row"><span class="tr-key">Sortie brute</span><span class="tr-val">[${pred.map(v=>v.toFixed(6)).join(", ")}]</span></div>
+          <div class="tr-row"><span class="tr-key">Sortie arrondie</span><span class="tr-val">[${pred.map(v=>Math.round(v)).join(", ")}]</span></div>
+          <div class="tr-row"><span class="tr-key">Classe prédite</span><span class="tr-val">${pred.indexOf(Math.max(...pred))}</span></div></div>`;
+        document.getElementById("testResult").innerHTML=resHtml;
+        let stepsHtml='<div class="test-steps">';
+        for (let l=0;l<NET.W.length;l++) {
+          const fnL=getActForLayer(l);
+          stepsHtml+=`<div class="ts-layer">Couche ${l+1} [${fnL}]</div>`;
+          for (let j=0;j<NET.W[l].length;j++) {
+            stepsHtml+=`<div class="ts-neu">N[${l+1},${j}]:</div>`;
+            for (let k=0;k<activations[l].length;k++) {
+              const w=NET.W[l][j][k],av=activations[l][k];
+              stepsHtml+=`<div class="ts-step"><span class="lf">w[${k}]×a[${k}]=${w.toFixed(4)}×${av.toFixed(4)}=<span class="lv">${(w*av).toFixed(5)}</span></span></div>`;
+            }
+            stepsHtml+=`<div class="ts-step"><span class="lf">+ b=${NET.B[l][j].toFixed(4)} → <span class="ts-z">z=${zs[l][j].toFixed(5)}</span> → <span class="ts-a">${fnL}(z)=${activations[l+1][j].toFixed(6)}</span></span></div>`;
+          }
+        }
+        stepsHtml+="</div>";
+        document.getElementById("testSteps").innerHTML=stepsHtml;
+      }
+      function runAllTest() {
+        if (!NET||!DS.inputs.length) return;
+        let html='<div class="test-result"><div class="tr-title">Test complet du dataset</div>';
+        let ok=0;
+        for (let i=0;i<DS.inputs.length;i++) {
+          const {activations}=forward(DS.inputs[i]);
+          const pred=activations[activations.length-1];
+          const correct=pred.every((p,j)=>Math.round(p)===DS.outputs[i][j]);
+          if (correct) ok++;
+          html+=`<div class="tr-row"><span class="tr-key">[${DS.inputs[i].join(",")}]</span>
+            <span class="tr-val" style="color:${correct?"var(--grn)":"var(--red)"}">${pred.map(p=>p.toFixed(3)).join(",")} ${correct?"✓":"✗"}</span></div>`;
+        }
+        html+=`<div class="tr-row" style="margin-top:6px;border-top:1px solid var(--brd)"><span class="tr-key">Accuracy</span><span class="tr-val" style="color:${ok===DS.inputs.length?"var(--grn)":"var(--org)"}">${ok}/${DS.inputs.length} (${((ok/DS.inputs.length)*100).toFixed(0)}%)</span></div>`;
+        html+="</div>";
+        document.getElementById("testResult").innerHTML=html;
+        document.getElementById("testSteps").innerHTML="";
+      }
+
+      // ══════════════════════════════════════════
+      // DATASET EDITOR
+      // ══════════════════════════════════════════
+      const PRESETS={
+        xor:{i:[[0,0],[0,1],[1,0],[1,1]],o:[[0],[1],[1],[0]]},
+        and:{i:[[0,0],[0,1],[1,0],[1,1]],o:[[0],[0],[0],[1]]},
+        or:{i:[[0,0],[0,1],[1,0],[1,1]],o:[[0],[1],[1],[1]]},
+        nand:{i:[[0,0],[0,1],[1,0],[1,1]],o:[[1],[1],[1],[0]]},
+        xnor:{i:[[0,0],[0,1],[1,0],[1,1]],o:[[1],[0],[0],[1]]},
+        half_adder:{i:[[0,0],[0,1],[1,0],[1,1]],o:[[0,0],[0,1],[0,1],[1,0]]},
+        "4bit":{i:[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],o:[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]},
+      };
+      function loadPreset() {
+        const k=document.getElementById("dsPreset").value;
+        if (k==="custom") return;
+        const p=PRESETS[k]; if (!p) return;
+        DS.inputs=p.i.map(r=>[...r]); DS.outputs=p.o.map(r=>[...r]);
+        DS.inN=DS.inputs[0].length; DS.outN=DS.outputs[0].length;
+        document.getElementById("dsIn").value=DS.inN; document.getElementById("dsOut").value=DS.outN;
+        buildDSEditorFromCurrent(); renderDSPreview();
+      }
+      function rebuildDSEditor() { DS.inN=parseInt(document.getElementById("dsIn").value)||2; DS.outN=parseInt(document.getElementById("dsOut").value)||1; buildDSEditorFromCurrent(); }
+      function buildDSEditorFromCurrent() {
+        const nIn=DS.inN,nOut=DS.outN;
+        let head='<div class="dse-head">';
+        for (let i=0;i<nIn;i++) head+=`<div class="dse-hcell">in[${i}]</div>`;
+        head+='<div class="dse-hcell" style="color:var(--a2)">→</div>';
+        for (let i=0;i<nOut;i++) head+=`<div class="dse-hcell" style="color:var(--grn)">out[${i}]</div>`;
+        head+='<div style="width:18px"></div></div>';
+        let rows="";
+        const data=DS.inputs.length>0?DS.inputs.map((inp,idx)=>({i:inp,o:DS.outputs[idx]})):[{i:Array(nIn).fill(0),o:Array(nOut).fill(0)}];
+        data.forEach((row,idx)=>{
+          rows+=`<div class="dse-row" id="dser_${idx}">`;
+          for (let k=0;k<nIn;k++) rows+=`<input class="dse-cell" type="number" step="0.01" value="${row.i[k]??0}" data-row="${idx}" data-type="i" data-idx="${k}">`;
+          rows+=`<span style="color:var(--a2);font-size:10px;padding:0 2px">→</span>`;
+          for (let k=0;k<nOut;k++) rows+=`<input class="dse-cell" type="number" step="0.01" value="${row.o[k]??0}" style="color:var(--grn)" data-row="${idx}" data-type="o" data-idx="${k}">`;
+          rows+=`<button class="dse-del" onclick="delDSRow(${idx})">✕</button>`;
+          rows+="</div>";
+        });
+        document.getElementById("dseRows").innerHTML=head+rows;
+      }
+      function addDSRow() { const nIn=DS.inN,nOut=DS.outN; DS.inputs.push(Array(nIn).fill(0)); DS.outputs.push(Array(nOut).fill(0)); buildDSEditorFromCurrent(); }
+      function delDSRow(idx) { DS.inputs.splice(idx,1); DS.outputs.splice(idx,1); buildDSEditorFromCurrent(); }
+      function applyDS() {
+        const nIn=parseInt(document.getElementById("dsIn").value)||2;
+        const nOut=parseInt(document.getElementById("dsOut").value)||1;
+        DS.inN=nIn; DS.outN=nOut;
+        const rows=document.querySelectorAll(".dse-row");
+        DS.inputs=[]; DS.outputs=[];
+        rows.forEach(row=>{
+          const iCells=[...row.querySelectorAll("[data-type=i]")].map(c=>parseFloat(c.value)||0);
+          const oCells=[...row.querySelectorAll("[data-type=o]")].map(c=>parseFloat(c.value)||0);
+          if (iCells.length) { DS.inputs.push(iCells); DS.outputs.push(oCells); }
+        });
+        renderDSPreview();
+        log(`<span class="ls">✓ Dataset appliqué</span> — ${DS.inputs.length} exemples, ${nIn} entrées, ${nOut} sorties`);
+      }
+      function renderDSPreview() {
+        let html='<div class="sh" style="margin-top:8px">Aperçu</div>';
+        DS.inputs.slice(0,8).forEach((inp,i)=>{ html+=`<div class="ds-row"><span>[${inp.map(v=>v.toFixed(2)).join(",")}]</span><span>→</span><span>[${DS.outputs[i].join(",")}]</span></div>`; });
+        if (DS.inputs.length>8) html+=`<div style="font-size:9px;color:var(--dim);text-align:center;padding:4px">+${DS.inputs.length-8} autres</div>`;
+        document.getElementById("dsPreview").innerHTML=html;
+      }
+      function importDSJSON() {
+        try {
+          const data=JSON.parse(document.getElementById("dsJSON").value);
+          DS.inputs=data.map(d=>d.i); DS.outputs=data.map(d=>d.o);
+          DS.inN=DS.inputs[0].length; DS.outN=DS.outputs[0].length;
+          document.getElementById("dsIn").value=DS.inN; document.getElementById("dsOut").value=DS.outN;
+          buildDSEditorFromCurrent(); renderDSPreview();
+          log(`<span class="ls">📥 Dataset importé</span> — ${DS.inputs.length} exemples`);
+        } catch(e) { alert("JSON invalide: "+e); }
+      }
+      function exportDSJSON() { const j=JSON.stringify(DS.inputs.map((inp,i)=>({i:inp,o:DS.outputs[i]})),null,2); document.getElementById("dsJSON").value=j; }
+
+      // ══════════════════════════════════════════
+      // THEMES
+      // ══════════════════════════════════════════
+      const THEMES={
+        dark:{cNI:"#ffd600",cNH:"#00e5ff",cNO:"#bf5fff",cWP:"#00ff9d",cWN:"#ff3d5a",cBG:"#05060c"},
+        neon:{cNI:"#ff00ff",cNH:"#00ffff",cNO:"#ffff00",cWP:"#00ff00",cWN:"#ff0066",cBG:"#020010"},
+        ocean:{cNI:"#ffd700",cNH:"#00b4d8",cNO:"#90e0ef",cWP:"#48cae4",cWN:"#ff6b6b",cBG:"#03045e"},
+        fire:{cNI:"#ffba08",cNH:"#f48c06",cNO:"#e85d04",cWP:"#fca311",cWN:"#dc2f02",cBG:"#1a0000"},
+        matrix:{cNI:"#39ff14",cNH:"#00cc00",cNO:"#006600",cWP:"#00ff41",cWN:"#003300",cBG:"#000300"},
+        pastel:{cNI:"#ffb3c1",cNH:"#bde0fe",cNO:"#cdb4db",cWP:"#b9fbc0",cWN:"#ffc8dd",cBG:"#0a0a14"},
+      };
+      function applyTheme(name) { const t=THEMES[name]; if (!t) return; Object.entries(t).forEach(([k,v])=>{ const el=document.getElementById(k); if (el) el.value=v; }); redraw(); }
+
+      // ══════════════════════════════════════════
+      // WIZARD
+      // ══════════════════════════════════════════
+      function showWizard() { document.getElementById("modal-bg").className="show"; }
+      function closeModal() { document.getElementById("modal-bg").className=""; }
+      function applyWizard() {
+        const type=document.getElementById("wType").value;
+        const nIn=parseInt(document.getElementById("wIn").value)||2;
+        const nOut=parseInt(document.getElementById("wOut").value)||1;
+        let hiddenStr=document.getElementById("wHidden").value.trim();
+        let hidden;
+        if (hiddenStr==="auto") { const sz=Math.max(4,Math.floor((nIn+nOut)*1.5)); hidden=[sz,sz]; }
+        else { hidden=hiddenStr.split(",").map(Number).filter(n=>n>0); }
+        const layers=[nIn,...hidden,nOut].join(",");
+        document.getElementById("iLayers").value=layers;
+        if (type==="bin") { document.getElementById("iAct").value="relu"; document.getElementById("iActOut").value="sigmoid"; document.getElementById("iLoss").value="logloss"; }
+        else if (type==="multi") { document.getElementById("iAct").value="relu"; document.getElementById("iActOut").value="softmax"; document.getElementById("iLoss").value="cce"; }
+        else { document.getElementById("iAct").value="relu"; document.getElementById("iActOut").value="linear"; document.getElementById("iLoss").value="mse"; }
+        closeModal(); buildNet();
+      }
+      document.getElementById("modal-bg").addEventListener("click",e=>{ if (e.target===document.getElementById("modal-bg")) closeModal(); });
+
+      // ══════════════════════════════════════════
+      // ADVANCED BUILDER
+      // ══════════════════════════════════════════
+      let ABLD_LAYERS = []; // [{n, act, type}]
+
+      const ACT_INFO = {
+        sigmoid: {eq:"1/(1+e⁻ᶻ)", range:"(0,1)", desc:"Standard classif. binaire. Vanishing gradient possible.", warn:true},
+        relu: {eq:"max(0,z)", range:"[0,+∞)", desc:"Le plus courant. Rapide. Risque dying ReLU.", warn:false},
+        tanh: {eq:"(eᶻ−e⁻ᶻ)/(eᶻ+e⁻ᶻ)", range:"(−1,1)", desc:"Centré en 0. Bien pour couches cachées. Vanishing possible.", warn:false},
+        leakyrelu: {eq:"z si z>0, 0.01z sinon", range:"(−∞,+∞)", desc:"Corrige le dying ReLU avec un petit gradient négatif.", warn:false},
+        elu: {eq:"z si z≥0, α(eᶻ−1) sinon", range:"(−α,+∞)", desc:"Lisse pour z<0. Activations neg. → convergence plus rapide.", warn:false},
+        swish: {eq:"z·σ(z)", range:"≈(−0.28,+∞)", desc:"De Google. Lisse, non-monotone. Surpasse souvent ReLU.", warn:false},
+        gelu: {eq:"z·Φ(z)", range:"≈(−0.17,+∞)", desc:"Utilisé dans BERT, GPT. Standard en NLP.", warn:false},
+        selu: {eq:"λ·ELU_α(z)", range:"(−λα,+∞)", desc:"Auto-normalisant. Requiert init LeCun + dropout alpha.", warn:false},
+        softsign: {eq:"z/(1+|z|)", range:"(−1,1)", desc:"Alternative à tanh. Gradient moins saturé.", warn:false},
+        linear: {eq:"z", range:"(−∞,+∞)", desc:"Identité. Pour la couche de sortie en régression.", warn:false},
+        softmax: {eq:"eᶻⁱ/Σeᶻʲ", range:"(0,1) Σ=1", desc:"Sortie multiclasse probabiliste. Couche finale uniquement.", warn:false},
+      };
+
+      function showAdvBuilder() {
+        // Initialize from current network if exists
+        if (NET) {
+          ABLD_LAYERS = [];
+          ABLD_LAYERS.push({n:NET.L[0], act:"input", type:"in"});
+          for (let l=0; l<NET.W.length; l++) {
+            const isLast = l === NET.W.length-1;
+            const fnL = LAYER_ACTS.length > 0 && l < LAYER_ACTS.length ? LAYER_ACTS[l] : (isLast ? getActOut() : getAct());
+            ABLD_LAYERS.push({n:NET.L[l+1], act:fnL, type:isLast?"out":"hidden"});
+          }
+        } else {
+          ABLD_LAYERS = [
+            {n:2, act:"input", type:"in"},
+            {n:4, act:"relu", type:"hidden"},
+            {n:1, act:"sigmoid", type:"out"},
+          ];
+        }
+        // Sync global config
+        document.getElementById("abld-opt").value = getOpt();
+        document.getElementById("abld-loss").value = getLoss();
+        document.getElementById("abld-lr").value = getLR();
+        renderAbldLayers();
+        drawAbldPreview();
+        document.getElementById("abld-modal-bg").className = "show";
+      }
+
+      function closeAdvBuilder() {
+        document.getElementById("abld-modal-bg").className = "";
+      }
+
+      function renderAbldLayers() {
+        let html = "";
+        ABLD_LAYERS.forEach((layer, idx) => {
+          const isIn = layer.type === "in";
+          const isOut = layer.type === "out";
+          const typeClass = isIn ? "layer-in" : isOut ? "layer-out" : "layer-hidden";
+          const badgeClass = isIn ? "in" : isOut ? "out" : "hidden";
+          const badgeLabel = isIn ? "Entrée" : isOut ? "Sortie" : `Cachée ${idx}`;
+          const actLabel = isIn ? "—" : layer.act;
+          const info = ACT_INFO[layer.act];
+
+          html += `<div class="layer-config ${typeClass}" id="lc_${idx}">
+            <div class="lc-header" onclick="togLC(${idx})">
+              <span class="lc-badge ${badgeClass}">${badgeLabel}</span>
+              <div>
+                <div class="lc-info">${layer.n} neurone${layer.n>1?"s":""} ${!isIn?`<span class="act-chip${isOut?" out-chip":""}">${actLabel}</span>`:""}</div>
+              </div>
+              <div class="lc-actions">
+                ${!isIn&&!isOut?`<button class="lc-mv" onclick="event.stopPropagation();abldMoveLayer(${idx},-1)" title="Monter">↑</button>
+                <button class="lc-mv" onclick="event.stopPropagation();abldMoveLayer(${idx},1)" title="Descendre">↓</button>
+                <button class="lc-del" onclick="event.stopPropagation();abldDelLayer(${idx})" title="Supprimer">✕</button>`:""}
+              </div>
+              <span class="lc-toggle" id="lct_${idx}">▶</span>
+            </div>
+            <div class="lc-body" id="lcb_${idx}">
+              <div class="lc-row">
+                <label>Neurones</label>
+                <input type="number" value="${layer.n}" min="1" max="128" onchange="abldSetN(${idx},this.value)" style="width:70px">
+                <input type="range" min="1" max="64" value="${Math.min(64,layer.n)}" oninput="this.previousElementSibling.value=this.value;abldSetN(${idx},this.value)" style="flex:1">
+              </div>
+              ${!isIn?`
+              <div class="lc-row">
+                <label>Activation</label>
+                <select onchange="abldSetAct(${idx},this.value)" style="flex:1">
+                  ${["sigmoid","relu","tanh","leakyrelu","elu","swish","gelu","selu","softsign","linear",...(isOut?["softmax"]:[])].map(a=>`<option value="${a}"${a===layer.act?" selected":""}>${a}</option>`).join("")}
+                </select>
+              </div>
+              ${info?`<div class="act-info-box">
+                <div class="aib-eq">${info.eq}</div>
+                <span class="aib-range">Plage: ${info.range}</span> — ${info.desc}
+                ${info.warn?`<div style="color:var(--org);margin-top:3px;font-size:8px">⚠ Attention: peut causer le vanishing gradient</div>`:""}
+              </div>`:""}
+              `:""}
+            </div>
+          </div>`;
+        });
+        document.getElementById("abld-layers").innerHTML = html;
+        requestAnimationFrame(drawAbldPreview);
+      }
+
+      function togLC(idx) {
+        const body = document.getElementById("lcb_"+idx);
+        const arrow = document.getElementById("lct_"+idx);
+        const o = body.classList.toggle("o");
+        arrow.classList.toggle("o", o);
+      }
+
+      function abldSetN(idx, v) {
+        ABLD_LAYERS[idx].n = Math.max(1, parseInt(v)||1);
+        // update header label without full re-render
+        const el = document.querySelector(`#lc_${idx} .lc-info`);
+        if (el) {
+          const layer = ABLD_LAYERS[idx];
+          const isIn = layer.type === "in";
+          const isOut = layer.type === "out";
+          el.innerHTML = `${layer.n} neurone${layer.n>1?"s":""} ${!isIn?`<span class="act-chip${isOut?" out-chip":""}">${layer.act}</span>`:""}`;
+        }
+        requestAnimationFrame(drawAbldPreview);
+      }
+
+      function abldSetAct(idx, v) {
+        ABLD_LAYERS[idx].act = v;
+        // Update act-info-box
+        const info = ACT_INFO[v];
+        const body = document.getElementById("lcb_"+idx);
+        const infoEl = body.querySelector(".act-info-box");
+        if (infoEl && info) {
+          infoEl.innerHTML = `<div class="aib-eq">${info.eq}</div>
+            <span class="aib-range">Plage: ${info.range}</span> — ${info.desc}
+            ${info.warn?`<div style="color:var(--org);margin-top:3px;font-size:8px">⚠ Attention: peut causer le vanishing gradient</div>`:""}`;
+        }
+        // Update chip in header
+        const headerEl = document.querySelector(`#lc_${idx} .lc-info`);
+        if (headerEl) {
+          const isOut = ABLD_LAYERS[idx].type === "out";
+          headerEl.innerHTML = `${ABLD_LAYERS[idx].n} neurone${ABLD_LAYERS[idx].n>1?"s":""} <span class="act-chip${isOut?" out-chip":""}">${v}</span>`;
+        }
+      }
+
+      function abldAddLayer() {
+        const act = document.getElementById("abld-add-act").value;
+        const n = parseInt(document.getElementById("abld-add-n").value)||4;
+        // Insert before output layer
+        const outIdx = ABLD_LAYERS.findIndex(l=>l.type==="out");
+        ABLD_LAYERS.splice(outIdx, 0, {n, act, type:"hidden"});
+        renderAbldLayers();
+      }
+
+      function abldDelLayer(idx) {
+        if (ABLD_LAYERS.length <= 2) return; // keep at least in+out
+        ABLD_LAYERS.splice(idx, 1);
+        renderAbldLayers();
+      }
+
+      function abldMoveLayer(idx, dir) {
+        const newIdx = idx + dir;
+        if (newIdx < 1 || newIdx >= ABLD_LAYERS.length - 1) return; // can't move in/out
+        [ABLD_LAYERS[idx], ABLD_LAYERS[newIdx]] = [ABLD_LAYERS[newIdx], ABLD_LAYERS[idx]];
+        renderAbldLayers();
+        // Re-open both
+        togLC(idx); togLC(newIdx);
+      }
+
+      function drawAbldPreview() {
+        const c = document.getElementById("abld-preview");
+        if (!c) return;
+        const g = c.getContext("2d");
+        c.width = c.clientWidth;
+        c.height = 80;
+        const W = c.width, H = c.height;
+        g.fillStyle = "#020307"; g.fillRect(0,0,W,H);
+        const ls = ABLD_LAYERS.map(l=>l.n);
+        const nr = Math.min(12, Math.max(4, Math.floor(H/(Math.max(...ls)+2)*0.7)));
+        const colW = W/(ls.length+1);
+        for (let l=0; l<ls.length; l++) {
+          const rowH = H/(ls[l]+1);
+          const layer = ABLD_LAYERS[l];
+          const isIn = layer.type==="in", isOut = layer.type==="out";
+          const colStr = isIn?"#ffd600":isOut?"#bf5fff":"#00e5ff";
+          const col = h2r(colStr);
+          for (let j=0; j<Math.min(ls[l],20); j++) {
+            const x = colW*(l+1), y = rowH*(j+1);
+            // draw connections
+            if (l > 0) {
+              const prevRowH = H/(ls[l-1]+1);
+              for (let k=0; k<Math.min(ls[l-1],20); k++) {
+                const px=colW*l, py=prevRowH*(k+1);
+                g.beginPath(); g.moveTo(px,py); g.lineTo(x,y);
+                g.strokeStyle=`rgba(${col.r},${col.g},${col.b},0.08)`; g.lineWidth=0.5; g.stroke();
+              }
+            }
+            g.beginPath(); g.arc(x,y,nr,0,Math.PI*2);
+            g.fillStyle=`rgba(${col.r},${col.g},${col.b},0.25)`; g.fill();
+            g.strokeStyle=`rgba(${col.r},${col.g},${col.b},0.7)`; g.lineWidth=1; g.stroke();
+          }
+          if (ls[l] > 20) {
+            const y = H/2;
+            g.fillStyle=`rgba(${col.r},${col.g},${col.b},0.5)`;
+            g.font="7px JetBrains Mono,monospace"; g.textAlign="center";
+            g.fillText(`+${ls[l]-20}…`,colW*(l+1),y+nr+10);
+          }
+          // Act label
+          if (!isIn) {
+            g.fillStyle=`rgba(${col.r},${col.g},${col.b},0.45)`;
+            g.font="7px JetBrains Mono,monospace"; g.textAlign="center";
+            g.fillText(layer.act,colW*(l+1),H-2);
+          }
+          // N label
+          g.fillStyle=`rgba(${col.r},${col.g},${col.b},0.7)`;
+          g.font="bold 7px JetBrains Mono,monospace"; g.textAlign="center";
+          g.fillText(ls[l].toString(),colW*(l+1),10);
+        }
+      }
+
+      const ABLD_PRESETS = {
+        xor: [{n:2,act:"input",type:"in"},{n:4,act:"relu",type:"hidden"},{n:1,act:"sigmoid",type:"out"}],
+        deep: [{n:3,act:"input",type:"in"},{n:8,act:"relu",type:"hidden"},{n:8,act:"relu",type:"hidden"},{n:4,act:"tanh",type:"hidden"},{n:1,act:"sigmoid",type:"out"}],
+        autoenc: [{n:4,act:"input",type:"in"},{n:2,act:"relu",type:"hidden"},{n:4,act:"sigmoid",type:"out"}],
+        cls3: [{n:3,act:"input",type:"in"},{n:8,act:"relu",type:"hidden"},{n:4,act:"relu",type:"hidden"},{n:3,act:"softmax",type:"out"}],
+        reg: [{n:2,act:"input",type:"in"},{n:6,act:"relu",type:"hidden"},{n:4,act:"swish",type:"hidden"},{n:1,act:"linear",type:"out"}],
+        wide: [{n:2,act:"input",type:"in"},{n:16,act:"relu",type:"hidden"},{n:1,act:"sigmoid",type:"out"}],
+      };
+
+      function abldPreset(name) {
+        const p = ABLD_PRESETS[name];
+        if (!p) return;
+        ABLD_LAYERS = p.map(l=>({...l}));
+        renderAbldLayers();
+      }
+
+      function applyAdvBuilder() {
+        const ls = ABLD_LAYERS.map(l=>l.n);
+        const acts = ABLD_LAYERS.slice(1).map(l=>l.act); // skip input layer
+
+        // Sync settings
+        const opt = document.getElementById("abld-opt").value;
+        const loss = document.getElementById("abld-loss").value;
+        const lr = parseFloat(document.getElementById("abld-lr").value)||0.5;
+        const initMethod = document.getElementById("abld-init").value;
+
+        document.getElementById("iOpt").value = opt;
+        document.getElementById("iLoss").value = loss;
+        syncLR(lr);
+        document.getElementById("iLayers").value = ls.join(",");
+
+        // Set global act to first hidden act (for display)
+        if (acts.length > 1) {
+          const hiddenActs = acts.slice(0,-1);
+          document.getElementById("iAct").value = hiddenActs[0] || "relu";
+          document.getElementById("iActOut").value = acts[acts.length-1] || "sigmoid";
+        }
+
+        closeAdvBuilder();
+        buildNet(ls, acts, initMethod);
+
+        log(`<span class="ls">⬡ RÉSEAU AVANCÉ CRÉÉ</span> — Couches:[${ls.join("→")}]`);
+        ABLD_LAYERS.slice(1).forEach((l,i)=>{
+          log(`<span class="lf">  Couche ${i+1}: ${l.n} neurones [<span class="lv">${l.act}</span>]</span>`);
+        });
+      }
+
+      document.getElementById("abld-modal-bg").addEventListener("click",e=>{
+        if (e.target===document.getElementById("abld-modal-bg")) closeAdvBuilder();
+      });
+
+      // ══════════════════════════════════════════
+      // EXPORT / IMPORT
+      // ══════════════════════════════════════════
+      function exportNet() {
+        if (!NET) return;
+        const data={layers:NET.L,weights:NET.W,biases:NET.B,epoch:EPOCH,lossHistory:LOSS_H,layerActs:LAYER_ACTS,config:{act:getAct(),actOut:getActOut(),loss:getLoss(),opt:getOpt(),lr:getLR()}};
+        const b=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+        const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="neural_lab_network.json"; a.click();
+      }
+      function importNet(e) {
+        const f=e.target.files[0]; if (!f) return;
+        const r=new FileReader();
+        r.onload=ev=>{
+          try {
+            const d=JSON.parse(ev.target.result);
+            NET=d; EPOCH=d.epoch||0; LOSS_H=d.lossHistory||[];
+            LAYER_ACTS=d.layerActs||[];
+            redraw(); log(`<span class="ls">📥 Réseau importé</span>`);
+          } catch(err) { alert("Erreur: "+err); }
+        };
+        r.readAsText(f);
+      }
+      function exportCode(lang) {
+        if (!NET) return;
+        let code="";
+        if (lang==="py") {
+          code=`# Neural Lab v3 — Python export\nimport numpy as np\n\n# Architecture: ${NET.L.join("→")}\n# Activations par couche: ${LAYER_ACTS.length>0?LAYER_ACTS.join(", "):(getAct()+" (toutes)")}\n# Loss: ${getLoss()} | Optimizer: ${getOpt()}\n\n`;
+          NET.W.forEach((W,l)=>{ code+=`W${l+1} = np.array(${JSON.stringify(W)})\nb${l+1} = np.array(${JSON.stringify(NET.B[l])})\n\n`; });
+          code+=`\ndef sigmoid(z): return 1/(1+np.exp(-z))\ndef relu(z): return np.maximum(0,z)\ndef tanh(z): return np.tanh(z)\n\ndef predict(x):\n    a = np.array(x)\n`;
+          NET.W.forEach((_,l)=>{
+            const fn=LAYER_ACTS.length>0&&l<LAYER_ACTS.length?LAYER_ACTS[l]:(l===NET.W.length-1?getActOut():getAct());
+            code+=`    a = ${fn}(W${l+1} @ a + b${l+1})\n`;
+          });
+          code+=`    return a\n`;
+        } else {
+          code=`// Neural Lab v3 — JS export\n// Architecture: ${NET.L.join("→")}\n\nconst weights = ${JSON.stringify(NET.W)};\nconst biases = ${JSON.stringify(NET.B)};\n\nconst acts = ${JSON.stringify(LAYER_ACTS.length>0?LAYER_ACTS:Array(NET.W.length).fill(getAct()))};\n\nfunction applyAct(z, fn) {\n  if(fn==='sigmoid') return 1/(1+Math.exp(-z));\n  if(fn==='relu') return Math.max(0,z);\n  if(fn==='tanh') return Math.tanh(z);\n  return z;\n}\n\nfunction predict(input){\n  let a=[...input];\n  for(let l=0;l<weights.length;l++){\n    const fn=acts[l];\n    const out=biases[l].map((b,j)=>{\n      let z=b; weights[l][j].forEach((w,k)=>z+=w*a[k]); return applyAct(z,fn);\n    });\n    a=out;\n  }\n  return a;\n}\n`;
+        }
+        const b=new Blob([code],{type:"text/plain"});
+        const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=`neural_lab.${lang}`; a.click();
+      }
+
+      // ══════════════════════════════════════════
+      // FORMULA LIBRARY
+      // ══════════════════════════════════════════
+      const FLIB=[
+        {id:"sigmoid",cat:"Activations",sub:"Classiques",name:"Sigmoid",eq:"σ(z) = 1 / (1 + e⁻ᶻ)",tags:["activation","classique","binaire"],range:"(0,1)",desc:"Écrase tout réel dans (0,1). Standard pour la sortie de classif. binaire. Souffre du vanishing gradient dans les réseaux profonds car σ'∈(0,0.25).",pros:["Probabiliste","Diff. partout"],cons:["Vanishing gradient","Non centrée","Saturée aux extrêmes"],deriv:"σ'(z) = σ(z)·(1−σ(z))"},
+        {id:"relu",cat:"Activations",sub:"Classiques",name:"ReLU",eq:"f(z) = max(0, z)",tags:["activation","standard","relu"],range:"[0,+∞)",desc:"La plus utilisée. Pas de vanishing gradient pour z>0. Risque de 'dying ReLU' si les neurones restent bloqués à 0 (gradient = 0 pour z<0).",pros:["Simple","Rapide","Pas vanishing (z>0)"],cons:["Dying ReLU","Non différentiable en 0","Non bornée"],deriv:"f'(z) = 1 si z>0, 0 sinon"},
+        {id:"tanh",cat:"Activations",sub:"Classiques",name:"Tanh",eq:"tanh(z) = (eᶻ−e⁻ᶻ)/(eᶻ+e⁻ᶻ)",tags:["activation","rnn","centré"],range:"(−1,1)",desc:"Centrée en 0, meilleure que sigmoid pour les couches cachées. Encore sensible au vanishing gradient. Préférée dans les RNN/LSTM.",pros:["Centrée en 0","Sym.","Mieux que sigmoid"],cons:["Vanishing gradient","Coûteuse"],deriv:"tanh'(z) = 1−tanh²(z)"},
+        {id:"lrelu",cat:"Activations",sub:"Variantes ReLU",name:"Leaky ReLU",eq:"f(z) = z si z>0, 0.01z sinon",tags:["activation","relu","leaky"],range:"(−∞,+∞)",desc:"Évite le dying ReLU en autorisant un petit gradient négatif. α=0.01 typiquement.",pros:["Pas de dying ReLU","Simple"],cons:["α fixé manuellement"],deriv:"f'(z) = 1 si z>0, 0.01 sinon"},
+        {id:"elu",cat:"Activations",sub:"Variantes ReLU",name:"ELU",eq:"f(z) = z si z≥0, α(eᶻ−1) sinon",tags:["activation","elu","smooth"],range:"(−α,+∞)",desc:"Lisse pour z<0. Activations négatives → moyenne proche de zéro → accélère la convergence.",pros:["Lisse","Moy. proches de 0"],cons:["Coûteuse (exp)","α à régler"],deriv:"f'(z) = 1 si z≥0, f(z)+α sinon"},
+        {id:"selu",cat:"Activations",sub:"Variantes ReLU",name:"SELU",eq:"SELU(z) = λ·ELU_α(z)",tags:["activation","selu","auto-norm"],range:"(−λα,+∞)",desc:"Self-Normalizing avec λ=1.0507 et α=1.6733. Normalise auto. les activations dans les couches denses si init. LeCun et dropout alpha.",pros:["Auto-normalisant"],cons:["Conditions strictes","Non universel"],deriv:"λ si z>0, λαeᶻ sinon"},
+        {id:"swish",cat:"Activations",sub:"Modernes",name:"Swish / SiLU",eq:"f(z) = z·σ(z)",tags:["activation","swish","google"],range:"≈(−0.28,+∞)",desc:"Proposé par Google. Lisse, non monotone. Souvent supérieure à ReLU sur les architectures profondes.",pros:["Lisse","Non monotone","SOTA"],cons:["Plus coûteuse"],deriv:"σ(z)+z·σ(z)·(1−σ(z))"},
+        {id:"gelu",cat:"Activations",sub:"Modernes",name:"GELU",eq:"GELU(z) = z·Φ(z)",tags:["activation","gelu","transformer","bert"],range:"≈(−0.17,+∞)",desc:"Utilisée dans BERT, GPT. Φ = CDF gaussienne. Approximation tanh. Meilleures perfs sur NLP.",pros:["Transformers","Perfs élevées"],cons:["Coûteuse","Approx. tanh"],deriv:"Complexe (voir code)"},
+        {id:"softsign",cat:"Activations",sub:"Classiques",name:"Softsign",eq:"f(z) = z/(1+|z|)",tags:["activation","softsign"],range:"(−1,1)",desc:"Alternative légère à tanh. Converge moins vite vers les extremes → gradient moins saturé.",pros:["Gradients moins saturés","Légère"],cons:["Moins connue"],deriv:"1/(1+|z|)²"},
+        {id:"softmax",cat:"Activations",sub:"Sortie",name:"Softmax",eq:"softmax(zᵢ) = eᶻⁱ / Σeᶻʲ",tags:["activation","multiclasse","sortie"],range:"(0,1) Σ=1",desc:"Transforme un vecteur en distribution de probabilité. Standard en sortie pour classif. multiclasse.",pros:["Probabiliste","Somme = 1"],cons:["Sensible au max","Jacobienne complexe"],deriv:"Jacobienne = diag(s)−ssᵀ"},
+        {id:"linear",cat:"Activations",sub:"Sortie",name:"Linéaire",eq:"f(z) = z",tags:["activation","régression","identité"],range:"(−∞,+∞)",desc:"Identité. Utilisée en sortie pour la régression. Pas de non-linéarité.",pros:["Régression continue"],cons:["Pas de non-linéarité"],deriv:"f'(z) = 1"},
+        {id:"mse",cat:"Fonctions de perte",sub:"Régression",name:"MSE",eq:"L = (1/n)Σ(ŷᵢ−yᵢ)²",tags:["loss","mse","régression"],range:"[0,+∞)",desc:"Erreur quadratique moyenne. Pénalise fort les grandes erreurs. Standard pour la régression.",pros:["Diff. partout","Standard"],cons:["Sensible aux outliers"],deriv:"∂L/∂ŷ = 2(ŷ−y)/n"},
+        {id:"mae",cat:"Fonctions de perte",sub:"Régression",name:"MAE",eq:"L = (1/n)Σ|ŷᵢ−yᵢ|",tags:["loss","mae","robuste"],range:"[0,+∞)",desc:"Erreur absolue moyenne. Robuste aux outliers. Non diff. en 0 (subdérivée).",pros:["Robuste aux outliers","Même unité que y"],cons:["Non diff. en 0","Gradient constant"],deriv:"signe(ŷ−y)/n"},
+        {id:"huber",cat:"Fonctions de perte",sub:"Régression",name:"Huber",eq:"½e² si |e|≤δ, δ(|e|−½δ) sinon",tags:["loss","huber","robuste"],range:"[0,+∞)",desc:"Hybride MAE/MSE. Quadratique pour petites erreurs, linéaire pour grandes. Robuste, diff. partout.",pros:["Robuste","Diff. partout"],cons:["δ à régler"],deriv:"e si |e|≤δ, δ·signe(e) sinon"},
+        {id:"logloss",cat:"Fonctions de perte",sub:"Classification binaire",name:"Log Loss / BCE",eq:"L = −(1/n)Σ[y·log(ŷ)+(1−y)·log(1−ŷ)]",tags:["loss","bce","binaire","cross-entropy"],range:"[0,+∞)",desc:"Standard pour classif. binaire. Maximise la log-vraisemblance. ŷ doit être en (0,1) → sigmoid.",pros:["Standard classif.","Interp. probabiliste"],cons:["Instable si ŷ≈0 ou ≈1"],deriv:"−y/ŷ+(1−y)/(1−ŷ)"},
+        {id:"cce",cat:"Fonctions de perte",sub:"Classification multiclasse",name:"Categorical Cross-Entropy",eq:"L = −Σyᵢ·log(ŷᵢ)",tags:["loss","cce","multiclasse","softmax"],range:"[0,+∞)",desc:"Avec softmax pour classif. multiclasse. Pénalise la proba attribuée à la mauvaise classe.",pros:["Standard multi-classes"],cons:["Labels one-hot","Requiert softmax"],deriv:"−yᵢ/ŷᵢ"},
+        {id:"hinge",cat:"Fonctions de perte",sub:"Classification",name:"Hinge Loss",eq:"L = max(0, 1−y·ŷ)",tags:["loss","svm","hinge"],range:"[0,+∞)",desc:"Perte des SVM. y∈{−1,+1}. Marge maximale entre classes.",pros:["SVM classique","Marge"],cons:["Labels ±1"],deriv:"−y si y·ŷ<1, 0 sinon"},
+        {id:"sgd",cat:"Optimiseurs",sub:"Gradient Descent",name:"SGD",eq:"w ← w − lr·∂L/∂w",tags:["opt","sgd","base"],range:"—",desc:"L'algorithme de base. Un exemple (ou mini-batch) à la fois. Simple mais sensible au lr et oscille.",pros:["Simple","Solide"],cons:["Lent","Oscille","Sensible lr"],deriv:"—"},
+        {id:"momentum_o",cat:"Optimiseurs",sub:"Gradient Descent",name:"SGD + Momentum",eq:"v←βv+lr·g  w←w−v",tags:["opt","momentum","vitesse"],range:"—",desc:"Accumule les gradients passés. Accélère dans les directions cohérentes, amortit les oscillations. β=0.9 typique.",pros:["Accélère","Réduit oscillations"],cons:["β à régler"],deriv:"—"},
+        {id:"adam_o",cat:"Optimiseurs",sub:"Adaptatifs",name:"Adam",eq:"m←β₁m+(1−β₁)g  v←β₂v+(1−β₂)g²\nw←w−lr·m̂/(√v̂+ε)",tags:["opt","adam","SOTA"],range:"—",desc:"Combine Momentum + RMSProp avec correction du biais. L'optimiseur le plus populaire. β₁=0.9, β₂=0.999, ε=1e-8.",pros:["Stable","SOTA","Peu sensible lr"],cons:["4× mémoire vs SGD","Peut sur-ajuster"],deriv:"—"},
+        {id:"adamw_o",cat:"Optimiseurs",sub:"Adaptatifs",name:"AdamW",eq:"Adam + décroissance poids découplée",tags:["opt","adamw","transformers"],range:"—",desc:"Adam avec weight decay découplé. Meilleure généralisation. Utilisé dans GPT, BERT, Vision Transformers.",pros:["Mieux généralise"],cons:["λ à régler"],deriv:"—"},
+        {id:"chain",cat:"Rétropropagation",sub:"Fondamentaux",name:"Règle de la chaîne",eq:"∂L/∂w = ∂L/∂a · ∂a/∂z · ∂z/∂w",tags:["backprop","gradient","fondamental"],range:"—",desc:"Le cœur mathématique de la rétropropagation. Décompose le gradient en produit de dérivées locales le long du chemin.",pros:["Exact","Récursif","Efficace"],cons:["Vanishing/Exploding gradient"],deriv:"C'est une règle"},
+        {id:"wgrad",cat:"Rétropropagation",sub:"Gradients",name:"Gradient du poids",eq:"∂L/∂wᵢⱼ = δⱼ · aᵢ",tags:["backprop","gradient","poids"],range:"—",desc:"Produit du delta du neurone cible et de l'activation source. Détermine comment chaque poids contribue à l'erreur.",pros:["Direct","Simple"],cons:["—"],deriv:"—"},
+        {id:"l2r",cat:"Régularisation",sub:"Normes",name:"L2 (Ridge)",eq:"L_tot = L + λΣwᵢ²",tags:["régularisation","l2","ridge","weight_decay"],range:"—",desc:"Pénalise les poids extrêmes. Encourage poids petits et uniformes. = weight decay.",pros:["Diff. partout","Stabilise"],cons:["Pas de poids = 0"],deriv:"2λw"},
+        {id:"drop",cat:"Régularisation",sub:"Techniques",name:"Dropout",eq:"ã = a/p · Bernoulli(p)",tags:["régularisation","dropout","overfitting"],range:"—",desc:"Désactive aléatoirement des neurones pendant l'entraînement. Empêche co-adaptation, effet d'ensemble.",pros:["Très efficace","Universel"],cons:["Ralentit","Pas en inférence"],deriv:"Non applicable"},
+        {id:"xav",cat:"Initialisation",sub:"Méthodes",name:"Xavier / Glorot",eq:"w ~ U(−√(6/(nᵢₙ+nₒᵤₜ)), √(6/(nᵢₙ+nₒᵤₜ)))",tags:["init","xavier","glorot","sigmoid"],range:"—",desc:"Garde la variance stable entre couches. Idéal pour sigmoid et tanh.",pros:["Variance stable","Sigmoid/tanh"],cons:["Sous-optimal ReLU"],deriv:"—"},
+        {id:"he_i",cat:"Initialisation",sub:"Méthodes",name:"He / Kaiming",eq:"w ~ N(0, √(2/nᵢₙ))",tags:["init","he","kaiming","relu"],range:"—",desc:"Adapté à ReLU (compense le zéro de la moitié des activations). Standard avec ReLU.",pros:["Optimal ReLU"],cons:["Moins bon sigmoid"],deriv:"—"},
+        {id:"dense",cat:"Architectures",sub:"Couches",name:"Dense / Fully Connected",eq:"a = f(Wa + b)",tags:["architecture","dense","couche"],range:"—",desc:"Chaque neurone est connecté à tous les neurones de la couche précédente. La brique de base du MLP.",pros:["Universel","Simple"],cons:["O(n²) paramètres"],deriv:"—"},
+        {id:"universal",cat:"Architectures",sub:"Théorèmes",name:"Théorème d'approximation universelle",eq:"∀ε>0, ∃N tel que |f(x)−NN(x)|<ε",tags:["théorème","puissance","mlp"],range:"—",desc:"Un MLP avec 1 couche cachée suffisamment large peut approximer n'importe quelle fonction continue sur un compact.",pros:["Garantit la puissance"],cons:["Peut requérir N→∞"],deriv:"—"},
+      ];
+      let FTAG="Tout",FSEARCH="";
+      function buildFLib() {
+        const tags=new Set(["Tout"]);
+        FLIB.forEach(f=>f.tags.forEach(t=>tags.add(t)));
+        const ta=document.getElementById("ftags");
+        ta.innerHTML=[...tags].slice(0,16).map(t=>`<span class="ftag${t==="Tout"?" on":""}" onclick="setFTag('${t}',this)">${t}</span>`).join("");
+        renderFTree(FLIB);
+      }
+      function setFTag(t,el) { FTAG=t; document.querySelectorAll(".ftag").forEach(e=>e.classList.remove("on")); el.classList.add("on"); renderFTree(getFilt()); }
+      function filterF(q) { FSEARCH=q.toLowerCase(); renderFTree(getFilt()); }
+      function getFilt() {
+        return FLIB.filter(f=>{
+          const tok=FTAG==="Tout"||f.tags.includes(FTAG);
+          const sq=!FSEARCH||[f.name,f.eq,f.desc,...f.tags].some(s=>s.toLowerCase().includes(FSEARCH));
+          return tok&&sq;
+        });
+      }
+      function renderFTree(list) {
+        const el=document.getElementById("ftree");
+        if (!list.length) { el.innerHTML='<div class="fnone">Aucune formule</div>'; return; }
+        const byCat={};
+        list.forEach(f=>{ if (!byCat[f.cat]) byCat[f.cat]={}; if (!byCat[f.cat][f.sub]) byCat[f.cat][f.sub]=[]; byCat[f.cat][f.sub].push(f); });
+        const CI={Activations:"⚡","Fonctions de perte":"📉",Optimiseurs:"🔧",Rétropropagation:"🔄",Régularisation:"🛡",Métriques:"📊",Initialisation:"🎲",Architectures:"🏗"};
+        let html="";
+        for (const cat in byCat) {
+          const tot=Object.values(byCat[cat]).reduce((s,a)=>s+a.length,0);
+          const autoOpen=FSEARCH||FTAG!=="Tout"?"o":"";
+          html+=`<div class="fcat"><div class="fcath" onclick="togFCat(this)"><span class="fci">${CI[cat]||"📌"}</span><span class="fct">${cat}</span><span class="fcc">${tot}</span><span class="fca ${autoOpen}">▶</span></div><div class="fcb ${autoOpen}">`;
+          for (const sub in byCat[cat]) {
+            html+=`<div class="fsub"><div class="fsubh" onclick="togFSub(this)"><span>${sub}</span><span class="fsuba ${autoOpen}">▶</span></div><div class="fsubb ${autoOpen}">`;
+            byCat[cat][sub].forEach(f=>{
+              html+=`<div class="fentry" id="fe_${f.id}" onclick="showFDetail('${f.id}')"><div class="fen">${f.name}</div><div class="feq">${f.eq.split("\n")[0]}</div><div class="fed">${f.desc.substring(0,70)}…</div><div class="fetags">${f.tags.slice(0,3).map(t=>`<span class="fetag">${t}</span>`).join("")}</div></div>`;
+            });
+            html+="</div></div>";
+          }
+          html+="</div></div>";
+        }
+        el.innerHTML=html;
+      }
+      function togFCat(h) { const b=h.nextElementSibling,a=h.querySelector(".fca"); const o=b.classList.toggle("o"); a.classList.toggle("o",o); }
+      function togFSub(h) { const b=h.nextElementSibling,a=h.querySelector(".fsuba"); const o=b.classList.toggle("o"); a.classList.toggle("o",o); }
+      let selF=null;
+      function showFDetail(id) {
+        const f=FLIB.find(x=>x.id===id); if (!f) return;
+        document.querySelectorAll(".fentry").forEach(e=>e.classList.remove("hi"));
+        document.getElementById("fe_"+id)?.classList.add("hi"); selF=id;
+        const pd=`<div class="fdpanel show"><h4>📌 ${f.name}</h4>
+          <div class="fdeq">${f.eq.replace(/\n/g,"<br>")}</div>
+          <div class="fdex">${f.desc}</div>
+
+          <!-- Legend contextuelle pour cette formule -->
+          <div class="fleg" style="margin-bottom:7px">
+            <div class="fleg-title">🔑 Symboles de cette formule</div>
+            <div class="fleg-grid">
+              ${getFormulaSymbols(f).map(s=>`<div class="fleg-row"><span class="fleg-sym">${s.sym}</span><span class="fleg-desc">${s.desc}</span></div>`).join("")}
+            </div>
+          </div>
+
+          <div class="fdpc">
+            <div class="fdpros">${f.pros.map(p=>`<span>✓ ${p}</span>`).join("")}</div>
+            <div class="fdcons">${f.cons.map(c=>`<span>✗ ${c}</span>`).join("")}</div>
+          </div>
+          ${f.range!=="—"?`<div class="fdrange"><span>Plage :</span><b>${f.range}</b></div>`:""}
+          ${f.deriv&&f.deriv!=="—"&&!f.deriv.includes("Non")?`<div class="fdderiv">Dérivée : <b>${f.deriv}</b></div>`:""}
+          ${f.cat==="Activations"?`<div class="fgwrap"><canvas id="fgcvs_${id}"></canvas></div>`:""}
+          </div>`;
+        document.getElementById("fdsel").innerHTML=pd;
+        if (f.cat==="Activations") requestAnimationFrame(()=>drawFGraph(id,f.id));
+      }
+
+      // Returns relevant symbol explanations for a formula
+      function getFormulaSymbols(f) {
+        const allSym = [
+          {sym:"z", desc:"Pré-activation = Σ(w×a) + b", keys:["z","activation","backprop","gradient"]},
+          {sym:"a / ŷ", desc:"Activation / sortie du neurone", keys:["activation","loss","backprop"]},
+          {sym:"w", desc:"Poids synaptique", keys:["poids","backprop","gradient","opt"]},
+          {sym:"b", desc:"Biais appris", keys:["backprop","gradient"]},
+          {sym:"∂L/∂w", desc:"Gradient de la loss", keys:["backprop","gradient","opt"]},
+          {sym:"δ", desc:"Erreur locale du neurone (backprop)", keys:["backprop","gradient"]},
+          {sym:"lr", desc:"Learning rate (taux d'apprentissage)", keys:["opt","sgd","adam"]},
+          {sym:"β / β₁ / β₂", desc:"Hyperparamètres de momentum", keys:["momentum","adam","adamw"]},
+          {sym:"y", desc:"Cible réelle (label)", keys:["loss","mse","mae","bce"]},
+          {sym:"n", desc:"Nombre d'éléments", keys:["loss","mse","mae"]},
+          {sym:"λ", desc:"Coefficient de régularisation", keys:["régularisation","l1","l2"]},
+          {sym:"ε", desc:"Epsilon pour stabilité numérique", keys:["adam","rmsprop","adamw"]},
+          {sym:"Σ", desc:"Somme sur tous les termes", keys:["activation","loss"]},
+          {sym:"σ", desc:"Fonction sigmoid", keys:["sigmoid","swish","activation"]},
+          {sym:"f'(z)", desc:"Dérivée de l'activation", keys:["backprop","gradient","fondamental"]},
+        ];
+        const relevant = allSym.filter(s => s.keys.some(k => f.tags.includes(k) || f.id.includes(k)));
+        return relevant.length > 0 ? relevant.slice(0,6) : allSym.slice(0,4);
+      }
+
+      function drawFGraph(domId,fnId) {
+        const c=document.getElementById("fgcvs_"+domId); if (!c) return;
+        const dpr=window.devicePixelRatio||1; c.width=c.clientWidth*dpr; c.height=c.clientHeight*dpr;
+        const g=c.getContext("2d"); g.scale(dpr,dpr);
+        const cw=c.clientWidth,ch=c.clientHeight||60;
+        g.fillStyle="#020307"; g.fillRect(0,0,cw,ch);
+        g.strokeStyle="rgba(25,32,64,.6)"; g.lineWidth=1;
+        g.beginPath();g.moveTo(0,ch/2);g.lineTo(cw,ch/2);g.stroke();
+        g.beginPath();g.moveTo(cw/2,0);g.lineTo(cw/2,ch);g.stroke();
+        g.beginPath(); g.strokeStyle="#00e5ff"; g.lineWidth=2;
+        for (let i=0;i<=cw;i++) { const z=(i/cw)*8-4; const a=act(z,fnId); const px=i,py=ch/2-a*(ch/2.6); i===0?g.moveTo(px,py):g.lineTo(px,py); }
+        g.stroke();
+        g.fillStyle="rgba(68,85,119,.5)"; g.font="7px JetBrains Mono,monospace";
+        g.textAlign="left"; g.fillText("−4",2,ch/2-2);
+        g.textAlign="right"; g.fillText("+4",cw-2,ch/2-2);
+      }
+
+      // ══════════════════════════════════════════
+      // MISC
+      // ══════════════════════════════════════════
+      function showHint() { const h=document.getElementById("hint"); h.style.opacity="1"; setTimeout(()=>h.style.opacity="0",3000); }
+
+      // ══════════════════════════════════════════
+      // RESIZE HANDLES
+      // ══════════════════════════════════════════
+      function initColResize(handleId, targetId, side) {
+        const handle = document.getElementById(handleId);
+        const target = document.getElementById(targetId);
+        if (!handle || !target) return;
+        let startX, startW;
+        handle.addEventListener("mousedown", e => {
+          startX = e.clientX;
+          startW = target.getBoundingClientRect().width;
+          handle.classList.add("dragging");
+          document.body.classList.add("resizing");
+          e.preventDefault();
+          function onMove(e) {
+            let delta = side === "left" ? e.clientX - startX : startX - e.clientX;
+            let newW = Math.max(
+              parseInt(getComputedStyle(target).minWidth) || 160,
+              Math.min(parseInt(getComputedStyle(target).maxWidth) || 650, startW + delta)
+            );
+            target.style.width = newW + "px";
+            target.style.minWidth = "0";
+            resizeCvs(); redraw();
+          }
+          function onUp() {
+            handle.classList.remove("dragging");
+            document.body.classList.remove("resizing");
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+            resizeCvs(); redraw();
+          }
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+        });
+        // Double-click = reset to default
+        handle.addEventListener("dblclick", () => {
+          target.style.width = (side === "left" ? "260px" : "370px");
+          target.style.minWidth = "";
+          resizeCvs(); redraw();
+        });
+      }
+
+      function initRowResize(handleId, targetId) {
+        const handle = document.getElementById(handleId);
+        const target = document.getElementById(targetId);
+        if (!handle || !target) return;
+        let startY, startH;
+        handle.addEventListener("mousedown", e => {
+          startY = e.clientY;
+          startH = target.getBoundingClientRect().height;
+          handle.classList.add("dragging");
+          document.body.classList.add("resizing-row");
+          e.preventDefault();
+          function onMove(e) {
+            let delta = startY - e.clientY; // dragging up = bigger log
+            let minH = parseInt(getComputedStyle(target).minHeight) || 60;
+            let maxH = parseInt(getComputedStyle(target).maxHeight) || window.innerHeight * 0.7;
+            let newH = Math.max(minH, Math.min(maxH, startH + delta));
+            target.style.height = newH + "px";
+            resizeCvs(); redraw();
+          }
+          function onUp() {
+            handle.classList.remove("dragging");
+            document.body.classList.remove("resizing-row");
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+            resizeCvs(); redraw();
+          }
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+        });
+        // Double-click = reset
+        handle.addEventListener("dblclick", () => {
+          target.style.height = "190px";
+          resizeCvs(); redraw();
+        });
+      }
+
+      initColResize("rszLeft", "left", "left");
+      initColResize("rszRight", "right", "right");
+      initRowResize("rszLog", "logPanel");
+
+      // ══════════════════════════════════════════
+      // END
+      // ══════════════════════════════════════════
+      resizeCvs();
+      loadPreset();
+      buildNet();
+      buildFLib();
+      showHint();
+    </script>
+  </body>
+</html>

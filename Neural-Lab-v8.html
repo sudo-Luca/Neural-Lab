@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Neural Lab v6</title>
+    <title>Neural Lab v8</title>
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800;900&display=swap"
       rel="stylesheet"
@@ -460,9 +460,9 @@
       #log {
         flex: 1;
         overflow-y: auto;
-        padding: 7px 12px;
+        padding: 6px 10px 10px;
         font-size: 10px;
-        line-height: 1.75;
+        line-height: 1.7;
         font-family: "JetBrains Mono", monospace;
       }
       .ls {
@@ -495,6 +495,239 @@
       .lsep {
         color: #192040;
         user-select: none;
+      }
+
+      /* ── LOG v7 : blocs structurés ── */
+      .log-block {
+        margin: 5px 0;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid;
+      }
+      .log-block-hdr {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        font-size: 9px;
+        font-weight: 700;
+        font-family: "Syne", sans-serif;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        user-select: none;
+      }
+      .log-block-hdr:hover {
+        filter: brightness(1.15);
+      }
+      .log-block-body {
+        padding: 4px 8px 6px;
+        background: rgba(3, 4, 8, 0.7);
+      }
+      .log-block-arr {
+        margin-left: auto;
+        font-size: 8px;
+        transition: transform 0.15s;
+        color: inherit;
+        opacity: 0.6;
+      }
+      .log-block-arr.open {
+        transform: rotate(90deg);
+      }
+
+      /* Phase colors */
+      .log-fwd {
+        border-color: rgba(0, 229, 255, 0.25);
+      }
+      .log-fwd .log-block-hdr {
+        background: rgba(0, 229, 255, 0.08);
+        color: var(--a1);
+      }
+      .log-loss {
+        border-color: rgba(255, 61, 90, 0.25);
+      }
+      .log-loss .log-block-hdr {
+        background: rgba(255, 61, 90, 0.08);
+        color: var(--red);
+      }
+      .log-bp {
+        border-color: rgba(255, 140, 42, 0.25);
+      }
+      .log-bp .log-block-hdr {
+        background: rgba(255, 140, 42, 0.08);
+        color: var(--org);
+      }
+      .log-upd {
+        border-color: rgba(0, 255, 157, 0.25);
+      }
+      .log-upd .log-block-hdr {
+        background: rgba(0, 255, 157, 0.08);
+        color: var(--grn);
+      }
+
+      /* Layer row inside a block */
+      .log-layer {
+        margin: 4px 0 2px;
+        font-size: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--dim);
+        padding: 2px 0;
+        border-bottom: 1px solid var(--brd);
+      }
+
+      /* Neuron mini card */
+      .log-neuron {
+        margin: 3px 0 4px 6px;
+        border-left: 2px solid var(--brd);
+        padding-left: 7px;
+      }
+      .log-neuron-id {
+        font-size: 9px;
+        font-weight: 700;
+        color: var(--a1);
+        margin-bottom: 2px;
+      }
+      .log-neuron-id.out {
+        color: var(--a2);
+      }
+
+      /* Calc row: label = expr */
+      .log-calc {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 3px;
+        font-size: 9px;
+        line-height: 1.65;
+        padding: 1px 0;
+      }
+      .log-clbl {
+        color: var(--dim);
+        min-width: 95px;
+        flex-shrink: 0;
+        font-size: 8px;
+      }
+      .log-cx {
+        color: var(--text);
+      }
+      .log-cw {
+        color: var(--a1);
+        font-weight: 700;
+      }
+      .log-ca {
+        color: var(--grn);
+        font-weight: 700;
+      }
+      .log-cz {
+        color: var(--ylw);
+        font-weight: 700;
+      }
+      .log-cb {
+        color: var(--a2);
+        font-weight: 700;
+      }
+      .log-cg {
+        color: var(--org);
+        font-weight: 700;
+      }
+      .log-cl {
+        color: var(--red);
+        font-weight: 700;
+      }
+      .log-cnew {
+        color: var(--grn);
+        font-weight: 700;
+      }
+      .log-sub {
+        font-size: 8px;
+        color: var(--dim);
+        padding-left: 4px;
+      }
+
+      /* Summary pill */
+      .log-summary {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 3px;
+        padding: 3px 6px;
+        background: rgba(0, 229, 255, 0.04);
+        border: 1px solid rgba(0, 229, 255, 0.1);
+        border-radius: 3px;
+      }
+      .log-sitem {
+        font-size: 9px;
+      }
+      .log-skey {
+        font-size: 7px;
+        color: var(--dim);
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .log-sval {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+      }
+
+      /* loss total */
+      .log-loss-total {
+        text-align: center;
+        font-family: "Syne", sans-serif;
+        font-weight: 900;
+        font-size: 15px;
+        color: var(--red);
+        text-shadow: 0 0 10px rgba(255, 61, 90, 0.4);
+        padding: 3px 0;
+        margin-top: 3px;
+      }
+
+      /* warn tags */
+      .log-warn-v {
+        display: inline-block;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 7px;
+        background: rgba(0, 229, 255, 0.08);
+        border: 1px solid rgba(0, 229, 255, 0.2);
+        color: var(--a1);
+        margin-left: 4px;
+      }
+      .log-warn-e {
+        display: inline-block;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 7px;
+        background: rgba(255, 61, 90, 0.08);
+        border: 1px solid rgba(255, 61, 90, 0.2);
+        color: var(--red);
+        margin-left: 4px;
+      }
+
+      .log-sep {
+        height: 1px;
+        background: var(--brd);
+        margin: 3px 0;
+      }
+      .log-dim-row {
+        color: var(--dim);
+        font-size: 8px;
+        padding: 1px 0;
+      }
+      .log-epoch-bar {
+        padding: 3px 0;
+        font-size: 10px;
+      }
+      .log-formula-box {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--brd);
+        border-radius: 3px;
+        padding: 3px 7px;
+        margin: 2px 0 3px;
+        font-size: 9px;
+        color: var(--a1);
+        letter-spacing: 0.02em;
       }
       .tabs {
         display: flex;
@@ -1878,7 +2111,7 @@
     <div id="left">
       <div class="ph">
         <h1>
-          ⬡ NEURAL LAB <span style="font-size: 9px; color: var(--dim)">v6</span>
+          ⬡ NEURAL LAB <span style="font-size: 9px; color: var(--dim)">v8</span>
         </h1>
         <p>Simulateur pédagogique deep learning</p>
       </div>
@@ -3107,9 +3340,6 @@
     <div id="tip"></div>
 
     <script>
-      // ══════════════════════════════════════════
-      // CORE STATE
-      // ══════════════════════════════════════════
       let NET = null,
         POS = [],
         LINES = [];
@@ -3125,14 +3355,10 @@
         ADAM_T = 0;
       let DISP = { W: true, B: true, A: true, I: true, G: true, Grid: true };
       let DS = { inputs: [], outputs: [], inN: 2, outN: 1 };
-      let RAF_ID = null;
+      let RAF_ID = null,
+        SELECTED = null;
+      let LAYER_ACTS = [];
 
-      // Per-layer activations (advanced builder)
-      let LAYER_ACTS = []; // array of activation per layer (length = L-1 layers, index l=0 is hidden1, last is output)
-
-      // ══════════════════════════════════════════
-      // UTILS
-      // ══════════════════════════════════════════
       const ε = 1e-15;
       const h2r = (h) => {
         let r = parseInt(h.slice(1, 3), 16) || 0,
@@ -3167,11 +3393,8 @@
       function getV(id) {
         return parseFloat(document.getElementById(id).value) || 0;
       }
-      function getDec() {
-        return 5;
-      }
       function fmt(v) {
-        return isNaN(v) ? "NaN" : (+v).toFixed(getDec());
+        return isNaN(v) ? "NaN" : (+v).toFixed(5);
       }
       function syncLR(v) {
         document.getElementById("lrR").value = v;
@@ -3189,9 +3412,6 @@
         return isLast ? getActOut() : getAct();
       }
 
-      // ══════════════════════════════════════════
-      // ACTIVATION FUNCTIONS
-      // ══════════════════════════════════════════
       function act(z, fn) {
         switch (fn) {
           case "sigmoid":
@@ -3277,9 +3497,6 @@
         return e.map((v) => v / s);
       }
 
-      // ══════════════════════════════════════════
-      // LOSS FUNCTIONS
-      // ══════════════════════════════════════════
       function computeLoss(pred, y) {
         const fn = getLoss(),
           n = pred.length,
@@ -3342,9 +3559,6 @@
         });
       }
 
-      // ══════════════════════════════════════════
-      // WEIGHT INIT
-      // ══════════════════════════════════════════
       function initW(nIn, nOut, method) {
         const m = method || document.getElementById("cInit").value;
         switch (m) {
@@ -3365,9 +3579,6 @@
         }
       }
 
-      // ══════════════════════════════════════════
-      // BUILD NETWORK
-      // ══════════════════════════════════════════
       function buildNet(customLayers, customActs, customInitMethod) {
         let ls =
           customLayers ||
@@ -3476,9 +3687,6 @@
         log(`<span class="ls">↺ Poids réinitialisés</span>`);
       }
 
-      // ══════════════════════════════════════════
-      // FORWARD
-      // ══════════════════════════════════════════
       function forward(input) {
         const drop = getV("cDrop");
         let a = input.slice(),
@@ -3506,9 +3714,6 @@
         return { activations, zs };
       }
 
-      // ══════════════════════════════════════════
-      // BACKWARD
-      // ══════════════════════════════════════════
       function backward(activations, zs, y) {
         const L = NET.W.length - 1;
         const deltas = Array.from({ length: NET.W.length }, () => []);
@@ -3534,9 +3739,6 @@
         return deltas;
       }
 
-      // ══════════════════════════════════════════
-      // APPLY GRADIENTS
-      // ══════════════════════════════════════════
       function applyGrad(activations, deltas) {
         const lr = getLR(),
           opt = getOpt();
@@ -3639,9 +3841,6 @@
         }
       }
 
-      // ══════════════════════════════════════════
-      // TRAIN
-      // ══════════════════════════════════════════
       function trainSample(x, y, verbose) {
         const { activations, zs } = forward(x);
         LAST_ACT = [...activations.map((a) => [...a])];
@@ -3690,7 +3889,7 @@
         updateStats(LOSS_H[LOSS_H.length - 1]);
         redraw();
         log(
-          `<span class="ls">×${n} epochs</span> — E:${EPOCH} Loss:<span class="ll">${fmt(LOSS_H[LOSS_H.length - 1])}</span> Acc:<span class="lv">${acc().toFixed(1)}%</span>`,
+          `<div class="log-epoch-bar"><span style="color:var(--a2);font-weight:700">×${n} epochs</span> &nbsp;|&nbsp; E:${EPOCH} &nbsp;|&nbsp; Loss:<span style="color:var(--red);font-weight:700">${fmt(LOSS_H[LOSS_H.length - 1])}</span> &nbsp;|&nbsp; Acc:<span style="color:var(--grn);font-weight:700">${acc().toFixed(1)}%</span></div>`,
         );
       }
       function toggleAuto() {
@@ -3727,12 +3926,18 @@
         document.getElementById("sLoss").textContent = loss.toFixed(4);
         document.getElementById("sAcc").textContent = acc().toFixed(0);
         document.getElementById("sLR").textContent = getLR().toFixed(4);
+        // Tendance de la loss sur les 10 derniers steps
+        if (LOSS_H.length >= 3) {
+          const recent = LOSS_H.slice(-10),
+            avg = recent.reduce((a, b) => a + b) / recent.length;
+          const trend = loss < avg ? "↘" : "↗";
+          const tCol = loss < avg ? "var(--grn)" : "var(--red)";
+          document.getElementById("sLoss").innerHTML =
+            `${loss.toFixed(4)} <span style="font-size:9px;color:${tCol}">${trend}</span>`;
+        }
         drawLossChart();
       }
 
-      // ══════════════════════════════════════════
-      // LOGGING
-      // ══════════════════════════════════════════
       const logEl = () => document.getElementById("log");
       function log(html) {
         const el = logEl(),
@@ -3751,142 +3956,291 @@
       }
 
       function logFull(x, y, activations, zs, deltas, ll) {
-        const lf = getLoss();
-        log(
-          `<span class="lsep">──────────────────────────────────────────</span>`,
-        );
-        log(
-          `<span class="ls">▶ FORWARD PASS</span> — X:[<span class="lv">${x.map((v) => fmt(+v)).join(", ")}</span>] → Y:[<span class="lb">${y.join(", ")}</span>]`,
-        );
+        const lf = getLoss(),
+          opt = getOpt(),
+          lr = getLR();
+        const f = (v) => (+v).toFixed(5),
+          f2 = (v) => (+v).toFixed(2),
+          f3 = (v) => (+v).toFixed(3);
+        log(`<div style="margin:6px 0 3px;padding:4px 8px;background:rgba(191,95,255,0.08);border:1px solid rgba(191,95,255,0.2);border-radius:4px;display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--a2)">
+          <span>▶ STEP #${EPOCH}</span>
+          <span style="font-size:8px;font-weight:400;color:var(--dim);font-family:'JetBrains Mono',monospace">
+            X:[<span style="color:var(--grn)">${x.map((v) => f3(+v)).join(", ")}</span>]
+            → Y:[<span style="color:var(--a2)">${y.join(", ")}</span>]
+            &nbsp;|&nbsp; ${lf.toUpperCase()} &nbsp;|&nbsp; ${opt} &nbsp;|&nbsp; lr=${lr}
+          </span>
+        </div>`);
+        let fwdBody = "";
         for (let l = 0; l < NET.W.length; l++) {
-          const fnL = getActForLayer(l);
-          log(
-            `<span class="ln">  ▸ Couche ${l + 1}/${NET.W.length} [${fnL}] — ${NET.L[l + 1]} neurone(s)</span>`,
-          );
+          const fnL = getActForLayer(l),
+            isOut = l === NET.W.length - 1;
+          fwdBody += `<div class="log-layer" style="color:${isOut ? "var(--a2)" : "var(--ylw)"}">▸ Couche ${isOut ? "Sortie" : "Cachée " + (l + 1)} (L${l + 1}) — <b>${fnL}</b></div>`;
           for (let j = 0; j < NET.W[l].length; j++) {
-            log(`<span class="ln">    ◉ Neurone [${l + 1},${j}]</span>`);
-            if (ll === "full") {
-              log(`<span class="lf">      z = Σ(w×a) + b</span>`);
-              for (let k = 0; k < activations[l].length; k++) {
-                const w = NET.W[l][j][k],
-                  av = activations[l][k],
-                  prod = w * av;
-                log(
-                  `<span class="lf">        w[${l},${k}→${j}]</span>=<span class="lw">${fmt(w)}</span> × a[${l},${k}]=<span class="lv">${fmt(av)}</span> → <span class="lv">${fmt(prod)}</span>`,
-                );
-              }
-              log(
-                `<span class="lf">        + biais b=<span class="lb">${fmt(NET.B[l][j])}</span></span>`,
-              );
-              log(
-                `<span class="lf">        z[${l + 1},${j}] = <span class="ls">${fmt(zs[l][j])}</span></span>`,
-              );
-              log(
-                `<span class="lf">        a[${l + 1},${j}] = ${fnL}(<span class="ls">${fmt(zs[l][j])}</span>) = <span class="lv">${fmt(activations[l + 1][j])}</span></span>`,
-              );
-            } else {
-              log(
-                `<span class="lf">      z=${fmt(zs[l][j])} → ${fnL}(z) = <span class="lv">${fmt(activations[l + 1][j])}</span></span>`,
-              );
+            const zv = zs[l][j],
+              av = activations[l + 1][j],
+              bv = NET.B[l][j],
+              fprime = actD(av, zv, fnL);
+            fwdBody += `<div class="log-neuron"><div class="log-neuron-id ${isOut ? "out" : ""}">◉ N[${l + 1},${j}] — ${fnL}(z)</div>`;
+            fwdBody += `<div class="log-formula-box">z = Σ(wᵢ × aᵢ) + b</div>`;
+            let sumWA = 0;
+            for (let k = 0; k < activations[l].length; k++) {
+              const wv = NET.W[l][j][k],
+                ak = activations[l][k],
+                prod = wv * ak;
+              sumWA += prod;
+              fwdBody += `<div class="log-calc" style="padding-left:8px"><span class="log-clbl">w[${k}→${j}] × a[${l},${k}]</span><span class="log-cx">=</span><span class="log-cw">${f(wv)}</span><span class="log-cx">×</span><span class="log-ca">${f(ak)}</span><span class="log-cx">=</span><span class="log-cx" style="color:var(--text)">${f(prod)}</span></div>`;
             }
+            fwdBody += `<div class="log-sep"></div>`;
+            fwdBody += `<div class="log-calc"><span class="log-clbl">Σ(w·a) + b</span><span class="log-cx">=</span><span class="log-cx">${f(sumWA)}</span><span class="log-cx">+</span><span class="log-cb">${f(bv)}</span><span class="log-cx">=</span><span class="log-cz">${f(zv)}</span></div>`;
+            fwdBody += `<div class="log-calc"><span class="log-clbl">a = ${fnL}(z)</span><span class="log-cx">= ${fnL}(<span class="log-cz">${f(zv)}</span>) =</span><span class="log-ca">${f(av)}</span></div>`;
+            fwdBody += `<div class="log-calc"><span class="log-clbl">f'(z) backprop</span><span class="log-cx">= <span class="log-cg">${f(fprime)}</span></span>${Math.abs(fprime) < 0.01 ? `<span class="log-warn-v">⚠ saturation</span>` : ""}</div>`;
+            fwdBody += `<div class="log-summary">
+              <div class="log-sitem"><span class="log-skey">z</span><span class="log-sval" style="color:var(--ylw)">${f2(zv)}</span></div>
+              <div class="log-sitem"><span class="log-skey">a</span><span class="log-sval" style="color:var(--grn)">${f2(av)}</span></div>
+              <div class="log-sitem"><span class="log-skey">f'(z)</span><span class="log-sval" style="color:var(--org);font-size:10px">${f2(fprime)}</span></div>
+              <div class="log-sitem"><span class="log-skey">biais b</span><span class="log-sval" style="color:var(--a2);font-size:10px">${f2(bv)}</span></div>
+            </div></div>`;
           }
         }
-        const pred = activations[activations.length - 1];
-        const loss = computeLoss(pred, y);
-        log(`<span class="ls">◈ LOSS [${lf.toUpperCase()}]</span>`);
-        if (ll === "full") {
-          pred.forEach((p, i) => {
-            let lterm = "";
-            switch (lf) {
-              case "mse":
-                lterm = `(${fmt(p)}−${y[i]})² = <span class="ll">${fmt((p - y[i]) ** 2)}</span>`;
-                break;
-              case "mae":
-                lterm = `|${fmt(p)}−${y[i]}| = <span class="ll">${fmt(Math.abs(p - y[i]))}</span>`;
-                break;
-              case "logloss": {
-                const c = clamp(p, ε, 1 - ε);
-                lterm = `−[${y[i]}·log(${fmt(c)}) + ${1 - y[i]}·log(${fmt(1 - c)})] = <span class="ll">${fmt(-(y[i] * Math.log(c) + (1 - y[i]) * Math.log(1 - c)))}</span>`;
-                break;
-              }
-              case "huber": {
-                const e = Math.abs(p - y[i]),
-                  hd = getV("cHD") || 1;
-                lterm =
-                  e <= hd
-                    ? `½·${fmt(e)}² = <span class="ll">${fmt(0.5 * e * e)}</span>`
-                    : `δ·(${fmt(e)}−½δ) = <span class="ll">${fmt(hd * (e - 0.5 * hd))}</span>`;
-                break;
-              }
-              case "hinge": {
-                const t = y[i] === 0 ? -1 : 1;
-                lterm = `max(0,1−${t}·${fmt(p)}) = <span class="ll">${fmt(Math.max(0, 1 - t * p))}</span>`;
-                break;
-              }
-            }
-            log(
-              `<span class="lf">    Sortie[${i}]: ŷ=${fmt(p)} y=${y[i]} → ${lterm}</span>`,
-            );
-          });
-        }
-        log(
-          `<span class="lf">    <b>Loss totale = <span class="ll">${fmt(loss)}</span></b></span>`,
+        logBlock(
+          "log-fwd",
+          "➡",
+          "FORWARD PASS — Propagation des activations",
+          fwdBody,
+          ll === "full",
         );
-        if (ll === "full") {
-          log(`<span class="ls">◀ BACKPROP — Règle de chaîne</span>`);
-          const L = NET.W.length - 1;
-          log(`<span class="lf">  Couche sortie (L=${L + 1}) :</span>`);
-          const fnOut = getActForLayer(L);
-          for (let j = 0; j < NET.W[L].length; j++) {
-            const dLda = computeLossGrad(pred, y)[j];
-            const dadz = actD(activations[L + 1][j], zs[L][j], fnOut);
-            const dz = dLda * dadz;
-            log(
-              `<span class="lf">    δ[${L},${j}]: ∂L/∂a=<span class="lu">${fmt(dLda)}</span> × ∂a/∂z=<span class="lu">${fmt(dadz)}</span> = <span class="lu">${fmt(dz)}</span></span>`,
+
+        // ══════════════════════════════
+        // PHASE 2 — LOSS
+        // ══════════════════════════════
+        const pred = activations[activations.length - 1],
+          lossVal = computeLoss(pred, y);
+        const lossFormulas = {
+          mse: "L = (1/n)·Σ(ŷ − y)²",
+          mae: "L = (1/n)·Σ|ŷ − y|",
+          logloss: "L = −[y·log(ŷ) + (1−y)·log(1−ŷ)]",
+          huber: "L = ½(ŷ−y)² si |e|≤δ, sinon δ·(|e|−½δ)",
+          hinge: "L = max(0, 1 − y·ŷ)",
+        };
+        let lossBody = `<div class="log-formula-box">${lossFormulas[lf] || lf}</div>`;
+        let totalLoss = 0;
+        pred.forEach((p, i) => {
+          const yi = y[i];
+          let lterm = "",
+            lval = 0;
+          switch (lf) {
+            case "mse":
+              lval = (p - yi) ** 2;
+              lterm = `(${f(p)} − ${yi})² = <span class="log-cl">${f(lval)}</span>`;
+              break;
+            case "mae":
+              lval = Math.abs(p - yi);
+              lterm = `|${f(p)} − ${yi}| = <span class="log-cl">${f(lval)}</span>`;
+              break;
+            case "logloss": {
+              const c = clamp(p, ε, 1 - ε);
+              lval = -(yi * Math.log(c) + (1 - yi) * Math.log(1 - c));
+              lterm = `−[${yi}·log(${f(c)}) + ${1 - yi}·log(${f(1 - c)})] = <span class="log-cl">${f(lval)}</span>`;
+              break;
+            }
+            case "huber": {
+              const e = Math.abs(p - yi),
+                hd = getV("cHD") || 1;
+              if (e <= hd) {
+                lval = 0.5 * e * e;
+                lterm = `½·(${f(e)})² = <span class="log-cl">${f(lval)}</span>`;
+              } else {
+                lval = hd * (e - 0.5 * hd);
+                lterm = `δ·(${f(e)}−½δ) = <span class="log-cl">${f(lval)}</span>`;
+              }
+              break;
+            }
+            case "hinge": {
+              const t = yi === 0 ? -1 : 1;
+              lval = Math.max(0, 1 - t * p);
+              lterm = `max(0,1−${t}·${f(p)}) = <span class="log-cl">${f(lval)}</span>`;
+              break;
+            }
+          }
+          totalLoss += lval;
+          lossBody += `<div class="log-calc"><span class="log-clbl">Sortie[${i}]</span><span class="log-cx">ŷ=<span class="log-ca">${f(p)}</span>&nbsp;&nbsp;y=<span class="log-cb">${yi}</span>&nbsp;&nbsp;→&nbsp;&nbsp;${lterm}</span></div>`;
+        });
+        if (pred.length > 1) {
+          lossBody += `<div class="log-sep"></div><div class="log-calc"><span class="log-clbl">Moyenne</span><span class="log-cx"><span class="log-cl">${f(totalLoss)}</span> / ${pred.length} = <span class="log-cl">${f(totalLoss / pred.length)}</span></span></div>`;
+        }
+        lossBody += `<div class="log-loss-total">${lossVal.toFixed(6)}</div>`;
+        logBlock(
+          "log-loss",
+          "◈",
+          `LOSS — ${lf.toUpperCase()} = ${f2(lossVal)}`,
+          lossBody,
+          ll === "full",
+        );
+
+        const lossGrad = computeLossGrad(pred, y),
+          Lmax = NET.W.length - 1;
+        const deltas_log = Array.from({ length: NET.W.length }, () => []);
+        const fnOut = getActForLayer(Lmax);
+        for (let j = 0; j < NET.W[Lmax].length; j++) {
+          const da = lossGrad[j],
+            dz =
+              fnOut === "softmax"
+                ? activations[Lmax + 1][j] * (1 - activations[Lmax + 1][j])
+                : actD(activations[Lmax + 1][j], zs[Lmax][j], fnOut);
+          deltas_log[Lmax].push(da * dz);
+        }
+        for (let l = Lmax - 1; l >= 0; l--) {
+          const fnL = getActForLayer(l);
+          for (let k = 0; k < NET.W[l].length; k++) {
+            let err = 0;
+            for (let j = 0; j < NET.W[l + 1].length; j++)
+              err += deltas_log[l + 1][j] * NET.W[l + 1][j][k];
+            deltas_log[l].push(
+              err * actD(activations[l + 1][k], zs[l][k], fnL),
             );
           }
-          for (let l = L - 1; l >= 0; l--) {
-            const fnL = getActForLayer(l);
-            log(`<span class="lf">  Couche cachée ${l + 1}:</span>`);
-            for (let k = 0; k < NET.W[l].length; k++) {
-              let err = 0;
-              const terms = NET.W[l + 1]
-                .map((row, j) => {
-                  err += deltas[l + 1][j] * row[k];
-                  return `δ[${l + 1},${j}]·w=${fmt(deltas[l + 1][j] * row[k])}`;
-                })
-                .join(" + ");
-              const dadz = actD(activations[l + 1][k], zs[l][k], fnL);
-              log(
-                `<span class="lf">    δ[${l},${k}]: (${terms}) × f'(z)=${fmt(dadz)} = <span class="lu">${fmt(deltas[l][k])}</span></span>`,
-              );
+        }
+        let bpBody = `<div class="log-layer" style="color:var(--a2)">▸ Couche Sortie — δ = (∂L/∂a) × f'(z)</div>`;
+        bpBody += `<div class="log-formula-box">δ = gradient_de_perte × dérivée_activation</div>`;
+        for (let j = 0; j < NET.W[Lmax].length; j++) {
+          const dLda = lossGrad[j],
+            dadz =
+              fnOut === "softmax"
+                ? activations[Lmax + 1][j] * (1 - activations[Lmax + 1][j])
+                : actD(activations[Lmax + 1][j], zs[Lmax][j], fnOut);
+          const delta = deltas_log[Lmax][j],
+            absD = Math.abs(delta);
+          const warn =
+            absD < 0.001
+              ? `<span class="log-warn-v">⚠ vanishing</span>`
+              : absD > 10
+                ? `<span class="log-warn-e">⚠ explosion</span>`
+                : "";
+          bpBody += `<div class="log-neuron"><div class="log-neuron-id out">◉ N[${Lmax + 1},${j}]</div>
+            <div class="log-calc"><span class="log-clbl">∂L/∂a[${j}]</span><span class="log-cx">= gradient perte = </span><span class="log-cg">${f(dLda)}</span></div>
+            <div class="log-calc"><span class="log-clbl">f'(z[${j}])</span><span class="log-cx">= ${fnOut}' = </span><span class="log-cg">${f(dadz)}</span></div>
+            <div class="log-sep"></div>
+            <div class="log-calc"><span class="log-clbl">δ[${Lmax + 1},${j}]</span><span class="log-cx">= </span><span class="log-cg">${f(dLda)}</span><span class="log-cx"> × </span><span class="log-cg">${f(dadz)}</span><span class="log-cx"> = </span><span class="log-cg" style="font-size:11px">${f(delta)}</span>${warn}</div>
+          </div>`;
+        }
+        for (let l = Lmax - 1; l >= 0; l--) {
+          const fnL = getActForLayer(l);
+          bpBody += `<div class="log-layer">▸ Couche Cachée ${l + 1} — δ[l,k] = (Σ δ_suiv·w_ret) × f'(z)</div>`;
+          for (let k = 0; k < NET.W[l].length; k++) {
+            const dadz = actD(activations[l + 1][k], zs[l][k], fnL),
+              delta = deltas_log[l][k],
+              absD = Math.abs(delta);
+            const warn =
+              absD < 0.001
+                ? `<span class="log-warn-v">⚠ vanishing</span>`
+                : absD > 10
+                  ? `<span class="log-warn-e">⚠ explosion</span>`
+                  : "";
+            bpBody += `<div class="log-neuron"><div class="log-neuron-id">◉ N[${l + 1},${k}]</div>
+              <div class="log-formula-box">Σ (δ_suivant × w_retour)</div>`;
+            let errSum = 0;
+            for (let j = 0; j < NET.W[l + 1].length; j++) {
+              const contrib = deltas_log[l + 1][j] * NET.W[l + 1][j][k];
+              errSum += contrib;
+              bpBody += `<div class="log-calc" style="padding-left:8px"><span class="log-clbl">δ[${l + 2},${j}]·w[${j},${k}]</span><span class="log-cx">=</span><span class="log-cg">${f(deltas_log[l + 1][j])}</span><span class="log-cx">×</span><span class="log-cw">${f(NET.W[l + 1][j][k])}</span><span class="log-cx">=</span><span class="log-cx">${f(contrib)}</span></div>`;
             }
-          }
-          log(`<span class="ls">⟳ UPDATE [${getOpt()}] lr=${getLR()}</span>`);
-          for (let l = 0; l < NET.W.length; l++) {
-            for (let j = 0; j < NET.W[l].length; j++) {
-              for (let k = 0; k < NET.W[l][j].length; k++) {
-                const g = deltas[l][j] * activations[l][k];
-                log(
-                  `<span class="lf">    w[${l},${k}→${j}] ∂L/∂w=<span class="lu">${fmt(g)}</span> → w=<span class="lw">${fmt(NET.W[l][j][k])}</span></span>`,
-                );
-              }
-              log(
-                `<span class="lf">    b[${l},${j}] δ=<span class="lu">${fmt(deltas[l][j])}</span> → b=<span class="lb">${fmt(NET.B[l][j])}</span></span>`,
-              );
-            }
+            bpBody += `<div class="log-sep"></div>
+              <div class="log-calc"><span class="log-clbl">Σ erreurs</span><span class="log-cx">= </span><span class="log-cx">${f(errSum)}</span></div>
+              <div class="log-calc"><span class="log-clbl">f'(z[${k}])</span><span class="log-cx">= ${fnL}' = </span><span class="log-cg">${f(dadz)}</span></div>
+              <div class="log-sep"></div>
+              <div class="log-calc"><span class="log-clbl">δ[${l + 1},${k}]</span><span class="log-cx">= </span><span class="log-cg">${f(errSum)}</span><span class="log-cx"> × </span><span class="log-cg">${f(dadz)}</span><span class="log-cx"> = </span><span class="log-cg" style="font-size:11px">${f(delta)}</span>${warn}</div>
+            </div>`;
           }
         }
-      }
-      function logEpoch(avg) {
-        log(
-          `<span class="ls">Epoch ${EPOCH}</span> Loss:<span class="ll">${fmt(avg)}</span> Acc:<span class="lv">${acc().toFixed(1)}%</span> Opt:${getOpt()} lr:${getLR().toFixed(4)}`,
+        logBlock(
+          "log-bp",
+          "◀",
+          "BACKPROPAGATION — Calcul des gradients δ",
+          bpBody,
+          false,
+        );
+
+        const optFormulas = {
+          sgd: `w ← w − lr · ∂L/∂w`,
+          momentum: `v ← β·v + lr·g  →  w ← w − v`,
+          nag: `v ← β·v + lr·g  →  w ← w − v  (Nesterov)`,
+          rmsprop: `E[g²] ← β·E + (1−β)·g²  →  w ← w − lr·g/√(E+ε)`,
+          adam: `m ← β₁m+(1−β₁)g  v ← β₂v+(1−β₂)g²  m̂=m/(1−β₁ᵗ)  v̂=v/(1−β₂ᵗ)  w ← w − lr·m̂/(√v̂+ε)`,
+          adamw: `(Adam) + décroissance : w ← w · (1 − lr·λ) avant update`,
+        };
+        let updBody = `<div class="log-formula-box">${optFormulas[opt] || opt}</div>`;
+        for (let l = 0; l < NET.W.length; l++) {
+          const isOut = l === NET.W.length - 1;
+          updBody += `<div class="log-layer" style="color:${isOut ? "var(--a2)" : "var(--grn)"}">▸ Couche ${l + 1}/${NET.W.length} ${isOut ? "(Sortie)" : "(Cachée)"}</div>`;
+          for (let j = 0; j < NET.W[l].length; j++) {
+            const dj = deltas_log[l][j];
+            updBody += `<div class="log-neuron"><div class="log-neuron-id ${isOut ? "out" : ""}">◉ N[${l + 1},${j}] &nbsp; δ=<span class="log-cg">${f(dj)}</span></div>`;
+            for (let k = 0; k < NET.W[l][j].length; k++) {
+              const wOld = NET.W[l][j][k],
+                g = dj * activations[l][k],
+                wNew = wOld - lr * g;
+              updBody += `<div class="log-calc"><span class="log-clbl">w[${k}→${j}]</span><span class="log-cx">∂L/∂w = δ·a =</span><span class="log-cg">${f(dj)}</span><span class="log-cx">·</span><span class="log-ca">${f(activations[l][k])}</span><span class="log-cx">=</span><span class="log-cg">${f(g)}</span></div>`;
+              updBody += `<div class="log-calc" style="padding-left:10px;font-size:8px"><span class="log-clbl" style="min-width:60px">Mise à jour</span><span class="log-cx"><span class="log-cw">${f2(wOld)}</span> − ${lr}·<span class="log-cg">${f(g)}</span> →</span><span class="log-cnew">${f(wNew)}</span><span style="color:var(--dim);font-size:7px">(Δ=${f2(wNew - wOld)})</span></div>`;
+            }
+            const bOld = NET.B[l][j],
+              bNew = bOld - lr * dj;
+            updBody += `<div class="log-sep"></div>
+              <div class="log-calc"><span class="log-clbl">biais b[${j}]</span><span class="log-cx">∂L/∂b = δ =</span><span class="log-cg">${f(dj)}</span></div>
+              <div class="log-calc" style="padding-left:10px;font-size:8px"><span class="log-clbl" style="min-width:60px">Mise à jour</span><span class="log-cx"><span class="log-cb">${f2(bOld)}</span> − ${lr}·<span class="log-cg">${f(dj)}</span> →</span><span class="log-cnew">${f(bNew)}</span><span style="color:var(--dim);font-size:7px">(Δ=${f2(bNew - bOld)})</span></div>
+            </div>`;
+          }
+        }
+        logBlock(
+          "log-upd",
+          "⟳",
+          `UPDATE — ${opt.toUpperCase()} lr=${lr}  →  Loss: ${lossVal.toFixed(5)}`,
+          updBody,
+          false,
         );
       }
 
-      // ══════════════════════════════════════════
-      // CANVAS & DRAW
-      // ══════════════════════════════════════════
+      // Helper: log a collapsible block
+      function logBlock(cls, icon, title, body, startOpen) {
+        const id = "lb" + Math.random().toString(36).slice(2, 7);
+        const el = logEl();
+        const wrap = document.createElement("div");
+        wrap.className = `log-block ${cls}`;
+        const open = startOpen !== false;
+        wrap.innerHTML = `
+          <div class="log-block-hdr" onclick="toggleLogBlock('${id}')">
+            <span>${icon}</span>
+            <span style="flex:1">${title}</span>
+            <span class="log-block-arr ${open ? "open" : ""}" id="${id}-arr">›</span>
+          </div>
+          <div class="log-block-body" id="${id}" style="${open ? "" : "display:none"}">${body}</div>`;
+        el.appendChild(wrap);
+        el.scrollTop = el.scrollHeight;
+      }
+      function toggleLogBlock(id) {
+        const body = document.getElementById(id);
+        const arr = document.getElementById(id + "-arr");
+        const vis = body.style.display === "none";
+        body.style.display = vis ? "" : "none";
+        if (arr) arr.classList.toggle("open", vis);
+      }
+      function logEpoch(avg) {
+        const accVal = acc().toFixed(1);
+        const lossColor =
+          avg < 0.1 ? "var(--grn)" : avg < 0.5 ? "var(--ylw)" : "var(--red)";
+        const accColor =
+          parseFloat(accVal) > 90
+            ? "var(--grn)"
+            : parseFloat(accVal) > 50
+              ? "var(--ylw)"
+              : "var(--red)";
+        log(`<div class="log-epoch-bar">
+          <span style="color:var(--a2);font-weight:700">Epoch ${EPOCH}</span>
+          &nbsp;|&nbsp; Loss: <span style="color:${lossColor};font-weight:700">${avg.toFixed(5)}</span>
+          &nbsp;|&nbsp; Acc: <span style="color:${accColor};font-weight:700">${accVal}%</span>
+          &nbsp;|&nbsp; <span style="color:var(--dim)">${getOpt()} lr=${getLR().toFixed(4)}</span>
+        </div>`);
+      }
+
       const cvs = () => document.getElementById("canvas");
       const ctx = () => cvs().getContext("2d");
       function resizeCvs() {
@@ -4094,20 +4448,51 @@
             g.font = `bold ${Math.max(7, fs * 0.9)}px JetBrains Mono,monospace`;
             g.fillText(`${p.l}-${p.j}`, p.x, p.y + nr * 0.22);
           }
-          if (DISP.B && p.l < NET.B.length && NET.B[p.l]?.[p.j] !== undefined) {
-            const bv = NET.B[p.l][p.j];
+          // Biais: NET.B[l] = biais pour les neurones de la couche l+1 (poids layer l)
+          // Donc pour un neurone p.l, le biais vient de NET.B[p.l-1]
+          if (
+            DISP.B &&
+            p.l > 0 &&
+            p.l - 1 < NET.B.length &&
+            NET.B[p.l - 1]?.[p.j] !== undefined
+          ) {
+            const bv = NET.B[p.l - 1][p.j];
             const bc = h2r(document.getElementById("cNO").value);
             g.fillStyle = `rgba(${bc.r},${bc.g},${bc.b},0.75)`;
             g.font = `${Math.max(7, fs * 0.8)}px JetBrains Mono,monospace`;
             g.fillText(`b:${bv.toFixed(2)}`, p.x, p.y + nr + 13);
           }
+          // Highlight selected node
+          const isSel =
+            SELECTED &&
+            SELECTED.type === "node" &&
+            SELECTED.l === p.l &&
+            SELECTED.j === p.j;
+          if (isSel) {
+            g.beginPath();
+            g.arc(p.x, p.y, nr + 5, 0, Math.PI * 2);
+            g.strokeStyle = "rgba(255,255,255,0.7)";
+            g.lineWidth = 2;
+            g.setLineDash([4, 3]);
+            g.stroke();
+            g.setLineDash([]);
+          }
+        }
+        // Highlight selected connection
+        if (SELECTED && SELECTED.type === "line") {
+          const sl = SELECTED.ln;
+          g.beginPath();
+          g.moveTo(sl.x1, sl.y1);
+          g.lineTo(sl.x2, sl.y2);
+          g.strokeStyle = "rgba(255,255,255,0.5)";
+          g.lineWidth = 3;
+          g.setLineDash([5, 4]);
+          g.stroke();
+          g.setLineDash([]);
         }
         drawLossChart();
       }
 
-      // ══════════════════════════════════════════
-      // LOSS CHART
-      // ══════════════════════════════════════════
       function drawLossChart() {
         const c = document.getElementById("lossChart"),
           g = c.getContext("2d");
@@ -4172,9 +4557,6 @@
         redraw();
       });
 
-      // ══════════════════════════════════════════
-      // TOOLTIP & CLICK
-      // ══════════════════════════════════════════
       const tip = () => document.getElementById("tip");
       function cpToCanvas(e) {
         const r = cvs().getBoundingClientRect();
@@ -4207,15 +4589,23 @@
                 : p.l === NET.L.length - 1
                   ? "Sortie"
                   : "Cachée";
-            const bv = p.l < NET.B.length ? NET.B[p.l]?.[p.j] : undefined;
-            const zv = LAST_Z[p.l > 0 ? p.l - 1 : 0]?.[p.j];
+            const bv =
+              p.l > 0 && p.l - 1 < NET.B.length
+                ? NET.B[p.l - 1][p.j]
+                : undefined;
+            const zv =
+              p.l > 0 && LAST_Z[p.l - 1] ? LAST_Z[p.l - 1][p.j] : undefined;
             const fnL = p.l > 0 ? getActForLayer(p.l - 1) : "—";
-            t.innerHTML = `<div class="tt">● [${lname} ${p.l}-${p.j}]</div>
-              ${p.av !== undefined ? `<div class="tr"><span class="tk">a</span><span class="tv">${fmt(p.av)}</span></div>` : ""}
-              ${zv !== undefined && p.l > 0 ? `<div class="tr"><span class="tk">z</span><span class="tv">${fmt(zv)}</span></div>` : ""}
-              ${bv !== undefined ? `<div class="tr"><span class="tk">b</span><span class="tv">${fmt(bv)}</span></div>` : ""}
-              <div class="tr"><span class="tk">activation</span><span class="tv">${p.l > 0 ? fnL : "input"}</span></div>
-              <div class="tr"><span class="tk">n_entrées</span><span class="tv">${NET.L[p.l]}</span></div>`;
+            const dv =
+              p.l > 0 && LAST_DELTAS[p.l - 1]
+                ? LAST_DELTAS[p.l - 1][p.j]
+                : undefined;
+            t.innerHTML = `<div class="tt">● [${lname} L${p.l}-N${p.j}]</div>
+              ${p.av !== undefined ? `<div class="tr"><span class="tk">a (activation)</span><span class="tv">${fmt(p.av)}</span></div>` : ""}
+              ${zv !== undefined ? `<div class="tr"><span class="tk">z (pré-activ.)</span><span class="tv">${fmt(zv)}</span></div>` : ""}
+              ${bv !== undefined ? `<div class="tr"><span class="tk">biais b</span><span class="tv">${fmt(bv)}</span></div>` : ""}
+              ${dv !== undefined ? `<div class="tr"><span class="tk">δ (gradient)</span><span class="tv" style="color:var(--org)">${fmt(dv)}</span></div>` : ""}
+              <div class="tr"><span class="tk">fn activation</span><span class="tv">${p.l > 0 ? fnL : "input"}</span></div>`;
             t.style.display = "block";
             t.style.left = e.clientX + 12 + "px";
             t.style.top = e.clientY - 8 + "px";
@@ -4225,10 +4615,15 @@
         for (const ln of LINES) {
           if (lpd(ln.x1, ln.y1, ln.x2, ln.y2, x, y) < 8) {
             const c = ln.w >= 0 ? "#00ff9d" : "#ff3d5a";
-            t.innerHTML = `<div class="tt">— Connexion [${ln.l},${ln.i}→${ln.j}]</div>
+            const ap = LAST_ACT[ln.l]?.[ln.i];
+            const delt = LAST_DELTAS[ln.l]?.[ln.j];
+            const grad =
+              delt !== undefined && ap !== undefined ? delt * ap : undefined;
+            t.innerHTML = `<div class="tt">— Connexion L${ln.l}N${ln.i}→L${ln.l + 1}N${ln.j}</div>
               <div class="tr"><span class="tk">w</span><span class="tv" style="color:${c}">${fmt(ln.w)}</span></div>
-              <div class="tr"><span class="tk">|w|</span><span class="tv">${fmt(Math.abs(ln.w))}</span></div>
-              <div class="tr"><span class="tk">type</span><span class="tv ${ln.w >= 0 ? "p" : "n"}">${ln.w >= 0 ? "+ excitateur" : "− inhibiteur"}</span></div>`;
+              <div class="tr"><span class="tk">type</span><span class="tv ${ln.w >= 0 ? "p" : "n"}">${ln.w >= 0 ? "+ excitateur" : "− inhibiteur"}</span></div>
+              ${ap !== undefined ? `<div class="tr"><span class="tk">w × a_src</span><span class="tv" style="color:var(--ylw)">${fmt(ln.w * ap)}</span></div>` : ""}
+              ${grad !== undefined ? `<div class="tr"><span class="tk">∂L/∂w</span><span class="tv" style="color:var(--org)">${fmt(grad)}</span></div>` : ""}`;
             t.style.display = "block";
             t.style.left = e.clientX + 12 + "px";
             t.style.top = e.clientY - 8 + "px";
@@ -4246,98 +4641,181 @@
           nr = getR() + 5;
         for (const p of POS) {
           if (Math.hypot(p.x - x, p.y - y) < nr) {
+            SELECTED = { type: "node", l: p.l, j: p.j };
+            redraw();
             showNodeDetail(p);
             return;
           }
         }
         for (const ln of LINES) {
           if (lpd(ln.x1, ln.y1, ln.x2, ln.y2, x, y) < 8) {
+            SELECTED = { type: "line", ln };
+            redraw();
             showLineDetail(ln);
             return;
           }
         }
+        SELECTED = null;
+        redraw();
       });
 
-      // ══════════════════════════════════════════
-      // DETAIL PANELS
-      // ══════════════════════════════════════════
       function showNodeDetail(p) {
         showTab("details");
         const isIn = p.l === 0,
           isOut = p.l === NET.L.length - 1;
         const lname = isIn ? "Entrée" : isOut ? "Sortie" : `Cachée ${p.l}`;
-        const bv = p.l < NET.B.length ? NET.B[p.l][p.j] : undefined;
+        // NET.B[l] = biais de la couche de poids l (entrée → cachée/sortie), indexée 0..W.length-1
+        // Un neurone de couche p.l reçoit ses biais depuis NET.B[p.l-1]
+        const bv =
+          !isIn && p.l - 1 < NET.B.length ? NET.B[p.l - 1][p.j] : undefined;
         const av = LAST_ACT[p.l]?.[p.j];
-        const zv =
-          p.l > 0 && LAST_Z[p.l - 1] ? LAST_Z[p.l - 1][p.j] : undefined;
-        const fn = p.l > 0 ? getActForLayer(p.l - 1) : "input";
-        const dv = av !== undefined ? LAST_DELTAS[p.l]?.[p.j] : undefined;
-        let inW = "",
-          comp = "",
-          actVis = "",
-          deltaBlock = "";
+        const zv = !isIn && LAST_Z[p.l - 1] ? LAST_Z[p.l - 1][p.j] : undefined;
+        const fn = isIn ? "input" : getActForLayer(p.l - 1);
+        // LAST_DELTAS[l] = deltas pour la couche de poids l, donc delta du neurone p.l = LAST_DELTAS[p.l-1][p.j]
+        const dv =
+          !isIn && LAST_DELTAS[p.l - 1] ? LAST_DELTAS[p.l - 1][p.j] : undefined;
+        const fprime =
+          av !== undefined && zv !== undefined ? actD(av, zv, fn) : undefined;
+
+        // Barre d'activation adaptée à la plage de la fonction
+        let actVis = "";
         if (av !== undefined) {
-          const pct = clamp(av * 100, 0, 100);
-          const col = av > 0.5 ? "#00ff9d" : "#ff3d5a";
+          const ranges = {
+            sigmoid: [0, 1],
+            relu: [0, Math.max(1, av)],
+            tanh: [-1, 1],
+            leakyrelu: [Math.min(0, av), Math.max(1, av)],
+            elu: [Math.min(-1, av), Math.max(1, av)],
+            swish: [Math.min(-0.3, av), Math.max(1, av)],
+            gelu: [Math.min(-0.2, av), Math.max(1, av)],
+            selu: [Math.min(-1.8, av), Math.max(1, av)],
+            softsign: [-1, 1],
+            linear: [Math.min(-1, av), Math.max(1, av)],
+            softmax: [0, 1],
+            input: [Math.min(0, av), Math.max(1, av)],
+          };
+          const [rMin, rMax] = ranges[fn] || [Math.min(0, av), Math.max(1, av)];
+          const pct = clamp(((av - rMin) / (rMax - rMin || 1)) * 100, 0, 100);
+          const col = av > 0 ? "#00ff9d" : av < 0 ? "#ff3d5a" : "#ffd600";
           actVis = `<div class="card"><h3>Activation</h3>
-            <div class="abar-wrap"><span style="color:var(--dim);min-width:22px">0</span>
+            <div class="abar-wrap">
+              <span style="color:var(--dim);min-width:28px;font-size:8px">${rMin.toFixed(1)}</span>
               <div class="abar-bg"><div class="abar" style="width:${pct}%;background:${col}"></div></div>
-              <span style="color:var(--dim);min-width:22px">1</span>
-              <span style="color:${col};font-weight:700">${fmt(av)}</span></div></div>`;
+              <span style="color:var(--dim);min-width:28px;font-size:8px;text-align:right">${rMax.toFixed(1)}</span>
+              <span style="color:${col};font-weight:700">${fmt(av)}</span>
+            </div>
+            ${fprime !== undefined ? `<div class="dr" style="margin-top:4px"><span class="dk">f'(z) pour backprop</span><span class="dv" style="color:var(--org)">${fmt(fprime)}${Math.abs(fprime) < 0.01 ? ' <span style="color:var(--ylw);font-size:8px">⚠ saturation</span>' : Math.abs(fprime) > 5 ? ' <span style="color:var(--red);font-size:8px">⚠ élevé</span>' : ""}</span></div>` : ""}</div>`;
         }
-        if (p.l > 0 && p.l <= NET.W.length) {
+
+        // Poids entrants + biais
+        let inW = "";
+        if (!isIn && p.l <= NET.W.length) {
           const rows = NET.W[p.l - 1][p.j]
             .map((w, k) => {
               const c = w >= 0 ? "p" : "n",
                 bw = Math.min(48, Math.abs(w) * 28),
                 bc = w >= 0 ? "#00ff9d" : "#ff3d5a";
               const prevAct = LAST_ACT[p.l - 1]?.[k];
-              return `<tr><td>[${p.l - 1},${k}]</td><td class="${c}">${fmt(w)}</td><td>${prevAct !== undefined ? fmt(prevAct) : "—"}</td><td class="${c}">${prevAct !== undefined ? fmt(w * prevAct) : "—"}</td><td><span class="wbar" style="width:${bw}px;background:${bc}"></span></td></tr>`;
+              return `<tr><td>[L${p.l - 1},N${k}]</td><td class="${c}">${fmt(w)}</td><td>${prevAct !== undefined ? fmt(prevAct) : "—"}</td><td class="${c}">${prevAct !== undefined ? fmt(w * prevAct) : "—"}</td><td><span class="wbar" style="width:${bw}px;background:${bc}"></span></td></tr>`;
             })
             .join("");
           inW = `<div class="card"><h3>Poids entrants</h3>
-            <table class="wt"><tr><th>De</th><th>w</th><th>a_prev</th><th>w×a</th><th>Force</th></tr>${rows}</table>
-            ${bv !== undefined ? `<div class="dr" style="margin-top:5px"><span class="dk">Biais b</span><span class="dv ${bv >= 0 ? "p" : "n"}">${fmt(bv)}</span></div>` : ""}</div>`;
+            <table class="wt"><tr><th>Source</th><th>w</th><th>a_prev</th><th>w×a</th><th>Force</th></tr>${rows}</table>
+            <div class="dr" style="margin-top:5px"><span class="dk">Biais b</span><span class="dv ${bv >= 0 ? "p" : "n"}">${fmt(bv)}</span></div>
+          </div>`;
         }
+
+        // Calcul complet z = Σwᵢaᵢ + b
+        let comp = "";
         if (
-          p.l > 0 &&
+          !isIn &&
           av !== undefined &&
           zv !== undefined &&
           p.l <= NET.W.length
         ) {
-          const terms = NET.W[p.l - 1][p.j]
+          const termRows = NET.W[p.l - 1][p.j]
             .map((w, k) => {
               const ai = LAST_ACT[p.l - 1]?.[k] ?? 0;
               return `<div class="fs"><span class="fe">w[${k}]×a[${k}]</span>=<span class="fvar">${fmt(w)}</span>×<span class="fval">${fmt(ai)}</span>=<span class="fval">${fmt(w * ai)}</span></div>`;
             })
             .join("");
+          const sumWA = NET.W[p.l - 1][p.j].reduce(
+            (s, w, k) => s + w * (LAST_ACT[p.l - 1]?.[k] ?? 0),
+            0,
+          );
           comp = `<div class="card"><h3>Calcul complet</h3>
             <div class="fb"><div class="ft">z = Σ(wᵢ×aᵢ) + b</div>
-            ${terms}
-            <div class="fs" style="margin-top:5px;padding-top:5px;border-top:1px solid var(--brd)"><span class="fe">+ biais</span><span class="fvar">${fmt(bv)}</span></div>
-            <div class="fs" style="color:var(--ylw);margin-top:4px"><span class="fe">z =</span><span class="fval">${fmt(zv)}</span></div></div>
+            ${termRows}
+            <div class="fs" style="margin-top:5px;padding-top:5px;border-top:1px solid var(--brd)">
+              <span class="fe">Σ(w·a)</span><span class="fval">${fmt(sumWA)}</span>
+              <span class="fe" style="margin-left:8px">+ biais</span><span class="fvar">${fmt(bv)}</span>
+            </div>
+            <div class="fs" style="color:var(--ylw);margin-top:4px;font-weight:700"><span class="fe">z =</span><span class="fval">${fmt(zv)}</span></div></div>
             <div class="fb" style="margin-top:6px"><div class="ft">a = ${fn}(z)</div>
             <div class="fs"><span class="fe">a =</span><span class="fvar">${fn}</span>(<span class="fval">${fmt(zv)}</span>) = <span class="fval">${fmt(av)}</span></div></div>
-            <div class="fb" style="margin-top:6px"><div class="ft">Dérivée ∂a/∂z (pour backprop)</div>
-            <div class="fs"><span class="fe">f'(z) =</span><span class="fval">${fmt(actD(av, zv, fn))}</span></div></div></div>`;
+            <div class="fb" style="margin-top:6px"><div class="ft">f'(z) — dérivée pour backprop</div>
+            <div class="fs"><span class="fe">f'(z) =</span><span class="fval" style="color:var(--org)">${fmt(fprime)}</span></div></div></div>`;
         }
+
+        // Gradient δ
+        let deltaBlock = "";
         if (dv !== undefined) {
-          deltaBlock = `<div class="card"><h3>Gradient local δ</h3>
-            <div class="fb"><div class="ft">δ = ∂L/∂z (contribution à l'erreur)</div>
-            <div class="fs"><span class="fe">δ[${p.l},${p.j}] =</span><span class="fval" style="color:var(--org)">${fmt(dv)}</span></div>
-            <div class="fs" style="margin-top:4px;font-size:9px;color:var(--dim)">${Math.abs(dv) < 0.001 ? "⚠ Vanishing gradient possible" : Math.abs(dv) > 10 ? "⚠ Gradient élevé" : ""}</div></div></div>`;
+          const warnD =
+            Math.abs(dv) < 0.001
+              ? "⚠ Vanishing gradient"
+              : Math.abs(dv) > 10
+                ? "⚠ Gradient explosif"
+                : "";
+          const warnCol = Math.abs(dv) > 10 ? "var(--red)" : "var(--ylw)";
+          // Gradient pour chaque poids entrant: ∂L/∂w[k] = δ × a_prev[k]
+          const gradRows =
+            !isIn && p.l <= NET.W.length
+              ? NET.W[p.l - 1][p.j]
+                  .map((w, k) => {
+                    const ap = LAST_ACT[p.l - 1]?.[k] ?? 0;
+                    const g = dv * ap;
+                    const wNew = w - getLR() * g;
+                    return `<div class="fs"><span class="fe">∂L/∂w[${k}]</span>=<span class="fval" style="color:var(--org)">${fmt(dv)}</span>×<span class="fval">${fmt(ap)}</span>=<span class="fval" style="color:var(--org)">${fmt(g)}</span> → w:<span class="fvar">${fmt(w)}</span>→<span class="fval" style="color:var(--grn)">${fmt(wNew)}</span></div>`;
+                  })
+                  .join("")
+              : "";
+          const bNew = bv !== undefined ? bv - getLR() * dv : undefined;
+          deltaBlock = `<div class="card"><h3>Gradient & Mise à jour</h3>
+            <div class="fb"><div class="ft">δ = ∂L/∂z (signal d'erreur local)</div>
+            <div class="fs"><span class="fe">δ[L${p.l},N${p.j}] =</span><span class="fval" style="color:var(--org);font-size:12px">${fmt(dv)}</span>${warnD ? `<span style="color:${warnCol};font-size:8px;margin-left:6px">${warnD}</span>` : ""}</div></div>
+            ${gradRows ? `<div class="fb" style="margin-top:6px"><div class="ft">∂L/∂w = δ × a_prev → w ← w − lr·∂L/∂w</div>${gradRows}</div>` : ""}
+            ${
+              bNew !== undefined
+                ? `<div class="fb" style="margin-top:6px"><div class="ft">∂L/∂b = δ → b ← b − lr·δ</div>
+            <div class="fs"><span class="fe">b</span><span class="fvar">${fmt(bv)}</span>→<span class="fval" style="color:var(--grn)">${fmt(bNew)}</span></div></div>`
+                : ""
+            }
+          </div>`;
         }
+
+        const copyBtn = `<div style="padding:4px 11px 10px"><button class="btn" onclick="copyDetailJSON()" style="width:100%;font-size:9px">📋 Copier données JSON</button></div>`;
         document.getElementById("detail-inner").innerHTML = `
-          <div class="card"><h3>Neurone [${lname} — ${p.l},${p.j}]</h3>
-            <div class="dr"><span class="dk">Couche</span><span class="dv">${lname}</span></div>
-            <div class="dr"><span class="dk">Index</span><span class="dv">[${p.l}, ${p.j}]</span></div>
+          <div class="card"><h3>Neurone [${lname} — L${p.l},N${p.j}]</h3>
+            <div class="dr"><span class="dk">Couche</span><span class="dv">${lname} (L${p.l})</span></div>
+            <div class="dr"><span class="dk">Index neurone</span><span class="dv">N${p.j}</span></div>
             <div class="dr"><span class="dk">Activation fn</span><span class="dv">${fn}</span></div>
-            <div class="dr"><span class="dk">Entrées</span><span class="dv">${NET.L[p.l]}</span></div>
-            ${av !== undefined ? `<div class="dr"><span class="dk">a (sortie)</span><span class="dv ${av >= 0.5 ? "p" : "n"}">${fmt(av)}</span></div>` : ""}
-            ${zv !== undefined ? `<div class="dr"><span class="dk">z (pré-activ.)</span><span class="dv">${fmt(zv)}</span></div>` : ""}
-            ${bv !== undefined ? `<div class="dr"><span class="dk">Biais b</span><span class="dv ${bv >= 0 ? "p" : "n"}">${fmt(bv)}</span></div>` : ""}
+            <div class="dr"><span class="dk">Connexions entrantes</span><span class="dv">${NET.L[p.l]}</span></div>
+            ${av !== undefined ? `<div class="dr"><span class="dk">a (sortie)</span><span class="dv ${av >= 0 ? "p" : "n"}">${fmt(av)}</span></div>` : ""}
+            ${zv !== undefined ? `<div class="dr"><span class="dk">z (pré-activation)</span><span class="dv">${fmt(zv)}</span></div>` : ""}
+            ${bv !== undefined ? `<div class="dr"><span class="dk">Biais b</span><span class="dv ${bv >= 0 ? "p" : "n"}">${fmt(bv)}</span></div>` : "<div class='dr'><span class='dk'>Biais</span><span class='dv' style='color:var(--dim)'>— (couche entrée)</span></div>"}
           </div>
-          ${actVis}${inW}${comp}${deltaBlock}`;
+          ${actVis}${inW}${comp}${deltaBlock}${copyBtn}`;
+        window._lastDetailData = {
+          type: "neuron",
+          layer: p.l,
+          neuron: p.j,
+          fn,
+          av,
+          zv,
+          bv,
+          dv,
+          weights: !isIn ? NET.W[p.l - 1][p.j] : null,
+        };
       }
 
       function showLineDetail(ln) {
@@ -4348,38 +4826,63 @@
         const delt = LAST_DELTAS[ln.l]?.[ln.j];
         const grad =
           delt !== undefined && ap !== undefined ? delt * ap : undefined;
+        const wNew = grad !== undefined ? ln.w - getLR() * grad : undefined;
+        const opt = getOpt(),
+          lr = getLR();
+        window._lastDetailData = {
+          type: "connection",
+          l: ln.l,
+          i: ln.i,
+          j: ln.j,
+          w: ln.w,
+          a_source: ap,
+          a_target: an,
+          gradient: grad,
+          wNew,
+        };
         document.getElementById("detail-inner").innerHTML = `
-          <div class="card"><h3>Connexion [${ln.l},${ln.i}] → [${ln.l + 1},${ln.j}]</h3>
+          <div class="card"><h3>Connexion L${ln.l}N${ln.i} → L${ln.l + 1}N${ln.j}</h3>
             <div class="dr"><span class="dk">Poids w</span><span class="dv ${c}">${fmt(ln.w)}</span></div>
             <div class="dr"><span class="dk">|w|</span><span class="dv">${fmt(Math.abs(ln.w))}</span></div>
             <div class="dr"><span class="dk">Type</span><span class="dv ${c}">${ln.w >= 0 ? "+ Excitateur" : "− Inhibiteur"}</span></div>
-            <div class="dr"><span class="dk">Couche source</span><span class="dv">L${ln.l}, N${ln.i}</span></div>
-            <div class="dr"><span class="dk">Couche cible</span><span class="dv">L${ln.l + 1}, N${ln.j}</span></div>
+            <div class="dr"><span class="dk">Source</span><span class="dv">L${ln.l}, N${ln.i}</span></div>
+            <div class="dr"><span class="dk">Cible</span><span class="dv">L${ln.l + 1}, N${ln.j}</span></div>
           </div>
           ${
             ap !== undefined
-              ? `<div class="card"><h3>Signal propagé</h3>
-            <div class="fb"><div class="ft">Contribution à la pré-activation z</div>
-            <div class="fs"><span class="fe">w × a_source =</span><span class="fvar">${fmt(ln.w)}</span> × <span class="fval">${fmt(ap)}</span> = <span class="fval">${fmt(ln.w * ap)}</span></div>
-            ${an !== undefined ? `<div class="fs" style="margin-top:3px"><span class="fe">a_cible =</span><span class="fval">${fmt(an)}</span></div>` : ""}</div></div>`
+              ? `<div class="card"><h3>Signal propagé (Forward)</h3>
+            <div class="fb"><div class="ft">Contribution à z du neurone cible</div>
+            <div class="fs"><span class="fe">w × a_source =</span><span class="fvar">${fmt(ln.w)}</span> × <span class="fval">${fmt(ap)}</span> = <span class="fval" style="color:var(--ylw)">${fmt(ln.w * ap)}</span></div>
+            ${an !== undefined ? `<div class="fs" style="margin-top:3px"><span class="fe">a_cible (résultat)</span><span class="fval">${fmt(an)}</span></div>` : ""}</div></div>`
               : ""
           }
           ${
             grad !== undefined
-              ? `<div class="card"><h3>Gradient ∂L/∂w</h3>
-            <div class="fb"><div class="ft">Calcul du gradient du poids</div>
-            <div class="fs"><span class="fe">∂L/∂w =</span><span class="fvar">δ_cible</span> × <span class="fvar">a_source</span></div>
-            <div class="fs"><span class="fe">=</span><span class="fval" style="color:var(--org)">${fmt(delt)}</span> × <span class="fval">${fmt(ap)}</span> = <span class="fval" style="color:var(--org)">${fmt(grad)}</span></div></div>
-            <div class="fb" style="margin-top:6px"><div class="ft">Mise à jour (${getOpt()}, lr=${getLR()})</div>
-            <div class="fs"><span class="fe">w_nouveau ←</span><span class="fvar">${fmt(ln.w)}</span> − ${getLR()} × <span class="fval" style="color:var(--org)">${fmt(grad)}</span></div>
-            <div class="fs" style="margin-top:3px"><span class="fe">w_nouveau =</span><span class="fval">${fmt(ln.w - getLR() * grad)}</span></div></div></div>`
+              ? `<div class="card"><h3>Gradient ∂L/∂w (Backprop)</h3>
+            <div class="fb"><div class="ft">Règle de chaîne : ∂L/∂w = δ_cible × a_source</div>
+            <div class="fs"><span class="fe">δ_cible =</span><span class="fval" style="color:var(--org)">${fmt(delt)}</span></div>
+            <div class="fs"><span class="fe">a_source =</span><span class="fval">${fmt(ap)}</span></div>
+            <div class="fs" style="margin-top:4px;padding-top:4px;border-top:1px solid var(--brd)"><span class="fe">∂L/∂w =</span><span class="fval" style="color:var(--org);font-size:12px">${fmt(grad)}</span></div></div>
+            <div class="fb" style="margin-top:6px"><div class="ft">Mise à jour — ${opt} (lr=${lr})</div>
+            <div class="fs"><span class="fe">formule</span><span class="fvar" style="font-size:8px">${opt === "sgd" ? "w ← w − lr·∂L/∂w" : opt === "adam" ? "w ← w − lr·m̂/(√v̂+ε)" : "w ← w − f(∂L/∂w)"}</span></div>
+            <div class="fs"><span class="fe">w : </span><span class="fvar">${fmt(ln.w)}</span><span class="fe"> → </span><span class="fval" style="color:var(--grn)">${fmt(wNew)}</span></div>
+            <div class="fs"><span class="fe">Δw =</span><span class="fval" style="color:${wNew - ln.w >= 0 ? "var(--grn)" : "var(--red)"}">${fmt(wNew - ln.w)}</span></div></div></div>`
               : ""
-          }`;
+          }
+          <div style="padding:4px 11px 10px"><button class="btn" onclick="copyDetailJSON()" style="width:100%;font-size:9px">📋 Copier données JSON</button></div>`;
       }
 
-      // ══════════════════════════════════════════
-      // TABS
-      // ══════════════════════════════════════════
+      function copyDetailJSON() {
+        if (!window._lastDetailData) return;
+        navigator.clipboard
+          .writeText(JSON.stringify(window._lastDetailData, null, 2))
+          .then(() => {
+            const b = event.target;
+            b.textContent = "✓ Copié !";
+            setTimeout(() => (b.textContent = "📋 Copier données JSON"), 1500);
+          });
+      }
+
       function showTab(name) {
         ["details", "test", "data", "flib", "cust", "guide"].forEach((t) => {
           document.getElementById(`tab-${t}`).className =
@@ -4389,9 +4892,6 @@
         });
       }
 
-      // ══════════════════════════════════════════
-      // TOGGLE OPTIONS
-      // ══════════════════════════════════════════
       function tog(key) {
         DISP[key] = !DISP[key];
         const btn = document.getElementById("t" + key);
@@ -4405,9 +4905,6 @@
         arrow.classList.toggle("o", o);
       }
 
-      // ══════════════════════════════════════════
-      // TEST TAB
-      // ══════════════════════════════════════════
       function showTestInputs() {
         if (!NET) return;
         const nIn = NET.L[0];
@@ -4931,9 +5428,6 @@
         document.getElementById("testSteps").innerHTML = "";
       }
 
-      // ══════════════════════════════════════════
-      // DATASET EDITOR
-      // ══════════════════════════════════════════
       const PRESETS = {
         xor: {
           i: [
@@ -5128,9 +5622,6 @@
         document.getElementById("dsJSON").value = j;
       }
 
-      // ══════════════════════════════════════════
-      // THEMES
-      // ══════════════════════════════════════════
       const THEMES = {
         dark: {
           cNI: "#ffd600",
@@ -5191,9 +5682,6 @@
         redraw();
       }
 
-      // ══════════════════════════════════════════
-      // WIZARD
-      // ══════════════════════════════════════════
       function showWizard() {
         document.getElementById("modal-bg").className = "show";
       }
@@ -5237,9 +5725,6 @@
         if (e.target === document.getElementById("modal-bg")) closeModal();
       });
 
-      // ══════════════════════════════════════════
-      // ADVANCED BUILDER
-      // ══════════════════════════════════════════
       let ABLD_LAYERS = []; // [{n, act, type}]
 
       const ACT_INFO = {
@@ -5644,9 +6129,6 @@
             closeAdvBuilder();
         });
 
-      // ══════════════════════════════════════════
-      // EXPORT / IMPORT
-      // ══════════════════════════════════════════
       function exportNet() {
         if (!NET) return;
         const data = {
@@ -5679,14 +6161,75 @@
         r.onload = (ev) => {
           try {
             const d = JSON.parse(ev.target.result);
-            NET = d;
+            // Supporte les deux formats : {L,W,B} (ancien) et {layers,weights,biases} (export actuel)
+            const layers = d.layers || d.L;
+            const weights = d.weights || d.W;
+            const biases = d.biases || d.B;
+            if (!layers || !weights || !biases)
+              throw new Error(
+                "Fichier JSON invalide : champs layers/weights/biases manquants",
+              );
+            NET = { L: layers, W: weights, B: biases };
             EPOCH = d.epoch || 0;
             LOSS_H = d.lossHistory || [];
             LAYER_ACTS = d.layerActs || [];
+            // Restaurer la config si présente
+            if (d.config) {
+              const c = d.config;
+              if (c.act) document.getElementById("iAct").value = c.act;
+              if (c.actOut) document.getElementById("iActOut").value = c.actOut;
+              if (c.loss) document.getElementById("iLoss").value = c.loss;
+              if (c.opt) document.getElementById("iOpt").value = c.opt;
+              if (c.lr) syncLR(c.lr);
+            }
+            // Restaurer les dimensions du dataset
+            DS.inN = NET.L[0];
+            DS.outN = NET.L[NET.L.length - 1];
+            document.getElementById("dsIn").value = DS.inN;
+            document.getElementById("dsOut").value = DS.outN;
+            // Réinitialiser les états d'optimisation (pas dans le JSON)
+            VEL = { w: [], b: [] };
+            MA = { w: [], b: [] };
+            MV = { w: [], b: [] };
+            ADAM_T = 0;
+            for (let l = 0; l < NET.W.length; l++) {
+              const vw = [],
+                mw = [],
+                vb = [],
+                mb = [];
+              for (let j = 0; j < NET.W[l].length; j++) {
+                vw.push(NET.W[l][j].map(() => 0));
+                mw.push(NET.W[l][j].map(() => 0));
+                vb.push(0);
+                mb.push(0);
+              }
+              VEL.w.push(vw);
+              VEL.b.push(vb);
+              MA.w.push(mw);
+              MA.b.push(mb);
+              MV.w.push(vw.map((r) => [...r]));
+              MV.b.push(vb.map(() => 0));
+            }
+            LAST_ACT = [];
+            LAST_Z = [];
+            LAST_DELTAS = [];
+            SELECTED = null;
+            document.getElementById("sEpoch").textContent = EPOCH;
+            document.getElementById("sLoss").textContent = LOSS_H.length
+              ? LOSS_H[LOSS_H.length - 1].toFixed(4)
+              : "—";
+            document.getElementById("sAcc").textContent = "—";
+            document.getElementById("iLayers").value = NET.L.join(",");
+            buildDSEditorFromCurrent();
+            showTestInputs();
+            resizeCvs();
             redraw();
-            log(`<span class="ls">📥 Réseau importé</span>`);
+            log(
+              `<span class="ls">📥 Réseau importé</span> — Architecture: [${NET.L.join("→")}] &nbsp;|&nbsp; Époque: ${EPOCH}`,
+            );
+            e.target.value = ""; // reset input pour permettre re-import du même fichier
           } catch (err) {
-            alert("Erreur: " + err);
+            alert("Erreur d'import : " + err.message);
           }
         };
         r.readAsText(f);
@@ -5695,7 +6238,7 @@
         if (!NET) return;
         let code = "";
         if (lang === "py") {
-          code = `# Neural Lab v3 — Python export\nimport numpy as np\n\n# Architecture: ${NET.L.join("→")}\n# Activations par couche: ${LAYER_ACTS.length > 0 ? LAYER_ACTS.join(", ") : getAct() + " (toutes)"}\n# Loss: ${getLoss()} | Optimizer: ${getOpt()}\n\n`;
+          code = `# Neural Lab v8 — Python export\nimport numpy as np\n\n# Architecture: ${NET.L.join("→")}\n# Activations par couche: ${LAYER_ACTS.length > 0 ? LAYER_ACTS.join(", ") : getAct() + " (toutes)"}\n# Loss: ${getLoss()} | Optimizer: ${getOpt()}\n\n`;
           NET.W.forEach((W, l) => {
             code += `W${l + 1} = np.array(${JSON.stringify(W)})\nb${l + 1} = np.array(${JSON.stringify(NET.B[l])})\n\n`;
           });
@@ -5711,7 +6254,7 @@
           });
           code += `    return a\n`;
         } else {
-          code = `// Neural Lab v3 — JS export\n// Architecture: ${NET.L.join("→")}\n\nconst weights = ${JSON.stringify(NET.W)};\nconst biases = ${JSON.stringify(NET.B)};\n\nconst acts = ${JSON.stringify(LAYER_ACTS.length > 0 ? LAYER_ACTS : Array(NET.W.length).fill(getAct()))};\n\nfunction applyAct(z, fn) {\n  if(fn==='sigmoid') return 1/(1+Math.exp(-z));\n  if(fn==='relu') return Math.max(0,z);\n  if(fn==='tanh') return Math.tanh(z);\n  return z;\n}\n\nfunction predict(input){\n  let a=[...input];\n  for(let l=0;l<weights.length;l++){\n    const fn=acts[l];\n    const out=biases[l].map((b,j)=>{\n      let z=b; weights[l][j].forEach((w,k)=>z+=w*a[k]); return applyAct(z,fn);\n    });\n    a=out;\n  }\n  return a;\n}\n`;
+          code = `// Neural Lab v8 — JS export\n// Architecture: ${NET.L.join("→")}\n\nconst weights = ${JSON.stringify(NET.W)};\nconst biases = ${JSON.stringify(NET.B)};\n\nconst acts = ${JSON.stringify(LAYER_ACTS.length > 0 ? LAYER_ACTS : Array(NET.W.length).fill(getAct()))};\n\nfunction applyAct(z, fn) {\n  if(fn==='sigmoid') return 1/(1+Math.exp(-z));\n  if(fn==='relu') return Math.max(0,z);\n  if(fn==='tanh') return Math.tanh(z);\n  return z;\n}\n\nfunction predict(input){\n  let a=[...input];\n  for(let l=0;l<weights.length;l++){\n    const fn=acts[l];\n    const out=biases[l].map((b,j)=>{\n      let z=b; weights[l][j].forEach((w,k)=>z+=w*a[k]); return applyAct(z,fn);\n    });\n    a=out;\n  }\n  return a;\n}\n`;
         }
         const b = new Blob([code], { type: "text/plain" });
         const a = document.createElement("a");
@@ -5720,9 +6263,6 @@
         a.click();
       }
 
-      // ══════════════════════════════════════════
-      // FORMULA LIBRARY
-      // ══════════════════════════════════════════
       const FLIB = [
         {
           id: "sigmoid",
@@ -6353,18 +6893,12 @@
         g.fillText("+4", cw - 2, ch / 2 - 2);
       }
 
-      // ══════════════════════════════════════════
-      // MISC
-      // ══════════════════════════════════════════
       function showHint() {
         const h = document.getElementById("hint");
         h.style.opacity = "1";
         setTimeout(() => (h.style.opacity = "0"), 3000);
       }
 
-      // ══════════════════════════════════════════
-      // RESIZE HANDLES
-      // ══════════════════════════════════════════
       function initColResize(handleId, targetId, side) {
         const handle = document.getElementById(handleId);
         const target = document.getElementById(targetId);
@@ -6456,9 +6990,6 @@
       initColResize("rszRight", "right", "right");
       initRowResize("rszLog", "logPanel");
 
-      // ══════════════════════════════════════════
-      // END
-      // ══════════════════════════════════════════
       resizeCvs();
       loadPreset();
       buildNet();

@@ -2,6 +2,10 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Neural Lab v8</title>
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800;900&display=swap"
@@ -2104,11 +2108,363 @@
         font-size: 8px;
         color: var(--dim);
       }
+
+      /* ══════════════════════════════════════════
+         MOBILE LAYOUT OVERRIDES
+         ══════════════════════════════════════════ */
+      @media (max-width: 900px) {
+        html,
+        body {
+          overflow: hidden;
+          height: 100%;
+          height: 100dvh;
+        }
+
+        body {
+          flex-direction: column;
+          position: fixed;
+          inset: 0;
+        }
+
+        /* Hide resize handles */
+        .rsz-col,
+        .rsz-row {
+          display: none !important;
+        }
+
+        /* ── MOBILE TOP BAR ── */
+        #mobile-topbar {
+          display: flex;
+          align-items: center;
+          padding: 8px 12px;
+          background: var(--p1);
+          border-bottom: 1px solid var(--brd);
+          gap: 10px;
+          flex-shrink: 0;
+          z-index: 100;
+        }
+        #mobile-topbar h1 {
+          font-family: "Syne", sans-serif;
+          font-weight: 900;
+          font-size: 13px;
+          color: var(--a1);
+          letter-spacing: 0.08em;
+          text-shadow: var(--glow1);
+          flex: 1;
+        }
+        #mobile-topbar .epoch-pill {
+          font-size: 9px;
+          color: var(--dim);
+          background: #030408;
+          border: 1px solid var(--brd);
+          border-radius: 4px;
+          padding: 3px 7px;
+          white-space: nowrap;
+        }
+        #mobile-topbar .epoch-pill span {
+          color: var(--a1);
+          font-weight: 700;
+        }
+
+        /* ── PANELS become full area ── */
+        #left,
+        #right,
+        #center {
+          position: absolute;
+          inset: 0;
+          top: 0;
+          bottom: 56px; /* bottom nav height */
+          width: 100% !important;
+          min-width: 0 !important;
+          max-width: none !important;
+          border: none !important;
+          display: none;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        #left.mob-active,
+        #right.mob-active,
+        #center.mob-active {
+          display: flex;
+        }
+
+        /* Push panels below topbar */
+        #left,
+        #right,
+        #center {
+          top: 47px;
+        }
+
+        /* Left panel scroll */
+        #lscroll {
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        /* Center: canvas takes remaining space */
+        #canvasWrap {
+          flex: 1;
+          min-height: 0;
+        }
+        #logPanel {
+          height: 160px !important;
+          min-height: 120px;
+          max-height: 50vh;
+          border-top: 1px solid var(--brd);
+        }
+
+        /* Right panel */
+        #rpbody {
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .tabs {
+          overflow-x: auto;
+        }
+
+        /* ── BOTTOM NAVIGATION ── */
+        #mobile-nav {
+          display: flex;
+          background: var(--p1);
+          border-top: 1px solid var(--brd);
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 56px;
+          z-index: 200;
+          flex-shrink: 0;
+        }
+        .mob-nav-btn {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          background: none;
+          border: none;
+          color: var(--dim);
+          font-family: "JetBrains Mono", monospace;
+          font-size: 7px;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          cursor: pointer;
+          transition: 0.15s;
+          padding: 6px 2px;
+          border-top: 2px solid transparent;
+        }
+        .mob-nav-btn .mob-icon {
+          font-size: 17px;
+          line-height: 1;
+        }
+        .mob-nav-btn.active {
+          color: var(--a1);
+          border-top-color: var(--a1);
+        }
+        .mob-nav-btn:hover {
+          color: var(--text);
+        }
+
+        /* ── TOUCH-FRIENDLY SIZING ── */
+        .btn {
+          padding: 8px 12px;
+          font-size: 11px;
+        }
+        .btn-row {
+          gap: 6px;
+        }
+        .sec {
+          padding: 12px 14px 10px;
+        }
+        lbl,
+        .lbl {
+          font-size: 10px;
+          margin-top: 8px;
+          margin-bottom: 4px;
+        }
+        .sh {
+          font-size: 9px;
+        }
+        select,
+        input[type="text"],
+        input[type="number"] {
+          font-size: 13px;
+          padding: 8px 10px;
+        }
+        textarea {
+          font-size: 13px;
+        }
+        .sb .v {
+          font-size: 18px;
+        }
+        .sb .k {
+          font-size: 9px;
+        }
+        .sb {
+          padding: 8px 10px;
+        }
+        input[type="range"] {
+          height: 6px;
+        }
+        .tab {
+          padding: 10px 13px;
+          font-size: 10px;
+        }
+        .card {
+          margin: 10px 12px 0;
+        }
+        .tog-grid {
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 5px;
+        }
+        .tog-grid .btn {
+          padding: 9px 6px;
+          font-size: 10px;
+        }
+
+        /* Bigger touch targets for log buttons */
+        .lh .btn {
+          padding: 6px 10px;
+          font-size: 10px;
+        }
+
+        /* Quick train bar pinned above nav */
+        #mobile-trainbar {
+          display: flex;
+          gap: 5px;
+          padding: 6px 10px;
+          background: var(--p2);
+          border-top: 1px solid var(--brd);
+          position: fixed;
+          bottom: 56px;
+          left: 0;
+          right: 0;
+          z-index: 150;
+          align-items: center;
+        }
+        #mobile-trainbar .btn {
+          flex: 1;
+          padding: 9px 6px;
+          font-size: 11px;
+        }
+        #mobile-trainbar .loss-display {
+          font-family: "Syne", sans-serif;
+          font-size: 13px;
+          font-weight: 800;
+          color: var(--a1);
+          min-width: 70px;
+          text-align: right;
+        }
+        #mobile-trainbar .loss-label {
+          font-size: 7px;
+          color: var(--dim);
+          text-transform: uppercase;
+          display: block;
+        }
+
+        /* Shift panels above both trainbar and nav */
+        #left,
+        #right,
+        #center {
+          bottom: calc(56px + 44px);
+        }
+
+        /* On canvas panel, hide trainbar (it's always visible) */
+
+        /* Modals become full screen on mobile */
+        #modal {
+          max-width: 100%;
+          width: 100%;
+          max-height: 85vh;
+          border-radius: 12px 12px 0 0;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          margin: 0;
+        }
+        #modal-bg.show {
+          align-items: flex-end;
+        }
+        #abld-modal {
+          max-width: 100%;
+          width: 100%;
+          max-height: 88vh;
+          border-radius: 12px 12px 0 0;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+        }
+        #abld-modal-bg.show {
+          align-items: flex-end;
+        }
+
+        /* Tooltip: position at top on mobile */
+        #tip {
+          bottom: 80px;
+          top: auto !important;
+        }
+
+        /* Canvas legend: smaller */
+        .canvas-legend {
+          font-size: 9px;
+          padding: 6px 8px;
+        }
+        .hint {
+          bottom: 56px;
+        }
+
+        /* lossChart bigger for touch */
+        #lossChart {
+          height: 80px;
+        }
+      }
+
+      /* Show topbar/nav only on mobile */
+      #mobile-topbar,
+      #mobile-nav,
+      #mobile-trainbar {
+        display: none;
+      }
+
+      /* Hide original left panel header on mobile (replaced by topbar) */
+      @media (max-width: 900px) {
+        #mobile-topbar,
+        #mobile-nav,
+        #mobile-trainbar {
+          display: flex;
+        }
+        .ph {
+          display: none;
+        } /* replaced by mobile-topbar */
+      }
     </style>
   </head>
   <body>
+    <!-- ══════════════ MOBILE TOP BAR ══════════════ -->
+    <div id="mobile-topbar">
+      <h1>
+        ⬡ NEURAL LAB <span style="font-size: 9px; color: var(--dim)">v8</span>
+      </h1>
+      <div class="epoch-pill">
+        Epoch <span id="mob-epoch">0</span> · Loss <span id="mob-loss">—</span>
+      </div>
+    </div>
+
+    <!-- ══════════════ MOBILE QUICK TRAIN BAR ══════════════ -->
+    <div id="mobile-trainbar">
+      <button class="btn go" onclick="doStep()">▶ Step</button>
+      <button class="btn ok" onclick="doEpoch()">+Epoch</button>
+      <button class="btn" id="btnAutoMob" onclick="toggleAuto()">
+        ⚡ Auto
+      </button>
+      <button class="btn" onclick="doN(100)">×100</button>
+    </div>
+
     <!-- ══════════════ LEFT ══════════════ -->
-    <div id="left">
+    <div id="left" class="mob-active">
       <div class="ph">
         <h1>
           ⬡ NEURAL LAB <span style="font-size: 9px; color: var(--dim)">v8</span>
@@ -6995,6 +7351,65 @@
       buildNet();
       buildFLib();
       showHint();
+    </script>
+
+    <!-- ══════════════ MOBILE BOTTOM NAV ══════════════ -->
+    <div id="mobile-nav">
+      <button
+        class="mob-nav-btn active"
+        id="mobnav-left"
+        onclick="mobNav('left')"
+      >
+        <span class="mob-icon">⚙</span>Config
+      </button>
+      <button class="mob-nav-btn" id="mobnav-center" onclick="mobNav('center')">
+        <span class="mob-icon">⬡</span>Réseau
+      </button>
+      <button class="mob-nav-btn" id="mobnav-right" onclick="mobNav('right')">
+        <span class="mob-icon">📊</span>Détails
+      </button>
+    </div>
+
+    <script>
+      // ── MOBILE NAVIGATION ──
+      function mobNav(panel) {
+        if (window.innerWidth > 900) return;
+        ["left", "center", "right"].forEach((p) => {
+          const el = document.getElementById(p);
+          if (el) el.classList.toggle("mob-active", p === panel);
+          const btn = document.getElementById("mobnav-" + p);
+          if (btn) btn.classList.toggle("active", p === panel);
+        });
+        if (panel === "center") {
+          setTimeout(() => {
+            resizeCvs();
+            redraw();
+          }, 60);
+        }
+      }
+
+      // ── SYNC MOBILE EPOCH/LOSS ──
+      function syncMobStats() {
+        const me = document.getElementById("mob-epoch");
+        const ml = document.getElementById("mob-loss");
+        const e = document.getElementById("sEpoch");
+        const l = document.getElementById("sLoss");
+        if (me && e) me.textContent = e.textContent;
+        if (ml && l) ml.textContent = l.textContent;
+      }
+      setInterval(syncMobStats, 400);
+
+      // ── KEEP AUTO BUTTON IN SYNC ──
+      const _ta = window.toggleAuto;
+      window.toggleAuto = function () {
+        if (_ta) _ta();
+        const m = document.getElementById("btnAutoMob");
+        const d = document.getElementById("btnAuto");
+        if (m && d) {
+          m.className = d.className;
+          m.id = "btnAutoMob";
+        }
+      };
     </script>
   </body>
 </html>

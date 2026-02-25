@@ -1425,26 +1425,148 @@
           <div style="padding:12px 13px 20px;font-size:9px;line-height:1.9;color:var(--text)">
             <div style="color:var(--a2);font-size:13px;font-weight:700;margin-bottom:10px;font-family:'Syne',sans-serif">Guide complet</div>
             <p style="color:var(--dim);margin-bottom:10px">Ce simulateur montre TOUS les calculs internes d'un réseau de neurones, étape par étape.</p>
+            
+            <!-- KEYBOARD SHORTCUTS SECTION -->
+            <div style="background:linear-gradient(135deg,rgba(0,229,255,0.05),rgba(191,95,255,0.05));border:1px solid var(--brd);border-radius:4px;padding:10px;margin-bottom:12px">
+              <div style="color:var(--a1);font-size:10px;font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:5px">
+                <span>⌨</span> Raccourcis clavier
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px;font-size:8px">
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--a1);font-family:'JetBrains Mono',monospace;font-size:7px">SPACE</kbd>
+                  <span style="color:var(--dim)">1 step</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--grn);font-family:'JetBrains Mono',monospace;font-size:7px">E</kbd>
+                  <span style="color:var(--dim)">1 epoch</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--ylw);font-family:'JetBrains Mono',monospace;font-size:7px">A</kbd>
+                  <span style="color:var(--dim)">Auto ON/OFF</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--org);font-family:'JetBrains Mono',monospace;font-size:7px">M</kbd>
+                  <span style="color:var(--dim)">Muter réseau</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--a2);font-family:'JetBrains Mono',monospace;font-size:7px">B</kbd>
+                  <span style="color:var(--dim)">Frontières</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--red);font-family:'JetBrains Mono',monospace;font-size:7px">R</kbd>
+                  <span style="color:var(--dim)">Course optim</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:7px">T</kbd>
+                  <span style="color:var(--dim)">Onglet Tools</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--a1);font-family:'JetBrains Mono',monospace;font-size:7px">G</kbd>
+                  <span style="color:var(--dim)">Analyse grads</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--ylw);font-family:'JetBrains Mono',monospace;font-size:7px">H</kbd>
+                  <span style="color:var(--dim)">Heatmap</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                  <kbd style="background:#0a0c18;border:1px solid var(--brd);border-radius:2px;padding:2px 5px;color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:7px">ESC</kbd>
+                  <span style="color:var(--dim)">Fermer modal</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- MOUSE CONTROLS SECTION -->
+            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.05),rgba(255,140,42,0.05));border:1px solid var(--brd);border-radius:4px;padding:10px;margin-bottom:12px">
+              <div style="color:var(--ylw);font-size:10px;font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:5px">
+                <span>🖱</span> Contrôles souris sur le canvas
+              </div>
+              <div style="font-size:8px;line-height:1.9;color:var(--dim)">
+                <div style="color:var(--a1);font-weight:600;margin-top:8px;margin-bottom:4px">Sur les neurones :</div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--text)">• Clic simple</b> → Afficher détails complets du neurone
+                </div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--a1)">• Ctrl+Clic</b> (ou Cmd+Clic sur Mac) → Forcer la valeur d'activation
+                </div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--a2)">• Shift+Clic</b> → Geler/dégeler le neurone ❄ (ne sera plus mis à jour pendant l'entraînement)
+                </div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--ylw)">• Alt+Clic</b> → Définir un pattern (0, 1, sin, random)
+                </div>
+                
+                <div style="color:var(--a1);font-weight:600;margin-top:8px;margin-bottom:4px">Sur les poids (lignes de connexion) :</div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--text)">• Clic simple</b> → Afficher détails du poids et gradient
+                </div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--a1)">• Ctrl+Clic</b> (ou Cmd+Clic sur Mac) → Modifier la valeur du poids manuellement
+                </div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--a2)">• Shift+Clic</b> → Geler/dégeler le poids ❄ (ne sera plus mis à jour)
+                </div>
+                
+                <div style="color:var(--a1);font-weight:600;margin-top:8px;margin-bottom:4px">Autres interactions :</div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--text)">• Survol</b> → Info-bulle avec valeurs en temps réel
+                </div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--grn)">• Clic sur graphique Loss</b> → Réinitialiser l'historique
+                </div>
+                <div style="margin-bottom:3px;padding-left:8px">
+                  <b style="color:var(--org)">• Double-clic séparateurs</b> → Réinitialiser taille des panneaux
+                </div>
+                
+                <div style="margin-top:8px;padding:6px;background:rgba(0,229,255,0.05);border-left:2px solid var(--a1);border-radius:2px;font-size:7px">
+                  💡 <b>Astuce :</b> Les éléments gelés sont marqués par ❄ · Les patterns actifs sont indiqués par des symboles colorés (🔴 pour '1', ⚫ pour '0', 〜 pour 'sin', ⚡ pour 'random')
+                </div>
+              </div>
+            </div>
+
+            <!-- THEORY SECTION -->
             <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">① Forward Pass</div>
-            <p style="color:var(--dim);margin-bottom:7px">Pour chaque neurone : <span style="color:var(--a1)">z = Σ(wᵢ×aᵢ) + b</span> puis <span style="color:var(--grn)">a = f(z)</span>. L'info circule gauche→droite.</p>
-            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">② Loss</div>
-            <p style="color:var(--dim);margin-bottom:7px">Mesure l'erreur entre prédiction et cible. MSE = <span style="color:var(--red)">(1/n)Σ(ŷ−y)²</span></p>
-            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">③ Backprop</div>
-            <p style="color:var(--dim);margin-bottom:7px">Règle de chaîne : <span style="color:var(--a1)">∂L/∂w = ∂L/∂a · ∂a/∂z · ∂z/∂w</span></p>
-            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">④ Descente gradient</div>
-            <p style="color:var(--dim);margin-bottom:7px"><span style="color:var(--a1)">w ← w − lr × ∂L/∂w</span> — Adam ajoute correction de biais + moments adaptatifs.</p>
+            <p style="color:var(--dim);margin-bottom:7px">Pour chaque neurone : <span style="color:var(--a1)">z = Σ(wᵢ×aᵢ) + b</span> puis <span style="color:var(--grn)">a = f(z)</span>. L'info circule gauche→droite à travers toutes les couches.</p>
+            
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">② Loss (fonction de coût)</div>
+            <p style="color:var(--dim);margin-bottom:7px">Mesure l'erreur entre prédiction et cible. MSE = <span style="color:var(--red)">(1/n)Σ(ŷ−y)²</span>. Plus la loss est faible, meilleur est le réseau.</p>
+            
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">③ Backpropagation</div>
+            <p style="color:var(--dim);margin-bottom:7px">Règle de chaîne : <span style="color:var(--a1)">∂L/∂w = ∂L/∂a · ∂a/∂z · ∂z/∂w</span>. Calcule comment chaque poids influence l'erreur finale, en remontant couche par couche.</p>
+            
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">④ Descente de gradient</div>
+            <p style="color:var(--dim);margin-bottom:7px"><span style="color:var(--a1)">w ← w − lr × ∂L/∂w</span> — Ajuste les poids dans la direction qui réduit l'erreur. Adam ajoute correction de biais + moments adaptatifs pour accélérer et stabiliser.</p>
+            
             <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">⑤ Constructeur avancé</div>
-            <p style="color:var(--dim);margin-bottom:7px">Le bouton <span style="color:var(--a2)">⬡ Constructeur avancé</span> permet de configurer chaque couche individuellement : activation propre, nombre de neurones, dropout par couche.</p>
+            <p style="color:var(--dim);margin-bottom:7px">Le bouton <span style="color:var(--a2)">⬡ Constructeur avancé</span> permet de configurer chaque couche individuellement : activation propre, nombre de neurones, dropout par couche. Idéal pour des architectures personnalisées.</p>
+            
+            <div style="color:var(--ylw);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;margin:10px 0 4px">⑥ Modes d'affichage</div>
+            <p style="color:var(--dim);margin-bottom:7px">• <span style="color:var(--text)">Minimal</span> : réseau simplifié<br>• <span style="color:var(--text)">Standard</span> : poids + activations<br>• <span style="color:var(--text)">Complet</span> : TOUT (z, gradients, deltas...)</p>
+
+            <!-- EXPERIMENTS SECTION -->
             <div style="background:#030408;border:1px solid var(--brd);border-radius:3px;padding:9px;margin-top:10px">
-              <div style="color:var(--a1);font-size:9px;margin-bottom:5px">💡 Expériences</div>
+              <div style="color:var(--a1);font-size:9px;margin-bottom:5px">💡 Expériences suggérées</div>
               <div style="color:var(--dim);font-size:8px;line-height:2">
-                • <b style="color:var(--text)">XOR avec 1 couche cachée</b> : impossible sans couches<br>
-                • <b style="color:var(--text)">ReLU vs Sigmoid</b> sur réseau profond (5+ couches)<br>
-                • <b style="color:var(--text)">lr=5</b> : divergence / <b style="color:var(--text)">lr=0.001</b> : lenteur<br>
-                • <b style="color:var(--text)">Adam vs SGD</b> sur même tâche<br>
-                • Couches mixtes via le <b style="color:var(--text)">Constructeur avancé</b><br>
-                • Observe le <b style="color:var(--text)">vanishing gradient</b> en mode complet<br>
-                • Utilise <b style="color:var(--text)">Test</b> pour prédire des valeurs arbitraires
+                • <b style="color:var(--text)">Problème XOR</b> : Créez un réseau 2→4→1 avec ReLU et dataset 4 points (0,0→0 | 0,1→1 | 1,0→1 | 1,1→0)<br>
+                • <b style="color:var(--text)">ReLU vs Sigmoid</b> : Testez sur un réseau profond (5+ couches) et comparez la vitesse de convergence<br>
+                • <b style="color:var(--text)">Impact du learning rate</b> : Essayez lr=5 (divergence), lr=0.5 (optimal), lr=0.001 (trop lent)<br>
+                • <b style="color:var(--text)">Adam vs SGD</b> : Course d'optimiseurs (touche <kbd style="background:#0a0c18;padding:1px 3px;border-radius:2px;color:var(--red)">R</kbd>) pour voir lequel converge le plus vite<br>
+                • <b style="color:var(--text)">Couches mixtes</b> : Via le Constructeur avancé, alternez ReLU et Tanh pour voir l'effet<br>
+                • <b style="color:var(--text)">Vanishing gradient</b> : Réseau profond (8+ couches) avec Sigmoid en mode complet — observez les δ→0<br>
+                • <b style="color:var(--text)">Frontières de décision</b> : Touche <kbd style="background:#0a0c18;padding:1px 3px;border-radius:2px;color:var(--a2)">B</kbd> pour visualiser comment le réseau sépare l'espace<br>
+                • <b style="color:var(--text)">Test de généralisation</b> : Créez un dataset, entraînez, puis utilisez l'onglet Test pour prédire de nouvelles valeurs
+              </div>
+            </div>
+
+            <!-- TIPS SECTION -->
+            <div style="background:rgba(0,255,157,0.03);border:1px solid rgba(0,255,157,0.2);border-radius:3px;padding:9px;margin-top:8px">
+              <div style="color:var(--grn);font-size:9px;margin-bottom:5px">✓ Conseils pro</div>
+              <div style="color:var(--dim);font-size:8px;line-height:2">
+                • Commencez simple (2-3 couches) puis augmentez la complexité<br>
+                • Surveillez la courbe de loss : elle doit descendre régulièrement<br>
+                • Si la loss explose → réduisez le learning rate<br>
+                • Si la loss stagne → essayez un autre optimiseur ou ajoutez des couches<br>
+                • Le mode Complet est excellent pour comprendre, mais ralentit l'affichage<br>
+                • Utilisez l'analyse de gradients (touche <kbd style="background:#0a0c18;padding:1px 3px;border-radius:2px;color:var(--a1)">G</kbd>) pour détecter les problèmes
               </div>
             </div>
           </div>
@@ -1741,7 +1863,21 @@
           for (let j=0; j<NET.W[l].length; j++) {
             let z=NET.B[l][j];
             for (let k=0; k<a.length; k++) z+=NET.W[l][j][k]*a[k];
-            zL.push(z); aL.push(act(z,fnL));
+            zL.push(z);
+            
+            // Apply node patterns if defined
+            const nodeKey = `${l+1}-${j}`;
+            let activation = act(z,fnL);
+            if (NET.nodePatterns && NET.nodePatterns[nodeKey]) {
+              const pattern = NET.nodePatterns[nodeKey];
+              switch(pattern) {
+                case '0': activation = 0; break;
+                case '1': activation = 1; break;
+                case 'random': activation = Math.random(); break;
+                case 'sin': activation = Math.sin(EPOCH * 0.1 + j); break;
+              }
+            }
+            aL.push(activation);
           }
           let aLF=aL.slice();
           const isLast = l===NET.W.length-1;
@@ -1791,12 +1927,21 @@
           for (let j=0;j<NET.W[l].length;j++) {
             const dj=deltas[l][j];
             for (let k=0;k<NET.W[l][j].length;k++) {
+              // Check if weight is frozen
+              const wKey = `${l}-${j}-${k}`;
+              if (NET.frozenWeights && NET.frozenWeights[wKey]) continue;
+              
               const g=dj*activations[l][k]+l2*NET.W[l][j][k];
               NET.W[l][j][k]=updateParam(NET.W[l][j][k],g,effLR,opt,mom,b1,b2,eps,VEL.w[l][j][k],MA.w[l][j][k],MV.w[l][j][k]);
               if (opt==="momentum"||opt==="nag") VEL.w[l][j][k]=mom*VEL.w[l][j][k]+effLR*g;
               else if (opt==="rmsprop") VEL.w[l][j][k]=b2*VEL.w[l][j][k]+(1-b2)*g*g;
               else if (opt==="adam"||opt==="adamw") { MA.w[l][j][k]=b1*MA.w[l][j][k]+(1-b1)*g; MV.w[l][j][k]=b2*MV.w[l][j][k]+(1-b2)*g*g; }
             }
+            
+            // Check if neuron bias is frozen (neuron at layer l+1, index j)
+            const nKey = `${l+1}-${j}`;
+            if (NET.frozenNodes && NET.frozenNodes[nKey]) continue;
+            
             const gb=dj;
             NET.B[l][j]=updateParam(NET.B[l][j],gb,effLR,opt,mom,b1,b2,eps,VEL.b[l][j],MA.b[l][j],MV.b[l][j]);
             if (opt==="momentum"||opt==="nag") VEL.b[l][j]=mom*VEL.b[l][j]+effLR*gb;
@@ -2139,7 +2284,20 @@
                 g.font=`bold ${Math.max(7,fs*0.9)}px JetBrains Mono,monospace`;
                 g.textAlign="center"; g.fillText(wv.toFixed(2),mx,my-4);
               }
-              LINES.push({x1:p1[i].x,y1:p1[i].y,x2:p2[j].x,y2:p2[j].y,w:wv,l,i,j});
+              LINES.push({x1:p1[i].x,y1:p1[i].y,x2:p2[j].x,y2:p2[j].y,w:wv,l,i,j,l1:l,j1:i,l2:l+1,j2:j});
+            }
+          }
+        }
+        // Frozen weights indicator
+        if (NET.frozenWeights) {
+          g.font=`bold ${Math.max(10,fs*1)}px Arial,sans-serif`;
+          g.textAlign='center';
+          for (const ln of LINES) {
+            const wKey = `${ln.l}-${ln.j2}-${ln.j1}`;
+            if (NET.frozenWeights[wKey]) {
+              const mx=(ln.x1+ln.x2)/2,my=(ln.y1+ln.y2)/2;
+              g.fillStyle='rgba(0,229,255,0.8)';
+              g.fillText('❄',mx+8,my+8);
             }
           }
         }
@@ -2209,6 +2367,25 @@
             g.beginPath(); g.arc(p.x,p.y,nr+5,0,Math.PI*2);
             g.strokeStyle='rgba(255,255,255,0.7)'; g.lineWidth=2;
             g.setLineDash([4,3]); g.stroke(); g.setLineDash([]);
+          }
+          
+          // Show frozen indicator
+          const nodeKey = `${p.l}-${p.j}`;
+          if (NET.frozenNodes && NET.frozenNodes[nodeKey]) {
+            g.font=`bold ${Math.max(12,fs*1.3)}px Arial,sans-serif`;
+            g.fillStyle='rgba(0,229,255,0.9)';
+            g.textAlign='center';
+            g.fillText('❄',p.x+nr*0.8,p.y-nr*0.6);
+          }
+          
+          // Show pattern indicator
+          if (NET.nodePatterns && NET.nodePatterns[nodeKey]) {
+            const pattern = NET.nodePatterns[nodeKey];
+            const icons = {'0':'⓪','1':'①','sin':'～','random':'?'};
+            g.font=`bold ${Math.max(10,fs*1.1)}px Arial,sans-serif`;
+            g.fillStyle='rgba(255,215,0,0.9)';
+            g.textAlign='center';
+            g.fillText(icons[pattern]||'◉',p.x-nr*0.8,p.y-nr*0.6);
           }
         }
         // Highlight selected connection
@@ -2296,8 +2473,109 @@
       cvs().addEventListener("click",e=>{
         if (!NET) return;
         const {x,y}=cpToCanvas(e),nr=getR()+5;
-        for (const p of POS) { if (Math.hypot(p.x-x,p.y-y)<nr) { SELECTED={type:'node',l:p.l,j:p.j}; redraw(); showNodeDetail(p); return; } }
-        for (const ln of LINES) { if (lpd(ln.x1,ln.y1,ln.x2,ln.y2,x,y)<8) { SELECTED={type:'line',ln}; redraw(); showLineDetail(ln); return; } }
+        
+        // Check for node click
+        for (const p of POS) { 
+          if (Math.hypot(p.x-x,p.y-y)<nr) { 
+            // Ctrl+Click: Force activation value
+            if (e.ctrlKey || e.metaKey) {
+              const isIn = p.l === 0;
+              const isOut = p.l === NET.L.length - 1;
+              if (!isIn) {
+                const promptVal = prompt(`Forcer l'activation du neurone L${p.l}N${p.j}\nValeur actuelle: ${LAST_ACT[p.l]?.[p.j]?.toFixed(4) || 'N/A'}\n\nEntrez une nouvelle valeur (ou 'r' pour random, 'z' pour 0, 'o' pour 1):`);
+                if (promptVal !== null) {
+                  if (!LAST_ACT[p.l]) LAST_ACT[p.l] = [...NET.L[p.l]];
+                  if (promptVal.toLowerCase() === 'r') {
+                    LAST_ACT[p.l][p.j] = Math.random();
+                  } else if (promptVal.toLowerCase() === 'z') {
+                    LAST_ACT[p.l][p.j] = 0;
+                  } else if (promptVal.toLowerCase() === 'o') {
+                    LAST_ACT[p.l][p.j] = 1;
+                  } else {
+                    const val = parseFloat(promptVal);
+                    if (!isNaN(val)) LAST_ACT[p.l][p.j] = val;
+                  }
+                  redraw();
+                  showNodeDetail(p);
+                }
+              }
+              return;
+            }
+            // Shift+Click: Freeze/unfreeze neuron (mark for no updates during training)
+            else if (e.shiftKey) {
+              if (!NET.frozenNodes) NET.frozenNodes = {};
+              const key = `${p.l}-${p.j}`;
+              NET.frozenNodes[key] = !NET.frozenNodes[key];
+              alert(`Neurone L${p.l}N${p.j} ${NET.frozenNodes[key] ? '❄️ GELÉ' : '✓ dégelé'}\n${NET.frozenNodes[key] ? 'Ne sera pas mis à jour pendant l\'entraînement' : 'Reprend l\'entraînement normal'}`);
+              redraw();
+              return;
+            }
+            // Alt+Click: Set neuron to specific pattern (for testing)
+            else if (e.altKey) {
+              const patterns = ['0', '1', 'sin', 'random'];
+              const choice = prompt(`Définir un pattern pour L${p.l}N${p.j}:\n0 = toujours 0\n1 = toujours 1\nsin = oscillation sinusoidale\nrandom = aléatoire à chaque step\nnone = annuler pattern\n\nChoix:`);
+              if (choice !== null) {
+                if (!NET.nodePatterns) NET.nodePatterns = {};
+                const key = `${p.l}-${p.j}`;
+                if (choice.toLowerCase() === 'none') {
+                  delete NET.nodePatterns[key];
+                  alert('Pattern supprimé');
+                } else if (patterns.includes(choice.toLowerCase())) {
+                  NET.nodePatterns[key] = choice.toLowerCase();
+                  alert(`Pattern "${choice}" appliqué au neurone L${p.l}N${p.j}`);
+                }
+              }
+              return;
+            }
+            // Normal click: Show details
+            else {
+              SELECTED={type:'node',l:p.l,j:p.j}; 
+              redraw(); 
+              showNodeDetail(p); 
+              return;
+            }
+          }
+        }
+        
+        // Check for line click
+        for (const ln of LINES) { 
+          if (lpd(ln.x1,ln.y1,ln.x2,ln.y2,x,y)<8) { 
+            // Ctrl+Click on line: Set weight value
+            if (e.ctrlKey || e.metaKey) {
+              const promptVal = prompt(`Modifier le poids\nDe L${ln.l1}N${ln.j1} → L${ln.l2}N${ln.j2}\nValeur actuelle: ${ln.w.toFixed(4)}\n\nNouvelle valeur (ou 'r' pour random, 'z' pour 0):`);
+              if (promptVal !== null) {
+                if (promptVal.toLowerCase() === 'r') {
+                  NET.W[ln.l2-1][ln.j2][ln.j1] = (Math.random() - 0.5) * 2;
+                } else if (promptVal.toLowerCase() === 'z') {
+                  NET.W[ln.l2-1][ln.j2][ln.j1] = 0;
+                } else {
+                  const val = parseFloat(promptVal);
+                  if (!isNaN(val)) NET.W[ln.l2-1][ln.j2][ln.j1] = val;
+                }
+                rebuildLines();
+                redraw();
+              }
+              return;
+            }
+            // Shift+Click: Freeze weight
+            else if (e.shiftKey) {
+              if (!NET.frozenWeights) NET.frozenWeights = {};
+              const key = `${ln.l2-1}-${ln.j2}-${ln.j1}`;
+              NET.frozenWeights[key] = !NET.frozenWeights[key];
+              alert(`Poids L${ln.l1}N${ln.j1}→L${ln.l2}N${ln.j2} ${NET.frozenWeights[key] ? '❄️ GELÉ' : '✓ dégelé'}`);
+              redraw();
+              return;
+            }
+            // Normal click: Show details
+            else {
+              SELECTED={type:'line',ln}; 
+              redraw(); 
+              showLineDetail(ln); 
+              return;
+            }
+          }
+        }
+        
         SELECTED=null; redraw();
       });
 
@@ -4649,6 +4927,9 @@
       else if(e.key==='m'||e.key==='M'){mutateNet(false);}
       else if(e.key==='b'||e.key==='B'){showBoundary();}
       else if(e.key==='r'||e.key==='R'){showRace();}
+      else if(e.key==='t'||e.key==='T'){showTab('tools');}
+      else if(e.key==='g'||e.key==='G'){analyzeGradients();}
+      else if(e.key==='h'||e.key==='H'){renderHeatmap();}
       else if(e.key==='Escape'){
         ['boundary-modal-bg','saveload-modal-bg','race-modal-bg'].forEach(id=>document.getElementById(id)?.classList.remove('show'));
         stopBoundaryLive(); stopRace();
@@ -4657,7 +4938,7 @@
 
     // Update hint
     const hintEl=document.getElementById('hint');
-    if(hintEl) hintEl.textContent='Clic=détails · Ctrl+clic=forcer · Space=step · E=epoch · A=auto · M=muter · B=boundary · R=race · T=tools · G=gradients';
+    if(hintEl) hintEl.textContent='Clic=détails · Ctrl+clic=forcer · Space=step · E=epoch · A=auto · M=muter · B=boundary · R=race · T=tools · G=gradients · H=heatmap';
 
     // Initial update
     setTimeout(updateNetStatsBar, 600);
@@ -4854,15 +5135,6 @@
           .catch(()=>log('<span style="color:var(--red)">✗ Impossible de copier (permission refusée)</span>'));
       });
     }
-
-    // ════════════ 19. KEYBOARD SHORTCUTS EXTRA ════════════
-    // T = tools tab, G = gradient analysis
-    document.addEventListener('keydown', e => {
-      if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return;
-      if(e.key==='t'||e.key==='T') { showTab('tools'); }
-      else if(e.key==='g'||e.key==='G') { analyzeGradients(); }
-      else if(e.key==='h'||e.key==='H') { renderHeatmap(); }
-    });
 
     // ════════════ 20. AUTO-REFRESH TOOLS ════════════
     setInterval(()=>{

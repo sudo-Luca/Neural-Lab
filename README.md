@@ -287,8 +287,6 @@ Optimizer: Adam
 
 A harder nonlinear problem.
 
-![Spiral](screenshots/spiral.png)
-
 
 ---
 

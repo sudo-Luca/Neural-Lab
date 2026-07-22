@@ -29,7 +29,7 @@
         --red: #ff3d5a;
         --org: #ff8c2a;
         --text: #b8cce8;
-        --dim: #80e1ff;
+        --dim: #445577;
         --glow1: 0 0 18px rgba(0, 229, 255, 0.3);
         --glow2: 0 0 18px rgba(191, 95, 255, 0.3);
       }
@@ -62,9 +62,6 @@
       }
       ::-webkit-scrollbar-thumb:hover {
         background: var(--a1);
-      }
-      a {
-        color: rgb(255, 218, 218);
       }
       input[type="text"],
       input[type="number"],
@@ -2619,6 +2616,85 @@
         display: flex;
         gap: 6px;
       }
+      #cnn-modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 1500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #cnn-modal-bg.show {
+        display: flex;
+      }
+      #cnn-modal {
+        background: var(--p1);
+        border: 1px solid var(--a1);
+        border-radius: 8px;
+        max-width: 780px;
+        width: 96%;
+        max-height: 92vh;
+        overflow-y: auto;
+        box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+      }
+      #cnn-header {
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--brd);
+        background: linear-gradient(135deg, var(--p1), var(--p2));
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #cnn-header h2 {
+        font-family: "Syne", sans-serif;
+        color: var(--a1);
+        font-size: 14px;
+        flex: 1;
+      }
+      #cnn-body {
+        padding: 14px 18px;
+      }
+      #cnn-footer {
+        padding: 10px 18px;
+        border-top: 1px solid var(--brd);
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .cnn-grid {
+        display: inline-grid;
+        gap: 2px;
+        margin: 4px 0;
+      }
+      .cnn-cell {
+        border-radius: 2px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 6px;
+        color: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: 0.1s;
+      }
+      .cnn-cell:hover {
+        outline: 1px solid var(--a1);
+      }
+      .cnn-cell.static {
+        cursor: default;
+      }
+      .cnn-cell.hl {
+        outline: 2px solid var(--ylw);
+        box-shadow: 0 0 6px rgba(255, 214, 0, 0.6);
+      }
+      .cnn-kernel-input {
+        width: 38px;
+        height: 22px;
+        font-size: 9px;
+        text-align: center;
+        padding: 2px;
+      }
       .racer {
         background: #030408;
         border: 1px solid var(--brd);
@@ -3077,12 +3153,7 @@
         <h1>
           ⬡ NEURAL LAB
           <span style="font-size: 9px; color: var(--dim)" data-no-translate
-            ><a
-              href="https://github.com/sudo-Luca/Neural-Lab"
-              target="_blank"
-              title="Dépôt GitHub"
-              >v12</a
-            >
+            >v12
           </span>
         </h1>
         <p>Simulateur pédagogique deep learning</p>
@@ -4308,6 +4379,39 @@
                 </button>
                 <button class="btn" onclick="showBoundaryAnim()">▶ Live</button>
               </div>
+            </div>
+
+            <div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--a1);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--a1);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🧩 Expérimentation CNN (Convolution)
+              </div>
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
+              >
+                Dessinez une image, appliquez un noyau de convolution (Sobel,
+                flou, netteté…) et observez la feature map — la brique de base
+                des réseaux convolutifs
+              </div>
+              <button class="btn ok" onclick="openCNNLab()" style="width: 100%">
+                🧠 Ouvrir le labo CNN
+              </button>
             </div>
 
             <div
@@ -11239,6 +11343,199 @@
       </div>
     </div>
 
+    <div id="cnn-modal-bg">
+      <div id="cnn-modal">
+        <div id="cnn-header">
+          <h2>🧩 Labo CNN — Convolution</h2>
+          <button class="btn" onclick="closeCNNLab()">✕</button>
+        </div>
+        <div id="cnn-body">
+          <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+            Expérimentez avec les couches convolutives : dessinez une image,
+            choisissez un noyau (kernel), et observez la feature map produite —
+            la brique de base des CNN (réseaux de neurones convolutifs).
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 14px;
+              flex-wrap: wrap;
+              margin-bottom: 10px;
+            "
+          >
+            <div style="flex: 1; min-width: 210px">
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--dim);
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                  margin-bottom: 5px;
+                  font-weight: 700;
+                "
+              >
+                1. Image d'entrée
+              </div>
+              <div
+                style="
+                  display: flex;
+                  gap: 5px;
+                  margin-bottom: 6px;
+                  align-items: center;
+                "
+              >
+                <span style="font-size: 9px; color: var(--dim)">Taille</span>
+                <select
+                  id="cnnSize"
+                  style="flex: 1; font-size: 9px"
+                  onchange="cnnSetGridSize(parseInt(this.value))"
+                >
+                  <option value="6">6×6</option>
+                  <option value="8" selected>8×8</option>
+                  <option value="10">10×10</option>
+                  <option value="12">12×12</option>
+                </select>
+              </div>
+              <div id="cnnInputGrid" class="cnn-grid"></div>
+              <div class="btn-row" style="margin-top: 6px">
+                <button class="btn" onclick="cnnPreset('croix')">
+                  ✚ Croix
+                </button>
+                <button class="btn" onclick="cnnPreset('carre')">
+                  ▢ Carré
+                </button>
+                <button class="btn" onclick="cnnPreset('diag')">╲ Diag.</button>
+                <button class="btn" onclick="cnnPreset('alea')">
+                  🎲 Aléa.
+                </button>
+                <button class="btn" onclick="cnnPreset('vide')">↺ Vide</button>
+              </div>
+              <div style="font-size: 8px; color: var(--dim); margin-top: 4px">
+                Cliquez une cellule pour basculer 0 ↔ 1 (pixel noir/blanc).
+              </div>
+            </div>
+
+            <div style="flex: 1; min-width: 190px">
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--dim);
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                  margin-bottom: 5px;
+                  font-weight: 700;
+                "
+              >
+                2. Noyau (kernel) 3×3
+              </div>
+              <select
+                id="cnnKernelPreset"
+                style="width: 100%; font-size: 9px; margin-bottom: 6px"
+                onchange="cnnKernelPresetChange()"
+              >
+                <option value="identity">Identité</option>
+                <option value="blur">Flou (box blur)</option>
+                <option value="sharpen">Netteté</option>
+                <option value="sobelx" selected>
+                  Sobel X (contours verticaux)
+                </option>
+                <option value="sobely">Sobel Y (contours horizontaux)</option>
+                <option value="laplacian">Laplacien (contours)</option>
+                <option value="emboss">Emboss (relief)</option>
+                <option value="custom">Personnalisé…</option>
+              </select>
+              <div id="cnnKernelGrid" class="cnn-grid"></div>
+              <div
+                id="cnnKernelDesc"
+                style="
+                  font-size: 8px;
+                  color: var(--dim);
+                  margin-top: 6px;
+                  line-height: 1.6;
+                "
+              ></div>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 12px;
+              flex-wrap: wrap;
+              align-items: center;
+              margin-bottom: 10px;
+              background: #030408;
+              border: 1px solid var(--brd);
+              border-radius: 4px;
+              padding: 8px 10px;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 5px">
+              <span style="font-size: 9px; color: var(--dim)">Stride</span>
+              <select id="cnnStride" style="font-size: 9px; width: 50px">
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px">
+              <span style="font-size: 9px; color: var(--dim)">Padding</span>
+              <select id="cnnPadding" style="font-size: 9px; width: 78px">
+                <option value="valid">Valide</option>
+                <option value="same">Same</option>
+              </select>
+            </div>
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 9px;
+                color: var(--dim);
+              "
+              ><input type="checkbox" id="cnnRelu" /> ReLU</label
+            >
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 9px;
+                color: var(--dim);
+              "
+              ><input type="checkbox" id="cnnPool" /> Max Pooling 2×2</label
+            >
+          </div>
+
+          <div class="btn-row" style="margin-bottom: 10px">
+            <button class="btn ok" onclick="cnnCompute()" style="flex: 1">
+              ⬡ Calculer la convolution
+            </button>
+            <button class="btn warn" id="cnnAnimBtn" onclick="cnnToggleAnim()">
+              ▶ Animer pas-à-pas
+            </button>
+          </div>
+
+          <div id="cnnResults" style="font-size: 9px; color: var(--dim)">
+            Dessinez une image et cliquez sur « Calculer ».
+          </div>
+        </div>
+        <div id="cnn-footer">
+          <div
+            style="
+              font-size: 8px;
+              color: var(--dim);
+              flex: 1;
+              align-self: center;
+            "
+          >
+            Formule : taille sortie = ⌊(N + 2p − k) / s⌋ + 1
+          </div>
+          <button class="btn" onclick="closeCNNLab()">Fermer</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       // ═══════════════════════════════════════════════
       // NEURAL LAB v12 — EXTENSIONS
@@ -12123,6 +12420,345 @@
         c.innerHTML = html;
       }
 
+      // ════════════ 10bis. CNN LAB (Convolution) ════════════
+      const CNN = {
+        size: 8,
+        grid: [],
+        kernel: [
+          [-1, 0, 1],
+          [-2, 0, 2],
+          [-1, 0, 1],
+        ],
+        preset: "sobelx",
+        animTimer: null,
+        animPos: -1,
+      };
+
+      const CNN_KERNELS = {
+        identity: {
+          k: [
+            [0, 0, 0],
+            [0, 1, 0],
+            [0, 0, 0],
+          ],
+          desc: "Ne modifie pas l'image — kernel de référence (a=1·centre).",
+        },
+        blur: {
+          k: [
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+          ],
+          desc: "Moyenne les pixels voisins → lisse / floute l'image.",
+        },
+        sharpen: {
+          k: [
+            [0, -1, 0],
+            [-1, 5, -1],
+            [0, -1, 0],
+          ],
+          desc: "Accentue les transitions locales → renforce la netteté.",
+        },
+        sobelx: {
+          k: [
+            [-1, 0, 1],
+            [-2, 0, 2],
+            [-1, 0, 1],
+          ],
+          desc: "Détecte les contours verticaux (gradient horizontal).",
+        },
+        sobely: {
+          k: [
+            [-1, -2, -1],
+            [0, 0, 0],
+            [1, 2, 1],
+          ],
+          desc: "Détecte les contours horizontaux (gradient vertical).",
+        },
+        laplacian: {
+          k: [
+            [0, 1, 0],
+            [1, -4, 1],
+            [0, 1, 0],
+          ],
+          desc: "Détecte les contours dans toutes les directions à la fois.",
+        },
+        emboss: {
+          k: [
+            [-2, -1, 0],
+            [-1, 1, 1],
+            [0, 1, 2],
+          ],
+          desc: "Donne un effet de relief 3D à l'image.",
+        },
+        custom: {
+          k: [
+            [0, 0, 0],
+            [0, 1, 0],
+            [0, 0, 0],
+          ],
+          desc: "Éditez librement les 9 valeurs du noyau ci-dessus.",
+        },
+      };
+
+      function openCNNLab() {
+        document.getElementById("cnn-modal-bg").classList.add("show");
+        if (!CNN.grid.length) cnnSetGridSize(8);
+        cnnKernelPresetChange();
+      }
+      function closeCNNLab() {
+        cnnStopAnim();
+        document.getElementById("cnn-modal-bg").classList.remove("show");
+      }
+      {
+        const _cb = document.getElementById("cnn-modal-bg");
+        if (_cb)
+          _cb.addEventListener("click", (e) => {
+            if (e.target === _cb) closeCNNLab();
+          });
+      }
+
+      function cnnSetGridSize(n) {
+        CNN.size = n;
+        CNN.grid = Array.from({ length: n }, () => Array(n).fill(0));
+        cnnRenderInputGrid();
+        const r = document.getElementById("cnnResults");
+        if (r) r.innerHTML = "Dessinez une image et cliquez sur « Calculer ».";
+      }
+      function cnnRenderInputGrid() {
+        const el = document.getElementById("cnnInputGrid");
+        if (!el) return;
+        const n = CNN.size,
+          cell = n <= 8 ? 24 : n <= 10 ? 19 : 16;
+        el.style.gridTemplateColumns = `repeat(${n},${cell}px)`;
+        let html = "";
+        for (let y = 0; y < n; y++)
+          for (let x = 0; x < n; x++) {
+            const v = CNN.grid[y][x],
+              g = Math.round(v * 255);
+            html += `<div class="cnn-cell" style="width:${cell}px;height:${cell}px;background:rgb(${g},${g},${g})" onclick="cnnToggleCell(${y},${x})"></div>`;
+          }
+        el.innerHTML = html;
+      }
+      function cnnToggleCell(y, x) {
+        CNN.grid[y][x] = CNN.grid[y][x] > 0 ? 0 : 1;
+        cnnRenderInputGrid();
+      }
+      function cnnPreset(name) {
+        const n = CNN.size;
+        const g = Array.from({ length: n }, () => Array(n).fill(0));
+        if (name === "croix") {
+          const mid = Math.floor(n / 2);
+          for (let i = 0; i < n; i++) {
+            g[mid][i] = 1;
+            g[i][mid] = 1;
+          }
+        } else if (name === "carre") {
+          const m = Math.floor(n * 0.25),
+            M = n - m;
+          for (let y = m; y < M; y++)
+            for (let x = m; x < M; x++)
+              if (y === m || y === M - 1 || x === m || x === M - 1) g[y][x] = 1;
+        } else if (name === "diag") {
+          for (let i = 0; i < n; i++) g[i][i] = 1;
+        } else if (name === "alea") {
+          for (let y = 0; y < n; y++)
+            for (let x = 0; x < n; x++) g[y][x] = Math.random() > 0.6 ? 1 : 0;
+        }
+        CNN.grid = g;
+        cnnRenderInputGrid();
+      }
+
+      function cnnKernelPresetChange() {
+        const sel = document.getElementById("cnnKernelPreset").value;
+        CNN.preset = sel;
+        CNN.kernel = CNN_KERNELS[sel].k.map((r) => [...r]);
+        const d = document.getElementById("cnnKernelDesc");
+        if (d) d.textContent = CNN_KERNELS[sel].desc;
+        cnnRenderKernelGrid();
+      }
+      function cnnRenderKernelGrid() {
+        const el = document.getElementById("cnnKernelGrid");
+        if (!el) return;
+        const editable = CNN.preset === "custom";
+        el.style.gridTemplateColumns = `repeat(3,${editable ? 42 : 44}px)`;
+        let html = "";
+        const mx = Math.max(0.001, ...CNN.kernel.flat().map(Math.abs));
+        for (let y = 0; y < 3; y++)
+          for (let x = 0; x < 3; x++) {
+            const v = CNN.kernel[y][x];
+            if (editable) {
+              html += `<input class="cnn-kernel-input" type="number" step="0.1" value="${v}" onchange="cnnKernelEdit(${y},${x},this.value)"/>`;
+            } else {
+              const nv = v / mx;
+              const bg =
+                nv >= 0
+                  ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
+                  : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
+              html += `<div class="cnn-cell static" style="width:44px;height:24px;font-size:8px;background:${bg}">${v.toFixed(2)}</div>`;
+            }
+          }
+        el.innerHTML = html;
+      }
+      function cnnKernelEdit(y, x, val) {
+        CNN.kernel[y][x] = parseFloat(val) || 0;
+      }
+
+      function cnnConv2d(input, kernel, stride, pad) {
+        const H = input.length,
+          W = input[0].length,
+          kH = kernel.length,
+          kW = kernel[0].length;
+        let padded = input,
+          padY = 0,
+          padX = 0;
+        if (pad === "same") {
+          padY = Math.floor((kH - 1) / 2);
+          padX = Math.floor((kW - 1) / 2);
+          padded = Array.from({ length: H + 2 * padY }, (_, y) =>
+            Array.from({ length: W + 2 * padX }, (_, x) => {
+              const yy = y - padY,
+                xx = x - padX;
+              return yy >= 0 && yy < H && xx >= 0 && xx < W ? input[yy][xx] : 0;
+            }),
+          );
+        }
+        const PH = padded.length,
+          PW = padded[0].length;
+        const outH = Math.floor((PH - kH) / stride) + 1,
+          outW = Math.floor((PW - kW) / stride) + 1;
+        const out = Array.from({ length: Math.max(0, outH) }, () =>
+          Array(Math.max(0, outW)).fill(0),
+        );
+        for (let oy = 0; oy < outH; oy++)
+          for (let ox = 0; ox < outW; ox++) {
+            let s = 0;
+            for (let ky = 0; ky < kH; ky++)
+              for (let kx = 0; kx < kW; kx++)
+                s +=
+                  padded[oy * stride + ky][ox * stride + kx] * kernel[ky][kx];
+            out[oy][ox] = s;
+          }
+        return { out, padY, padX };
+      }
+      function cnnRelu(m) {
+        return m.map((r) => r.map((v) => Math.max(0, v)));
+      }
+      function cnnMaxPool2(m) {
+        const H = m.length,
+          W = m[0]?.length || 0,
+          oh = Math.floor(H / 2),
+          ow = Math.floor(W / 2);
+        const out = Array.from({ length: oh }, () => Array(ow).fill(0));
+        for (let y = 0; y < oh; y++)
+          for (let x = 0; x < ow; x++)
+            out[y][x] = Math.max(
+              m[2 * y][2 * x],
+              m[2 * y][2 * x + 1],
+              m[2 * y + 1][2 * x],
+              m[2 * y + 1][2 * x + 1],
+            );
+        return out;
+      }
+      function cnnRenderMatrix(m, cell) {
+        const vals = m.flat(),
+          mx = Math.max(0.001, ...vals.map(Math.abs));
+        let html = `<div class="cnn-grid" style="grid-template-columns:repeat(${m[0]?.length || 0},${cell}px)">`;
+        for (let y = 0; y < m.length; y++)
+          for (let x = 0; x < (m[0]?.length || 0); x++) {
+            const v = m[y][x],
+              nv = v / mx;
+            const bg =
+              nv >= 0
+                ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
+                : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
+            html += `<div class="cnn-cell static" style="width:${cell}px;height:${cell}px;background:${bg}" title="${v.toFixed(3)}"></div>`;
+          }
+        html += "</div>";
+        return html;
+      }
+
+      function cnnCompute() {
+        cnnStopAnim();
+        const stride = parseInt(document.getElementById("cnnStride").value);
+        const pad = document.getElementById("cnnPadding").value;
+        const useRelu = document.getElementById("cnnRelu").checked;
+        const usePool = document.getElementById("cnnPool").checked;
+        const { out } = cnnConv2d(CNN.grid, CNN.kernel, stride, pad);
+        const resEl = document.getElementById("cnnResults");
+        if (!out.length || !out[0]?.length) {
+          resEl.innerHTML =
+            '<span style="color:var(--red)">Dimensions invalides — réduisez le stride ou activez le padding "same".</span>';
+          return;
+        }
+        let feature = useRelu ? cnnRelu(out) : out;
+        let pooled =
+          usePool && feature.length >= 2 && feature[0].length >= 2
+            ? cnnMaxPool2(feature)
+            : null;
+
+        const n = CNN.size,
+          cell = n <= 8 ? 22 : n <= 10 ? 17 : 14;
+        let html = `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div><div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700">FEATURE MAP (${out.length}×${out[0].length})</div>${cnnRenderMatrix(feature, cell)}</div>`;
+        if (pooled)
+          html += `<div><div style="font-size:8px;color:var(--org);margin-bottom:4px;font-weight:700">APRÈS MAX-POOLING (${pooled.length}×${pooled[0].length})</div>${cnnRenderMatrix(pooled, 24)}</div>`;
+        html += "</div>";
+        html += `<div style="margin-top:8px;font-size:8px;color:var(--dim)">Entrée ${n}×${n} · Noyau 3×3 · Stride ${stride} · Padding ${pad === "same" ? "same" : "valide"} → sortie ${out.length}×${out[0].length}${useRelu ? " · ReLU appliqué" : ""}${pooled ? " · Max-pool 2×2" : ""}</div>`;
+        resEl.innerHTML = html;
+      }
+
+      function cnnToggleAnim() {
+        if (CNN.animTimer) {
+          cnnStopAnim();
+          return;
+        }
+        const stride = parseInt(document.getElementById("cnnStride").value);
+        const pad = document.getElementById("cnnPadding").value;
+        const H = CNN.size,
+          W = CNN.size;
+        const padY = pad === "same" ? 1 : 0,
+          padX = pad === "same" ? 1 : 0;
+        const PH = H + 2 * padY,
+          PW = W + 2 * padX;
+        const outH = Math.floor((PH - 3) / stride) + 1,
+          outW = Math.floor((PW - 3) / stride) + 1;
+        if (outH <= 0 || outW <= 0) return;
+        const positions = [];
+        for (let oy = 0; oy < outH; oy++)
+          for (let ox = 0; ox < outW; ox++) positions.push([oy, ox]);
+        CNN.animPos = -1;
+        document.getElementById("cnnAnimBtn").textContent = "⏹ Stop";
+        CNN.animTimer = setInterval(() => {
+          CNN.animPos++;
+          if (CNN.animPos >= positions.length) {
+            cnnCompute();
+            cnnStopAnim();
+            return;
+          }
+          const [oy, ox] = positions[CNN.animPos];
+          cnnRenderInputGrid();
+          const cells = document.getElementById("cnnInputGrid").children;
+          for (let ky = 0; ky < 3; ky++)
+            for (let kx = 0; kx < 3; kx++) {
+              const iy = oy * stride + ky - padY,
+                ix = ox * stride + kx - padX;
+              if (iy >= 0 && iy < H && ix >= 0 && ix < W)
+                cells[iy * W + ix]?.classList.add("hl");
+            }
+          document.getElementById("cnnResults").innerHTML =
+            `<div style="font-size:9px;color:var(--ylw)">Position ${CNN.animPos + 1}/${positions.length} — fenêtre du noyau en surbrillance sur l'entrée</div>`;
+        }, 350);
+      }
+      function cnnStopAnim() {
+        if (CNN.animTimer) {
+          clearInterval(CNN.animTimer);
+          CNN.animTimer = null;
+        }
+        const b = document.getElementById("cnnAnimBtn");
+        if (b) b.textContent = "▶ Animer pas-à-pas";
+      }
+
       // ════════════ 11. KEYBOARD SHORTCUTS ════════════
       document.addEventListener("keydown", (e) => {
         if (
@@ -12151,11 +12787,17 @@
         } else if (e.key === "h" || e.key === "H") {
           renderHeatmap();
         } else if (e.key === "Escape") {
-          ["boundary-modal-bg", "saveload-modal-bg", "race-modal-bg"].forEach(
-            (id) => document.getElementById(id)?.classList.remove("show"),
+          [
+            "boundary-modal-bg",
+            "saveload-modal-bg",
+            "race-modal-bg",
+            "cnn-modal-bg",
+          ].forEach((id) =>
+            document.getElementById(id)?.classList.remove("show"),
           );
           stopBoundaryLive();
           stopRace();
+          cnnStopAnim();
         }
       });
 

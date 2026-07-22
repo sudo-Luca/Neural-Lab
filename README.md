@@ -40,10 +40,6 @@ Built with **pure HTML + CSS + Vanilla JavaScript**.
 
 ## 🎥 See it in action
 
-<!-- Replace with your own GIF -->
-
-![Training animation](screenshots/training-demo.gif)
-
 Watch a neural network learn in real time:
 - neurons activating
 - weights changing
@@ -68,7 +64,8 @@ Features:
 ✅ Live neuron activation display  
 ✅ Weight visualisation  
 ✅ Bias inspection  
-✅ Interactive neuron and connection editing  
+✅ Interactive neuron and connection editing 
+✅ CNN lab
 
 
 ---
@@ -245,12 +242,12 @@ Neural-Lab/Neural-Lab-v12.html
 
 That's it.
 
-No installation.
+No dependencies.
 No build step.
 
 ---
 
-## Option 2 — Run locally
+## Option 2 — Try online
 
 Any modern browser works:
 
@@ -258,7 +255,10 @@ Any modern browser works:
 - Firefox
 - Edge
 - Safari
+- Opera
+- Opera GX
 
+Click [here](https://sudo-luca.github.io/Neural-Lab/Neural-Lab-v12.html) and enjoy your experience
 
 ---
 
@@ -303,6 +303,12 @@ y = sin(x)
 ```
 
 Watch the network learn a curve.
+
+---
+
+## CNN problems
+
+Learn about CNN with the CNN lab in tools tab
 
 ---
 

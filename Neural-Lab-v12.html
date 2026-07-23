@@ -2691,6 +2691,60 @@
       .cnn-cell.hl {
         outline: 2px solid var(--ylw);
         box-shadow: 0 0 6px rgba(255, 214, 0, 0.6);
+        position: relative;
+        z-index: 2;
+      }
+      .cnn-cell .kw {
+        font-size: 9px;
+        font-weight: 700;
+        text-shadow:
+          0 0 2px #000,
+          0 0 4px #000,
+          0 0 6px #000;
+      }
+      .cnn-cell.current {
+        outline: 2px solid var(--ylw);
+        box-shadow: 0 0 10px rgba(255, 214, 0, 0.75);
+        background: #10142a;
+        animation: pulse 0.6s infinite;
+      }
+      .cnn-cell.pending {
+        background: #0a0c18;
+        border: 1px dashed var(--brd);
+        opacity: 0.45;
+      }
+      .cnn-legend {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 8px;
+        color: var(--dim);
+        margin-top: 5px;
+      }
+      .cnn-legend .bar {
+        width: 70px;
+        height: 7px;
+        border-radius: 3px;
+        background: linear-gradient(
+          to right,
+          rgb(255, 0, 80),
+          #0a0c18,
+          rgb(0, 200, 100)
+        );
+        border: 1px solid var(--brd);
+      }
+      .cnn-formula {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--text);
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 7px 9px;
+        margin-top: 6px;
+        line-height: 1.7;
+        max-width: 320px;
+        word-break: break-word;
       }
       .cnn-kernel-input {
         width: 38px;
@@ -13855,9 +13909,15 @@
               4;
         return out;
       }
+      // Un chiffre entier s'affiche sans décimales (plus lisible pour les
+      // pixels binaires 0/1), sinon on garde 2 décimales.
+      function cnnNumFmt(v) {
+        return Number.isInteger(v) ? String(v) : v.toFixed(2);
+      }
       function cnnRenderMatrix(m, cell) {
         const vals = m.flat(),
           mx = Math.max(0.001, ...vals.map(Math.abs));
+        const showVal = cell >= 16;
         let html = `<div class="cnn-grid" style="grid-template-columns:repeat(${m[0]?.length || 0},${cell}px)">`;
         for (let y = 0; y < m.length; y++)
           for (let x = 0; x < (m[0]?.length || 0); x++) {
@@ -13867,10 +13927,19 @@
               nv >= 0
                 ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
                 : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
-            html += `<div class="cnn-cell static" style="width:${cell}px;height:${cell}px;background:${bg}" title="${v.toFixed(3)}"></div>`;
+            const label = showVal
+              ? v.toFixed(cell >= 22 ? 2 : 1)
+              : "";
+            html += `<div class="cnn-cell static" style="width:${cell}px;height:${cell}px;background:${bg};font-size:${cell >= 22 ? 8 : 7}px" title="${v.toFixed(3)}">${label}</div>`;
           }
         html += "</div>";
         return html;
+      }
+      // Légende de la palette de couleur (rouge = négatif, vert = positif),
+      // affichée sous les feature maps pour rendre le code couleur lisible
+      // sans avoir à survoler chaque cellule.
+      function cnnColorLegend(label) {
+        return `<div class="cnn-legend"><span>− fort</span><div class="bar"></div><span>fort +</span>${label ? `<span style="margin-left:6px">· ${label}</span>` : ""}</div>`;
       }
 
       function cnnCompute() {
@@ -13895,16 +13964,52 @@
         const n = CNN.size,
           cell = n <= 8 ? 22 : n <= 10 ? 17 : 14;
         let html = `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
-        <div><div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700" data-no-translate>FEATURE MAP (${out.length}×${out[0].length})</div>${cnnRenderMatrix(feature, cell)}</div>`;
+        <div><div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700" data-no-translate>FEATURE MAP (${out.length}×${out[0].length})</div>${cnnRenderMatrix(feature, cell)}${cnnColorLegend("intensité du pixel de sortie")}</div>`;
         if (pooled) {
           const poolLbl = poolMode === "avg" ? "MOYENNE" : "MAX";
-          html += `<div><div style="font-size:8px;color:var(--org);margin-bottom:4px;font-weight:700">APRÈS ${poolLbl}-POOLING (${pooled.length}×${pooled[0].length})</div>${cnnRenderMatrix(pooled, 24)}</div>`;
+          html += `<div><div style="font-size:8px;color:var(--org);margin-bottom:4px;font-weight:700">APRÈS ${poolLbl}-POOLING (${pooled.length}×${pooled[0].length})</div>${cnnRenderMatrix(pooled, 24)}${cnnColorLegend()}</div>`;
         }
         html += "</div>";
         html += `<div style="margin-top:8px;font-size:8px;color:var(--dim)">Entrée ${n}×${n} · Noyau 3×3 · Stride ${stride} · Padding ${pad === "same" ? "same" : "valide"} → sortie ${out.length}×${out[0].length}${useRelu ? " · ReLU appliqué" : ""}${pooled ? ` · ${poolMode === "avg" ? "Avg" : "Max"}-pool 2×2` : ""}</div>`;
         resEl.innerHTML = html;
       }
 
+      // Construit la feature map "en cours de calcul" : les cases déjà
+      // visitées par l'animation affichent leur vraie valeur (couleur +
+      // chiffre), la case courante pulse en jaune, et les cases futures
+      // restent grisées/pointillées — pour voir la carte se construire
+      // au même rythme que le noyau glisse sur l'entrée.
+      function cnnRenderProgressiveMatrix(m, useRelu, cell) {
+        const H = m.length,
+          W = m[0]?.length || 0;
+        const shown = m.map((row) =>
+          row.map((v) => (useRelu ? Math.max(0, v) : v)),
+        );
+        const mx = Math.max(0.001, ...shown.flat().map(Math.abs));
+        const showVal = cell >= 16;
+        let html = `<div class="cnn-grid" style="grid-template-columns:repeat(${W},${cell}px)">`;
+        let idx = -1;
+        for (let y = 0; y < H; y++)
+          for (let x = 0; x < W; x++) {
+            idx++;
+            if (idx < CNN.animPos) {
+              const v = shown[y][x],
+                nv = v / mx;
+              const bg =
+                nv >= 0
+                  ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
+                  : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
+              const label = showVal ? v.toFixed(cell >= 22 ? 2 : 1) : "";
+              html += `<div class="cnn-cell static" style="width:${cell}px;height:${cell}px;background:${bg};font-size:${cell >= 22 ? 8 : 7}px" title="${v.toFixed(3)}">${label}</div>`;
+            } else if (idx === CNN.animPos) {
+              html += `<div class="cnn-cell current" style="width:${cell}px;height:${cell}px"></div>`;
+            } else {
+              html += `<div class="cnn-cell pending" style="width:${cell}px;height:${cell}px"></div>`;
+            }
+          }
+        html += "</div>";
+        return html;
+      }
       function cnnToggleAnim() {
         if (CNN.animTimer) {
           cnnStopAnim();
@@ -13912,20 +14017,20 @@
         }
         const stride = parseInt(document.getElementById("cnnStride").value);
         const pad = document.getElementById("cnnPadding").value;
+        const useRelu = document.getElementById("cnnRelu").checked;
         const H = CNN.size,
           W = CNN.size;
-        const padY = pad === "same" ? 1 : 0,
-          padX = pad === "same" ? 1 : 0;
-        const PH = H + 2 * padY,
-          PW = W + 2 * padX;
-        const outH = Math.floor((PH - 3) / stride) + 1,
-          outW = Math.floor((PW - 3) / stride) + 1;
-        if (outH <= 0 || outW <= 0) return;
+        const { padded, padY, padX } = cnnPadInput(CNN.grid, 3, 3, pad);
+        const { out: fullOut } = cnnConv2d(CNN.grid, CNN.kernel, stride, pad);
+        if (!fullOut.length || !fullOut[0]?.length) return;
+        const outH = fullOut.length,
+          outW = fullOut[0].length;
         const positions = [];
         for (let oy = 0; oy < outH; oy++)
           for (let ox = 0; ox < outW; ox++) positions.push([oy, ox]);
         CNN.animPos = -1;
         document.getElementById("cnnAnimBtn").textContent = "⏹ Stop";
+        const outCell = W <= 8 ? 22 : W <= 10 ? 17 : 14;
         CNN.animTimer = setInterval(() => {
           CNN.animPos++;
           if (CNN.animPos >= positions.length) {
@@ -13936,21 +14041,46 @@
           const [oy, ox] = positions[CNN.animPos];
           cnnRenderInputGrid();
           const cells = document.getElementById("cnnInputGrid").children;
+          // Superpose chaque poids du noyau sur la cellule d'entrée qu'il
+          // multiplie, et construit la formule terme à terme en même temps.
+          const terms = [];
           for (let ky = 0; ky < 3; ky++)
             for (let kx = 0; kx < 3; kx++) {
-              const iy = oy * stride + ky - padY,
-                ix = ox * stride + kx - padX;
-              if (iy >= 0 && iy < H && ix >= 0 && ix < W)
-                cells[iy * W + ix]?.classList.add("hl");
+              const py = oy * stride + ky,
+                px = ox * stride + kx;
+              const iy = py - padY,
+                ix = px - padX;
+              const w = CNN.kernel[ky][kx];
+              const pv = padded[py][px];
+              terms.push(`${cnnNumFmt(pv)}×${cnnNumFmt(w)}`);
+              if (iy >= 0 && iy < H && ix >= 0 && ix < W) {
+                const c = cells[iy * W + ix];
+                if (c) {
+                  c.classList.add("hl");
+                  c.innerHTML = `<span class="kw" style="color:${w >= 0 ? "var(--grn)" : "var(--red)"}">${cnnNumFmt(w)}</span>`;
+                }
+              }
             }
-          document.getElementById("cnnResults").innerHTML =
-            `<div style="font-size:9px;color:var(--ylw)">Position ${CNN.animPos + 1}/${positions.length} — fenêtre du noyau en surbrillance sur l'entrée</div>`;
-        }, 350);
+          const raw = fullOut[oy][ox];
+          const activated = useRelu ? Math.max(0, raw) : raw;
+          const html = `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+            <div style="min-width:200px">
+              <div style="font-size:8px;color:var(--ylw);margin-bottom:4px;font-weight:700">CASE (${oy},${ox}) — ${CNN.animPos + 1}/${positions.length}</div>
+              <div class="cnn-formula">Σ = ${terms.join(" + ")}<br>Σ = <b style="color:${raw >= 0 ? "var(--grn)" : "var(--red)"}">${raw.toFixed(3)}</b>${useRelu ? ` → ReLU → <b style="color:var(--a1)">${activated.toFixed(3)}</b>` : ""}</div>
+            </div>
+            <div>
+              <div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700">FEATURE MAP (en construction)</div>
+              ${cnnRenderProgressiveMatrix(fullOut, useRelu, outCell)}
+            </div>
+          </div>`;
+          document.getElementById("cnnResults").innerHTML = html;
+        }, 550);
       }
       function cnnStopAnim() {
         if (CNN.animTimer) {
           clearInterval(CNN.animTimer);
           CNN.animTimer = null;
+          cnnRenderInputGrid();
         }
         const b = document.getElementById("cnnAnimBtn");
         if (b) b.textContent = "▶ Animer pas-à-pas";
@@ -13971,7 +14101,7 @@
         const useRelu = document.getElementById("cnnGalleryRelu")?.checked;
         const names = Object.keys(CNN_KERNELS).filter((k) => k !== "custom");
         const n = CNN.size,
-          cell = n <= 8 ? 14 : n <= 10 ? 11 : 9;
+          cell = n <= 8 ? 18 : n <= 10 ? 14 : 11;
         let html = "";
         names.forEach((name) => {
           const { out } = cnnConv2d(CNN.grid, CNN_KERNELS[name].k, 1, "valid");
@@ -13982,6 +14112,7 @@
             ${cnnRenderMatrix(feat, cell)}
           </div>`;
         });
+        html += cnnColorLegend();
         el.innerHTML = html;
       }
 
@@ -14084,6 +14215,7 @@
           html += `<div class="cnn-pipe-stage"><div class="stg-lbl">${s.label}</div>${cnnRenderMatrix(s.matrix, cell)}</div>`;
         });
         html += "</div>";
+        html += cnnColorLegend();
         if (blocked) {
           html += `<div style="margin-top:10px;color:var(--red);font-size:9px">❌ Carte de features trop petite pour ajouter une couche supplémentaire — augmentez la taille de l'image d'entrée ou retirez une couche.</div>`;
         }
@@ -14226,6 +14358,7 @@
             )}
             <h3 style="margin-top:8px">Carte cible</h3>
             ${cnnRenderMatrix(CNN_TRAIN.target, cell)}
+            ${cnnColorLegend()}
           </div>
           <div class="cnn-train-col">
             <h3>Perte (MSE)</h3>

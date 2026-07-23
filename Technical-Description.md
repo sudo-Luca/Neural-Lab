@@ -674,7 +674,7 @@ Called every 400 ms via `setInterval`. Copies the epoch and loss text content fr
 Tip to have **hotreload** (*nodejs* must be installed)
 
 ```bash
-npx live-serveer .
+npx live-server .
 ```
 
 ---

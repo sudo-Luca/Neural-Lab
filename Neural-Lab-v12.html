@@ -2636,7 +2636,7 @@
         background: var(--p1);
         border: 1px solid var(--a1);
         border-radius: 8px;
-        max-width: 780px;
+        max-width: 900px;
         width: 96%;
         max-height: 92vh;
         overflow-y: auto;
@@ -2691,6 +2691,60 @@
       .cnn-cell.hl {
         outline: 2px solid var(--ylw);
         box-shadow: 0 0 6px rgba(255, 214, 0, 0.6);
+        position: relative;
+        z-index: 2;
+      }
+      .cnn-cell .kw {
+        font-size: 9px;
+        font-weight: 700;
+        text-shadow:
+          0 0 2px #000,
+          0 0 4px #000,
+          0 0 6px #000;
+      }
+      .cnn-cell.current {
+        outline: 2px solid var(--ylw);
+        box-shadow: 0 0 10px rgba(255, 214, 0, 0.75);
+        background: #10142a;
+        animation: pulse 0.6s infinite;
+      }
+      .cnn-cell.pending {
+        background: #0a0c18;
+        border: 1px dashed var(--brd);
+        opacity: 0.45;
+      }
+      .cnn-legend {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 8px;
+        color: var(--dim);
+        margin-top: 5px;
+      }
+      .cnn-legend .bar {
+        width: 70px;
+        height: 7px;
+        border-radius: 3px;
+        background: linear-gradient(
+          to right,
+          rgb(255, 0, 80),
+          #0a0c18,
+          rgb(0, 200, 100)
+        );
+        border: 1px solid var(--brd);
+      }
+      .cnn-formula {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--text);
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 7px 9px;
+        margin-top: 6px;
+        line-height: 1.7;
+        max-width: 320px;
+        word-break: break-word;
       }
       .cnn-kernel-input {
         width: 38px;
@@ -2698,6 +2752,340 @@
         font-size: 9px;
         text-align: center;
         padding: 2px;
+      }
+      #cnn-body .tabs {
+        margin: 0 0 12px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .cnn-gallery-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .cnn-gallery-item {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 6px;
+        text-align: center;
+      }
+      .cnn-pipe-layer {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 8px 10px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .cnn-pipe-layer .lbl {
+        font-size: 8px;
+        color: var(--a1);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        min-width: 54px;
+      }
+      .cnn-pipe-layer select {
+        width: auto;
+        min-width: 150px;
+        flex: 1;
+      }
+      .cnn-pipe-stage {
+        text-align: center;
+      }
+      .cnn-pipe-stage .stg-lbl {
+        font-size: 8px;
+        color: var(--dim);
+        margin-bottom: 4px;
+        max-width: 110px;
+      }
+      .cnn-pipe-arrow {
+        align-self: center;
+        color: var(--a2);
+        font-size: 16px;
+      }
+      .cnn-train-col {
+        flex: 1;
+        min-width: 200px;
+      }
+      .cnn-train-col h3 {
+        font-size: 8px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 5px;
+        font-weight: 700;
+      }
+      .cnn-loss-box {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 8px 10px;
+      }
+      /* ══════════ RNN LAB ══════════ */
+      #rnn-modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 1500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #rnn-modal-bg.show {
+        display: flex;
+      }
+      #rnn-modal {
+        background: var(--p1);
+        border: 1px solid var(--a2);
+        border-radius: 8px;
+        max-width: 920px;
+        width: 96%;
+        max-height: 92vh;
+        overflow-y: auto;
+        box-shadow: 0 0 40px rgba(191, 95, 255, 0.15);
+      }
+      #rnn-header {
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--brd);
+        background: linear-gradient(135deg, var(--p1), var(--p2));
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #rnn-header h2 {
+        font-family: "Syne", sans-serif;
+        color: var(--a2);
+        font-size: 14px;
+        flex: 1;
+      }
+      #rnn-body {
+        padding: 14px 18px;
+      }
+      #rnn-body .tabs {
+        margin: 0 0 12px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      #rnn-footer {
+        padding: 10px 18px;
+        border-top: 1px solid var(--brd);
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .rnn-strip {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 3px;
+      }
+      .rnn-step {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 6px 7px;
+        text-align: center;
+        min-width: 58px;
+        flex-shrink: 0;
+        transition: 0.15s;
+      }
+      .rnn-step.active {
+        border-color: var(--ylw);
+        box-shadow: 0 0 8px rgba(255, 214, 0, 0.4);
+      }
+      .rnn-step .t-lbl {
+        font-size: 7px;
+        color: var(--dim);
+        margin-bottom: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .rnn-step .t-x {
+        font-size: 10px;
+        color: var(--a2);
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .rnn-step .t-h {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .rnn-step .t-h span {
+        font-size: 8px;
+        padding: 1px 3px;
+        border-radius: 2px;
+        color: #fff;
+      }
+      .rnn-arrow {
+        align-self: center;
+        color: var(--a2);
+        font-size: 13px;
+        flex-shrink: 0;
+      }
+      .rnn-gate-box {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        font-size: 9px;
+        line-height: 1.7;
+        color: var(--text);
+      }
+      .rnn-gate-box b {
+        color: var(--a2);
+      }
+      .rnn-verdict {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-weight: 700;
+        font-size: 10px;
+        letter-spacing: 0.04em;
+      }
+      /* ── diagramme de cellule ── */
+      .rnn-diagram-wrap {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+      }
+      .rnn-dbox {
+        fill: #0a0d1a;
+        stroke: var(--brd);
+        stroke-width: 1;
+      }
+      .rnn-dbox.x {
+        stroke: var(--a1);
+      }
+      .rnn-dbox.h {
+        stroke: var(--a2);
+      }
+      .rnn-dbox.cell {
+        fill: #12081f;
+        stroke: var(--ylw);
+        stroke-width: 1.4;
+      }
+      .rnn-dtext {
+        fill: var(--text);
+        font-size: 9px;
+        font-family: "JetBrains Mono", monospace;
+        text-anchor: middle;
+      }
+      .rnn-dtext.lbl {
+        fill: var(--dim);
+        font-size: 7px;
+        letter-spacing: 0.05em;
+      }
+      .rnn-flow-line {
+        fill: none;
+        stroke: var(--brd);
+        stroke-width: 1.6;
+        marker-end: url(#rnnArrow);
+        transition: stroke 0.2s;
+      }
+      .rnn-flow-line.active {
+        stroke: var(--ylw);
+        stroke-dasharray: 5 4;
+        animation: rnnFlowDash 0.6s linear infinite;
+      }
+      @keyframes rnnFlowDash {
+        to {
+          stroke-dashoffset: -18;
+        }
+      }
+      .rnn-loop-line {
+        fill: none;
+        stroke: var(--a2);
+        stroke-width: 1.2;
+        stroke-dasharray: 3 3;
+        marker-end: url(#rnnArrowDim);
+        opacity: 0.7;
+      }
+      /* ── swatch (mini heatmap d'un vecteur) ── */
+      .rnn-vecswatch {
+        display: inline-flex;
+        gap: 1px;
+        vertical-align: middle;
+      }
+      .rnn-vecswatch span {
+        width: 12px;
+        height: 12px;
+        border-radius: 1px;
+        display: inline-block;
+      }
+      /* ── heatmap temporelle (unités × pas de temps) ── */
+      .rnn-heatmap {
+        display: inline-block;
+        border-collapse: collapse;
+      }
+      .rnn-heatmap-row {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 2px;
+      }
+      .rnn-heatmap-cell {
+        width: 30px;
+        height: 18px;
+        border-radius: 2px;
+        font-size: 7px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .rnn-heatmap-lbl {
+        width: 30px;
+        font-size: 7px;
+        color: var(--dim);
+        text-align: center;
+        flex-shrink: 0;
+      }
+      /* ── chaîne de gradient (mémoire & gradients) ── */
+      .rnn-chain-wrap {
+        display: flex;
+        align-items: center;
+        overflow-x: auto;
+        padding: 10px 4px;
+      }
+      .rnn-chain-node {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 7px;
+        color: #fff;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .rnn-chain-arrow {
+        height: 2px;
+        flex-shrink: 0;
+        min-width: 14px;
+        border-radius: 1px;
+      }
+      /* ── heatmaps de poids (onglet Entraîner) ── */
+      .rnn-wmap {
+        display: inline-block;
+        line-height: 0;
+      }
+      .rnn-wmap-row {
+        display: flex;
+      }
+      .rnn-wmap-cell {
+        display: block;
       }
       .racer {
         background: #030408;
@@ -4411,17 +4799,51 @@
                   font-weight: 700;
                 "
               >
-                🧩 Expérimentation CNN (Convolution)
+                🧩 Labo CNN (Convolution)
               </div>
               <div
                 style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
               >
-                Dessinez une image, appliquez un noyau de convolution (Sobel,
-                flou, netteté…) et observez la feature map — la brique de base
-                des réseaux convolutifs
+                Convolution pas-à-pas, galerie comparant tous les filtres,
+                pipeline multi-couches avec champ réceptif, et entraînement
+                d'un noyau par descente de gradient
               </div>
               <button class="btn ok" onclick="openCNNLab()" style="width: 100%">
                 🧠 Ouvrir le labo CNN
+              </button>
+            </div>
+
+            <div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--a2);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--a2);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🔁 Labo RNN (Récurrent)
+              </div>
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
+              >
+                Cellule récurrente pas-à-pas, déroulement dans le temps avec
+                trace de mémoire, démonstration du vanishing/exploding
+                gradient, et entraînement réel (BPTT) d'un mini-RNN
+                caractère-par-caractère
+              </div>
+              <button class="btn on" onclick="openRNNLab()" style="width: 100%">
+                🔁 Ouvrir le labo RNN
               </button>
             </div>
 
@@ -9512,6 +9934,7 @@
           "\\dfrac{\\partial L}{\\partial w} = \\underbrace{\\dfrac{\\partial L}{\\partial a}}_{\\delta} \\cdot \\underbrace{\\dfrac{\\partial a}{\\partial z}}_{f'(z)} \\cdot \\underbrace{\\dfrac{\\partial z}{\\partial w}}_{a_{\\text{prev}}}",
         wgrad: "\\dfrac{\\partial L}{\\partial w_{ij}} = \\delta_j \\cdot a_i",
         drop: "\\tilde{a}_k = \\dfrac{a_k}{p} \\cdot m_k,\\quad m_k\\sim\\text{Bernoulli}(p)",
+        gap: "\\dfrac{\\partial L}{\\partial x(i,j,c)} = \\dfrac{\\delta_c}{H\\cdot W}",
       };
 
       // ── Extra constructive info for loss functions ──
@@ -9591,6 +10014,39 @@
           "\\mathbf{a} = f(\\mathbf{W}\\mathbf{a}_{\\text{prev}} + \\mathbf{b})",
         universal:
           "\\forall\\varepsilon>0,\\;\\exists N \\text{ t.q. }|f(x)-\\text{NN}(x)|<\\varepsilon",
+        // ── RNN ──
+        rnncell:
+          "h_t = \\tanh(W_{xh}\\,x_t + W_{hh}\\,h_{t-1} + b_h)",
+        rnnout: "\\hat{y}_t = \\text{softmax}(W_{hy}\\,h_t + b_y)",
+        rnnloss: "L = \\sum_{t=1}^{T} L_t(\\hat{y}_t,\\, y_t)",
+        bptt:
+          "\\dfrac{\\partial L}{\\partial h_t} = \\dfrac{\\partial L_t}{\\partial h_t} + W_{hh}^{\\top}\\dfrac{\\partial L}{\\partial h_{t+1}}\\odot\\tanh'(z_{t+1})",
+        rnnvanish:
+          "\\dfrac{\\partial h_T}{\\partial h_1} = \\prod_{t=2}^{T} W_{hh}^{\\top}\\,\\text{diag}\\big(\\tanh'(z_t)\\big)",
+        lstm:
+          "\\begin{aligned} f_t &= \\sigma(W_f[h_{t-1},x_t]+b_f) \\\\ i_t &= \\sigma(W_i[h_{t-1},x_t]+b_i) \\\\ \\tilde{C}_t &= \\tanh(W_C[h_{t-1},x_t]+b_C) \\\\ C_t &= f_t \\odot C_{t-1} + i_t \\odot \\tilde{C}_t \\\\ o_t &= \\sigma(W_o[h_{t-1},x_t]+b_o) \\\\ h_t &= o_t \\odot \\tanh(C_t) \\end{aligned}",
+        gru:
+          "\\begin{aligned} z_t &= \\sigma(W_z[h_{t-1},x_t]) \\\\ r_t &= \\sigma(W_r[h_{t-1},x_t]) \\\\ \\tilde{h}_t &= \\tanh(W[r_t \\odot h_{t-1},\\,x_t]) \\\\ h_t &= (1-z_t)\\odot h_{t-1} + z_t \\odot \\tilde{h}_t \\end{aligned}",
+        // ── CNN ──
+        conv2d:
+          "S(i,j) = \\sum_{m}\\sum_{n} I(i+m,\\,j+n)\\,K(m,n) + b",
+        convout:
+          "N_{\\text{out}} = \\left\\lfloor \\dfrac{N + 2p - k}{s} \\right\\rfloor + 1",
+        maxpool:
+          "y(i,j) = \\max_{(m,n)\\in R} x(i\\cdot s+m,\\; j\\cdot s+n)",
+        avgpool:
+          "y(i,j) = \\dfrac{1}{|R|}\\sum_{(m,n)\\in R} x(i\\cdot s+m,\\; j\\cdot s+n)",
+        recfield:
+          "RF_l = RF_{l-1} + (k_l - 1)\\prod_{i<l} s_i",
+        convparams:
+          "N_{\\text{param}} = (k_h \\times k_w \\times C_{\\text{in}} + 1)\\times C_{\\text{out}}",
+        padsame: "p = \\left\\lfloor \\dfrac{k-1}{2} \\right\\rfloor",
+        conv1x1:
+          "S(i,j) = \\sum_{c=1}^{C_{\\text{in}}} I(i,j,c)\\,K(c) + b",
+        dilconv:
+          "N_{\\text{out}} = \\left\\lfloor \\dfrac{N + 2p - d(k-1) - 1}{s} \\right\\rfloor + 1",
+        tconv: "N_{\\text{out}} = (N-1)\\cdot s - 2p + k",
+        gap: "y_c = \\dfrac{1}{H\\cdot W}\\sum_{i=1}^{H}\\sum_{j=1}^{W} x(i,j,c)",
       };
       // Helper: render formula with KaTeX if available, fallback to renderMathEq
       function renderEqAuto(f, display) {
@@ -10013,6 +10469,260 @@
           deriv: "—",
           kw: "universal approximation theorem power mlp",
         },
+        // ══════════ RNN ══════════
+        {
+          id: "rnncell",
+          cat: "RNN",
+          sub: "Cellule",
+          name: "Cellule RNN simple (Elman)",
+          eq: "h(t) = tanh(Wxh·x(t) + Whh·h(t−1) + bh)",
+          tags: ["rnn", "cellule", "récurrent", "mémoire"],
+          range: "h(t) ∈ (−1,1)",
+          desc: "À chaque pas de temps, combine l'entrée courante x(t) et l'état caché précédent h(t−1) avec les mêmes poids partagés : c'est cette boucle qui donne au réseau une mémoire des pas précédents.",
+          pros: ["Mémoire séquentielle", "Poids partagés dans le temps"],
+          cons: ["Vanishing/exploding gradient sur longues séquences"],
+          deriv: "∂h(t)/∂h(t−1) = diag(1−h(t)²)·Whh",
+          kw: "elman recurrent cell hidden state memory rnn sequence",
+        },
+        {
+          id: "rnnout",
+          cat: "RNN",
+          sub: "Cellule",
+          name: "Sortie d'un RNN",
+          eq: "ŷ(t) = softmax(Why·h(t) + by)",
+          tags: ["rnn", "sortie", "softmax"],
+          range: "(0,1), somme = 1",
+          desc: "L'état caché h(t) est projeté vers l'espace de sortie à chaque pas de temps, par ex. une distribution de probabilité sur le prochain caractère ou mot.",
+          pros: ["Une sortie possible à chaque pas de temps"],
+          cons: ["Dépend entièrement de la qualité de h(t)"],
+          deriv: "—",
+          kw: "rnn output softmax prediction sequence",
+        },
+        {
+          id: "rnnloss",
+          cat: "RNN",
+          sub: "Entraînement",
+          name: "Perte totale d'une séquence",
+          eq: "L = Σ (t=1→T) L(t)( ŷ(t), y(t) )",
+          tags: ["rnn", "perte", "séquence", "bptt"],
+          range: "—",
+          desc: "La perte d'un RNN est la somme (ou moyenne) des pertes à chaque pas de temps de la séquence entière : le réseau est évalué sur toute la séquence, pas juste sur la fin.",
+          pros: ["Supervision à chaque pas de temps"],
+          cons: ["Coût mémoire proportionnel à la longueur de la séquence"],
+          deriv: "—",
+          kw: "sequence loss total rnn training sum timesteps",
+        },
+        {
+          id: "bptt",
+          cat: "RNN",
+          sub: "Entraînement",
+          name: "Rétropropagation dans le temps (BPTT)",
+          eq: "∂L/∂h(t) = ∂L(t)/∂h(t) + Whhᵀ·(∂L/∂h(t+1))⊙tanh'(z(t+1))",
+          tags: ["rnn", "bptt", "backprop", "gradient"],
+          range: "—",
+          desc: "On « déplie » le RNN sur T pas de temps, comme un réseau profond de T couches à poids partagés, puis on rétropropage l'erreur de la fin vers le début de la séquence.",
+          pros: ["Exact", "Réutilise le principe du backprop classique"],
+          cons: ["Coûteux sur longues séquences (souvent tronqué en pratique)"],
+          deriv: "Somme récursive sur t = T, T−1, …, 1",
+          kw: "backpropagation through time bptt gradient rnn unroll",
+        },
+        {
+          id: "rnnvanish",
+          cat: "RNN",
+          sub: "Entraînement",
+          name: "Vanishing / exploding gradient",
+          eq: "∂h(T)/∂h(1) = Π (t=2→T) Whhᵀ·diag(tanh'(z(t)))",
+          tags: ["rnn", "vanishing", "exploding", "gradient"],
+          range: "—",
+          desc: "Le gradient remonte le temps via un produit de T termes. Si ce produit est <1, il s'évanouit et le réseau « oublie » les pas lointains ; si >1, il explose. C'est le problème central des RNN simples sur longues séquences.",
+          pros: ["Explique précisément le comportement observé"],
+          cons: ["Aucune solution intrinsèque au RNN simple (→ LSTM/GRU)"],
+          deriv: "|tanh'(z)| ≤ 1, donc le produit tend vers 0 si ‖Whh‖ < 1",
+          kw: "vanishing exploding gradient long term dependency rnn problem",
+        },
+        {
+          id: "lstm",
+          cat: "RNN",
+          sub: "Variantes à portes",
+          name: "LSTM",
+          eq: "f=σ(Wf[h,x]+bf)  i=σ(Wi[h,x]+bi)\nC̃=tanh(Wc[h,x]+bc)  C(t)=f⊙C(t−1)+i⊙C̃\no=σ(Wo[h,x]+bo)  h(t)=o⊙tanh(C(t))",
+          tags: ["lstm", "portes", "mémoire long terme", "rnn"],
+          range: "—",
+          desc: "Ajoute une cellule mémoire C(t) et 3 portes (oubli f, entrée i, sortie o) qui contrôlent additivement ce qu'on garde, oublie ou expose. Le chemin additif de C(t) limite fortement le vanishing gradient.",
+          pros: ["Mémoire longue portée", "Combat le vanishing gradient"],
+          cons: ["4× plus de paramètres qu'un RNN simple", "Plus lent"],
+          deriv: "—",
+          kw: "lstm long short term memory gates forget input output cell",
+        },
+        {
+          id: "gru",
+          cat: "RNN",
+          sub: "Variantes à portes",
+          name: "GRU",
+          eq: "z=σ(Wz[h,x])  r=σ(Wr[h,x])\nh̃=tanh(W[r⊙h,x])\nh(t)=(1−z)⊙h(t−1)+z⊙h̃",
+          tags: ["gru", "portes", "mémoire", "rnn"],
+          range: "—",
+          desc: "Version simplifiée du LSTM : fusionne cellule et état caché, utilise seulement 2 portes (mise à jour z, reset r). Souvent aussi performant que le LSTM avec moins de paramètres.",
+          pros: ["Moins de paramètres que LSTM", "Rapide à entraîner"],
+          cons: ["Un peu moins expressif que LSTM sur certaines tâches"],
+          deriv: "—",
+          kw: "gru gated recurrent unit update reset gate rnn",
+        },
+        // ══════════ CNN ══════════
+        {
+          id: "conv2d",
+          cat: "CNN",
+          sub: "Convolution",
+          name: "Convolution 2D",
+          eq: "S(i,j) = ΣΣ I(i+m,j+n)·K(m,n) + b",
+          tags: ["cnn", "convolution", "kernel", "filtre"],
+          range: "—",
+          desc: "Fait glisser un noyau (kernel) sur l'image et calcule une somme pondérée locale à chaque position : détecte contours, textures et motifs.",
+          pros: ["Partage de poids", "Peu de paramètres", "Invariance par translation"],
+          cons: ["Champ réceptif local (nécessite de la profondeur)"],
+          deriv: "∂L/∂K(m,n) = ΣΣ δ(i,j)·I(i+m,j+n)",
+          kw: "convolution kernel filter feature map cnn slide",
+        },
+        {
+          id: "convout",
+          cat: "CNN",
+          sub: "Dimensionnement",
+          name: "Taille de sortie",
+          eq: "N_sortie = ⌊(N + 2p − k) / s⌋ + 1",
+          tags: ["cnn", "dimension", "stride", "padding"],
+          range: "—",
+          desc: "N = taille d'entrée, p = padding, k = taille du noyau, s = stride. Détermine la taille de la feature map produite par une couche de convolution ou de pooling.",
+          pros: ["Prévisible", "Contrôle la profondeur du réseau"],
+          cons: ["La carte rétrécit vite sans padding"],
+          deriv: "—",
+          kw: "output size stride padding formula cnn",
+        },
+        {
+          id: "maxpool",
+          cat: "CNN",
+          sub: "Pooling",
+          name: "Max pooling",
+          eq: "y(i,j) = max (m,n)∈fenêtre x(i·s+m, j·s+n)",
+          tags: ["cnn", "pooling", "sous-échantillonnage"],
+          range: "—",
+          desc: "Garde la valeur maximale de chaque fenêtre : réduit la dimension, apporte une invariance aux petites translations et met en avant les activations fortes.",
+          pros: ["Réduit le calcul", "Invariance translation", "Pas de paramètres"],
+          cons: ["Perd l'information fine"],
+          deriv: "∂L/∂x = δ uniquement sur l'argmax, 0 ailleurs",
+          kw: "max pooling downsampling subsampling cnn",
+        },
+        {
+          id: "avgpool",
+          cat: "CNN",
+          sub: "Pooling",
+          name: "Average pooling",
+          eq: "y(i,j) = (1/|fenêtre|) Σ x(i·s+m, j·s+n)",
+          tags: ["cnn", "pooling", "moyenne"],
+          range: "—",
+          desc: "Moyenne les valeurs de la fenêtre au lieu du max : lissage plus doux, souvent utilisé en global average pooling avant la couche de sortie.",
+          pros: ["Lisse", "Toutes les activations comptent"],
+          cons: ["Dilue les activations fortes"],
+          deriv: "∂L/∂x = δ/|fenêtre| répartie sur toute la fenêtre",
+          kw: "average pooling downsampling smoothing cnn",
+        },
+        {
+          id: "recfield",
+          cat: "CNN",
+          sub: "Dimensionnement",
+          name: "Champ réceptif",
+          eq: "RFₗ = RFₗ₋₁ + (kₗ − 1)·Π s_i (i<l)",
+          tags: ["cnn", "champ réceptif", "profondeur"],
+          range: "—",
+          desc: "Zone de l'image d'entrée qui influence un neurone donné. Grandit avec la profondeur du réseau et le stride des couches précédentes — c'est pourquoi empiler des couches capture un contexte de plus en plus large.",
+          pros: ["Justifie la profondeur du réseau"],
+          cons: ["Calcul cumulatif, pas toujours intuitif"],
+          deriv: "—",
+          kw: "receptive field depth stack layers cnn",
+        },
+        {
+          id: "convparams",
+          cat: "CNN",
+          sub: "Dimensionnement",
+          name: "Paramètres d'une couche conv",
+          eq: "N_param = (kh × kw × Cin + 1) × Cout",
+          tags: ["cnn", "paramètres", "poids"],
+          range: "—",
+          desc: "Nombre de poids appris par une couche convolutive : bien plus léger qu'une couche dense équivalente grâce au partage de poids (le même noyau glisse sur toute l'image).",
+          pros: ["Très économe en paramètres vs dense"],
+          cons: ["Augmente avec Cin × Cout"],
+          deriv: "—",
+          kw: "parameters count weight sharing cnn",
+        },
+        {
+          id: "padsame",
+          cat: "CNN",
+          sub: "Dimensionnement",
+          name: "Padding « same »",
+          eq: "p = ⌊(k − 1) / 2⌋",
+          tags: ["cnn", "padding", "dimension", "same"],
+          range: "—",
+          desc: "Quantité de zéros à ajouter de chaque côté de l'entrée pour que la sortie garde la même taille spatiale que l'entrée (avec stride=1) — le mode « Same » du Labo CNN, par opposition au padding « valide » (p=0).",
+          pros: ["Préserve la résolution spatiale entre les couches", "Évite de perdre l'information des bords"],
+          cons: ["Calcule sur des zéros artificiels", "Léger biais près des bordures"],
+          deriv: "—",
+          kw: "same padding preserve size zero pad valid cnn",
+        },
+        {
+          id: "conv1x1",
+          cat: "CNN",
+          sub: "Convolution",
+          name: "Convolution 1×1",
+          eq: "S(i,j) = Σc I(i,j,c)·K(c) + b",
+          tags: ["cnn", "convolution", "1x1", "bottleneck", "pointwise"],
+          range: "—",
+          desc: "Un noyau 1×1 ne regarde qu'un seul pixel à la fois mais combine tous ses canaux : il ne capte aucune information spatiale, il sert uniquement à changer la profondeur (nombre de canaux) à moindre coût — bottleneck (ResNet), réduction de dimension (Inception).",
+          pros: ["Très peu coûteux en calcul", "Mélange les canaux entre eux", "Ajuste la profondeur à volonté"],
+          cons: ["Aucune information spatiale captée à elle seule"],
+          deriv: "—",
+          kw: "pointwise 1x1 bottleneck channel mixing inception resnet",
+        },
+        {
+          id: "dilconv",
+          cat: "CNN",
+          sub: "Dimensionnement",
+          name: "Convolution dilatée (atrous)",
+          eq: "N_sortie = ⌊(N + 2p − d(k−1) − 1) / s⌋ + 1",
+          tags: ["cnn", "dilatation", "atrous", "champ réceptif", "dimension"],
+          range: "—",
+          desc: "Le taux de dilatation d espace les poids du noyau (des « trous » entre eux) : agrandit le champ réceptif sans ajouter de paramètres ni réduire la résolution de la carte de features — utilisé en segmentation sémantique (DeepLab).",
+          pros: ["Champ réceptif plus large sans plus de paramètres", "Pas de perte de résolution"],
+          cons: ["Peut créer un effet de grille (gridding artifacts)"],
+          deriv: "—",
+          kw: "dilated atrous rate receptive field deeplab segmentation",
+        },
+        {
+          id: "tconv",
+          cat: "CNN",
+          sub: "Convolution",
+          name: "Convolution transposée",
+          eq: "N_sortie = (N − 1)·s − 2p + k",
+          tags: ["cnn", "transposée", "déconvolution", "upsampling"],
+          range: "—",
+          desc: "Opération inverse de la convolution classique : au lieu de réduire la carte de features, elle l'agrandit. Utilisée pour le suréchantillonnage appris — segmentation, autoencodeurs, générateurs de GAN.",
+          pros: ["Apprend l'agrandissement (contrairement à une simple interpolation)"],
+          cons: ["Peut produire un effet de damier (checkerboard artifacts)"],
+          deriv: "—",
+          kw: "transposed deconvolution upsampling gan segmentation checkerboard",
+        },
+        {
+          id: "gap",
+          cat: "CNN",
+          sub: "Pooling",
+          name: "Global Average Pooling",
+          eq: "y_c = (1/(H·W)) ΣΣ x(i,j,c)",
+          tags: ["cnn", "pooling", "global average pooling", "gap"],
+          range: "—",
+          desc: "Réduit chaque carte de features entière à une seule valeur (sa moyenne sur tout H×W) : remplace souvent les couches denses finales d'un CNN (ResNet, MobileNet) → beaucoup moins de paramètres et moins de surapprentissage.",
+          pros: ["Élimine les couches denses finales", "Beaucoup moins de paramètres", "Réduit le surapprentissage"],
+          cons: ["Perd la localisation spatiale fine"],
+          deriv: "∂L/∂x(i,j,c) = δc / (H·W)",
+          kw: "global average pooling resnet mobilenet parameter reduction",
+        },
       ];
       // ── Math rendering for formula library ──
       function renderMathEq(eq) {
@@ -10125,6 +10835,8 @@
           Métriques: "📊",
           Initialisation: "🎲",
           Architectures: "🏗",
+          RNN: "🔁",
+          CNN: "🧩",
         };
         let html = "";
         for (const cat in byCat) {
@@ -10308,6 +11020,36 @@
             sym: "f'(z)",
             desc: "Dérivée de l'activation",
             keys: ["backprop", "gradient", "fondamental"],
+          },
+          {
+            sym: "I(i,j) / K(m,n)",
+            desc: "Pixel de l'entrée / poids du noyau (kernel)",
+            keys: ["cnn"],
+          },
+          {
+            sym: "k",
+            desc: "Taille du noyau (ex. 3 pour un noyau 3×3)",
+            keys: ["cnn"],
+          },
+          {
+            sym: "s",
+            desc: "Stride — pas de déplacement du noyau/de la fenêtre",
+            keys: ["cnn"],
+          },
+          {
+            sym: "p",
+            desc: "Padding — bordure de zéros ajoutée autour de l'entrée",
+            keys: ["cnn"],
+          },
+          {
+            sym: "N / N_sortie",
+            desc: "Taille spatiale de l'entrée / de la sortie",
+            keys: ["cnn"],
+          },
+          {
+            sym: "Cin / Cout",
+            desc: "Nombre de canaux d'entrée / de sortie",
+            keys: ["cnn"],
           },
         ];
         const relevant = allSym.filter((s) =>
@@ -11364,7 +12106,7 @@
     <div id="cnn-modal-bg">
       <div id="cnn-modal">
         <div id="cnn-header">
-          <h2>🧩 Labo CNN — Convolution</h2>
+          <h2>🧩 Labo CNN</h2>
           <button class="btn" onclick="closeCNNLab()">✕</button>
         </div>
         <div id="cnn-body">
@@ -11374,6 +12116,38 @@
             la brique de base des CNN (réseaux de neurones convolutifs).
           </div>
 
+          <div class="tabs">
+            <div
+              class="tab active"
+              id="cnntab-btn-conv"
+              onclick="cnnShowTab('conv')"
+            >
+              Convolution
+            </div>
+            <div
+              class="tab"
+              id="cnntab-btn-gallery"
+              onclick="cnnShowTab('gallery')"
+            >
+              Galerie de filtres
+            </div>
+            <div
+              class="tab"
+              id="cnntab-btn-pipe"
+              onclick="cnnShowTab('pipe')"
+            >
+              Pipeline multi-couches
+            </div>
+            <div
+              class="tab"
+              id="cnntab-btn-train"
+              onclick="cnnShowTab('train')"
+            >
+              Entraîner un noyau
+            </div>
+          </div>
+
+          <div class="tc show" id="cnntab-conv">
           <div
             style="
               display: flex;
@@ -11513,16 +12287,14 @@
               "
               ><input type="checkbox" id="cnnRelu" /> ReLU</label
             >
-            <label
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                color: var(--dim);
-              "
-              ><input type="checkbox" id="cnnPool" /> Max Pooling 2×2</label
-            >
+            <div style="display: flex; align-items: center; gap: 5px">
+              <span style="font-size: 9px; color: var(--dim)">Pooling</span>
+              <select id="cnnPoolMode" style="font-size: 9px; width: 100px">
+                <option value="none">Aucun</option>
+                <option value="max">Max 2×2</option>
+                <option value="avg">Moyenne 2×2</option>
+              </select>
+            </div>
           </div>
 
           <div class="btn-row" style="margin-bottom: 10px">
@@ -11537,6 +12309,136 @@
           <div id="cnnResults" style="font-size: 9px; color: var(--dim)">
             Dessinez une image et cliquez sur « Calculer ».
           </div>
+          </div>
+
+          <div class="tc" id="cnntab-gallery">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Applique les 7 noyaux prédéfinis à l'image d'entrée en même
+              temps, pour comparer d'un coup d'œil ce que détecte chaque
+              filtre (contours, flou, relief…). Dessinez l'image dans
+              l'onglet « Convolution », puis revenez ici.
+            </div>
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 9px;
+                color: var(--dim);
+                margin-bottom: 10px;
+              "
+              ><input
+                type="checkbox"
+                id="cnnGalleryRelu"
+                onchange="cnnGalleryRender()"
+              />
+              Appliquer ReLU sur chaque filtre</label
+            >
+            <div class="btn-row" style="margin-bottom: 10px">
+              <button class="btn ok" onclick="cnnGalleryRender()">
+                🔄 Régénérer la galerie
+              </button>
+            </div>
+            <div id="cnnGalleryGrid" class="cnn-gallery-grid"></div>
+          </div>
+
+          <div class="tc" id="cnntab-pipe">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Empilez plusieurs couches convolution → ReLU → pooling, comme
+              dans un vrai CNN. Chaque couche s'applique à la sortie de la
+              précédente : observez la carte de features rétrécir et le
+              champ réceptif grandir à mesure que le réseau s'approfondit.
+            </div>
+            <div id="cnnPipeLayers"></div>
+            <div class="btn-row" style="margin: 8px 0 12px">
+              <button class="btn" onclick="cnnPipeAddLayer()">
+                + Ajouter une couche
+              </button>
+              <button class="btn ok" onclick="cnnPipeCompute()" style="flex: 1">
+                ⬡ Calculer le pipeline
+              </button>
+            </div>
+            <div
+              id="cnnPipeResults"
+              style="font-size: 9px; color: var(--dim)"
+            >
+              Configurez vos couches puis cliquez sur « Calculer le
+              pipeline ».
+            </div>
+          </div>
+
+          <div class="tc" id="cnntab-train">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Un CNN n'utilise pas des noyaux écrits à la main : il les
+              <em>apprend</em> par descente de gradient. Ci-dessous, un
+              noyau cible (l'un des filtres classiques) produit une carte de
+              features de référence ; un second noyau, initialisé au
+              hasard, essaie de la reproduire en ajustant ses 9 poids pas à
+              pas — exactement comme les couches convolutives d'un vrai
+              réseau pendant l'entraînement.
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-bottom: 10px;
+                background: #030408;
+                border: 1px solid var(--brd);
+                border-radius: 4px;
+                padding: 8px 10px;
+              "
+            >
+              <div style="display: flex; align-items: center; gap: 5px">
+                <span style="font-size: 9px; color: var(--dim)"
+                  >Noyau cible</span
+                >
+                <select
+                  id="cnnTrainTarget"
+                  style="font-size: 9px; width: 150px"
+                  onchange="cnnTrainSetup()"
+                >
+                  <option value="sobelx" selected>
+                    Sobel X (contours verticaux)
+                  </option>
+                  <option value="sobely">Sobel Y (contours horizontaux)</option>
+                  <option value="laplacian">Laplacien (contours)</option>
+                  <option value="sharpen">Netteté</option>
+                  <option value="blur">Flou (box blur)</option>
+                  <option value="emboss">Emboss (relief)</option>
+                  <option value="identity">Identité</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: center; gap: 5px">
+                <span style="font-size: 9px; color: var(--dim)"
+                  >Taux d'apprentissage</span
+                >
+                <select
+                  id="cnnTrainLr"
+                  style="font-size: 9px; width: 65px"
+                  onchange="CNN_TRAIN.lr = parseFloat(this.value)"
+                >
+                  <option value="0.02">0.02</option>
+                  <option value="0.05" selected>0.05</option>
+                  <option value="0.1">0.1</option>
+                  <option value="0.2">0.2</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 10px">
+              <button class="btn ok" id="cnnTrainBtn" onclick="cnnTrainToggle()">
+                ▶ Entraîner
+              </button>
+              <button class="btn" onclick="cnnTrainStep(); cnnTrainRender()">
+                ⏭ Un pas
+              </button>
+              <button class="btn warn" onclick="cnnTrainReset()">
+                ↺ Réinitialiser
+              </button>
+            </div>
+            <div id="cnnTrainBody"></div>
+          </div>
         </div>
         <div id="cnn-footer">
           <div
@@ -11550,6 +12452,375 @@
             Formule : taille sortie = ⌊(N + 2p − k) / s⌋ + 1
           </div>
           <button class="btn" onclick="closeCNNLab()">Fermer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ RNN LAB MODAL ══════════════ -->
+    <div id="rnn-modal-bg">
+      <div id="rnn-modal">
+        <div id="rnn-header">
+          <h2>🔁 Labo RNN</h2>
+          <button class="btn" onclick="closeRNNLab()">✕</button>
+        </div>
+        <div id="rnn-body">
+          <svg width="0" height="0" style="position: absolute">
+            <defs>
+              <marker
+                id="rnnArrow"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0L10,5L0,10z" fill="var(--ylw)" />
+              </marker>
+              <marker
+                id="rnnArrowDim"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="5"
+                markerHeight="5"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0L10,5L0,10z" fill="var(--a2)" />
+              </marker>
+            </defs>
+          </svg>
+          <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+            Expérimentez avec les réseaux de neurones récurrents : une
+            cellule qui réutilise ses propres poids à chaque pas de temps,
+            en combinant l'entrée courante et sa <em>mémoire</em> du passé
+            (l'état caché) — la brique de base des RNN.
+          </div>
+
+          <div class="tabs">
+            <div
+              class="tab active"
+              id="rnntab-btn-cell"
+              onclick="rnnShowTab('cell')"
+            >
+              Cellule
+            </div>
+            <div
+              class="tab"
+              id="rnntab-btn-seq"
+              onclick="rnnShowTab('seq')"
+            >
+              Déroulement
+            </div>
+            <div
+              class="tab"
+              id="rnntab-btn-grad"
+              onclick="rnnShowTab('grad')"
+            >
+              Mémoire & gradients
+            </div>
+            <div
+              class="tab"
+              id="rnntab-btn-train"
+              onclick="rnnShowTab('train')"
+            >
+              Entraîner (BPTT)
+            </div>
+          </div>
+
+          <!-- ── TAB 1 : CELLULE ── -->
+          <div class="tc show" id="rnntab-cell">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Un seul pas de temps : la cellule combine l'entrée
+              <span class="fe">x</span>, l'état caché précédent
+              <span class="fe">h(t−1)</span>, ses poids
+              <span class="fe">Wx</span> / <span class="fe">Wh</span> et son
+              biais <span class="fe">b</span> pour produire le nouvel état
+              <span class="fe">h(t)</span>. Éditez les valeurs puis calculez.
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 14px;
+                flex-wrap: wrap;
+                margin-bottom: 10px;
+              "
+            >
+              <div style="flex: 1; min-width: 200px">
+                <div
+                  style="
+                    font-size: 8px;
+                    color: var(--dim);
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    margin-bottom: 5px;
+                    font-weight: 700;
+                  "
+                >
+                  Taille de l'état caché
+                </div>
+                <select
+                  id="rnnH"
+                  data-no-translate
+                  style="width: 100%; font-size: 9px; margin-bottom: 8px"
+                  onchange="rnnCellInit(parseInt(this.value))"
+                >
+                  <option value="2">2</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                </select>
+                <div class="btn-row">
+                  <button class="btn" onclick="rnnCellInit(RNN_CELL.H)">
+                    🎲 Poids aléatoires
+                  </button>
+                  <button class="btn" onclick="rnnCellZeroH()">
+                    ↺ h(t−1) = 0
+                  </button>
+                </div>
+              </div>
+              <div style="flex: 1; min-width: 200px">
+                <div
+                  style="
+                    font-size: 8px;
+                    color: var(--dim);
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    margin-bottom: 5px;
+                    font-weight: 700;
+                  "
+                >
+                  Entrée x(t) <span style="opacity: 0.6">(scalaire)</span>
+                </div>
+                <input
+                  type="range"
+                  id="rnnX"
+                  min="-2"
+                  max="2"
+                  step="0.05"
+                  value="0.6"
+                  oninput="rnnCellSetX(this.value)"
+                />
+                <div
+                  style="font-size: 10px; color: var(--a2)"
+                  data-no-translate
+                  id="rnnXVal"
+                >
+                  x = 0.60
+                </div>
+              </div>
+            </div>
+
+            <div id="rnnCellDiagram" class="rnn-diagram-wrap"></div>
+
+            <div id="rnnCellGrid" style="margin-bottom: 10px"></div>
+
+            <div class="btn-row" style="margin-bottom: 10px">
+              <button class="btn ok" onclick="rnnCellCompute()" style="flex: 1">
+                ⬡ Calculer h(t)
+              </button>
+              <button class="btn warn" onclick="rnnCellAdvance()">
+                ⏭ h(t) → h(t−1) (pas suivant)
+              </button>
+            </div>
+
+            <div id="rnnCellResults" style="font-size: 9px; color: var(--dim)">
+              Réglez les poids et cliquez sur « Calculer h(t) ».
+            </div>
+          </div>
+
+          <!-- ── TAB 2 : DÉROULEMENT ── -->
+          <div class="tc" id="rnntab-seq">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              On « déroule » la même cellule (mêmes poids que l'onglet
+              Cellule) sur une séquence entière : à chaque pas, l'état
+              caché est recalculé à partir de l'entrée du pas et de l'état
+              du pas précédent. Observez comment la <em>mémoire</em>
+              (l'état caché) évolue, se renforce ou s'efface.
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-bottom: 8px;
+              "
+            >
+              <input
+                type="text"
+                id="rnnSeqInput"
+                value="1, 0.5, -1, 0.5, 1, -1, 0"
+                style="flex: 1; min-width: 180px"
+                placeholder="Séquence séparée par des virgules"
+              />
+              <button class="btn" onclick="rnnSeqPreset('impulsion')">
+                Impulsion
+              </button>
+              <button class="btn" onclick="rnnSeqPreset('alt')">
+                Alternance
+              </button>
+              <button class="btn" onclick="rnnSeqPreset('rampe')">
+                Rampe
+              </button>
+              <button class="btn" onclick="rnnSeqPreset('bruit')">
+                🎲 Bruit
+              </button>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px">
+              <span style="font-size: 9px; color: var(--dim)">Neurone tracé</span>
+              <select id="rnnSeqNeuron" data-no-translate style="width: 70px; font-size: 9px">
+              </select>
+              <div class="btn-row" style="margin: 0; flex: 1">
+                <button class="btn ok" onclick="rnnSeqRunAndRender()" style="flex: 1">
+                  ⬡ Dérouler
+                </button>
+                <button class="btn warn" id="rnnSeqAnimBtn" onclick="rnnSeqToggleAnim()">
+                  ▶ Animer pas-à-pas
+                </button>
+              </div>
+            </div>
+            <div id="rnnSeqHeatmap" style="margin-bottom: 4px"></div>
+            <div id="rnnSeqStrip" class="rnn-strip"></div>
+            <div
+              id="rnnSeqChart"
+              style="margin-top: 6px; font-size: 9px; color: var(--dim)"
+            ></div>
+          </div>
+
+          <!-- ── TAB 3 : MÉMOIRE & GRADIENTS ── -->
+          <div class="tc" id="rnntab-grad">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Pendant l'entraînement, le gradient qui remonte de
+              <span class="fe">h(T)</span> jusqu'à
+              <span class="fe">h(1)</span> traverse un produit de T termes
+              (règle de la chaîne appliquée T fois). Approximation
+              simplifiée : chaque terme ≈
+              <span class="fe">w</span> (magnitude effective de Whh) ×
+              <span class="fe">s</span> (dérivée moyenne de tanh, qui sature
+              vers 0). Ajustez les curseurs pour voir le résultat après T
+              pas de temps.
+            </div>
+            <div class="rnn-gate-box">
+              <div style="display: flex; gap: 16px; flex-wrap: wrap">
+                <div style="flex: 1; min-width: 180px">
+                  <span style="color: var(--dim); font-size: 8px; text-transform: uppercase">
+                    Magnitude de Whh — <b id="rnnGradWLbl">1.00</b>
+                  </span>
+                  <input
+                    type="range"
+                    id="rnnGradW"
+                    min="0.1"
+                    max="2.5"
+                    step="0.02"
+                    value="1"
+                    oninput="rnnGradRender()"
+                  />
+                </div>
+                <div style="flex: 1; min-width: 180px">
+                  <span style="color: var(--dim); font-size: 8px; text-transform: uppercase">
+                    Saturation moyenne tanh'(z) — <b id="rnnGradSLbl">0.50</b>
+                  </span>
+                  <input
+                    type="range"
+                    id="rnnGradS"
+                    min="0.05"
+                    max="1"
+                    step="0.02"
+                    value="0.5"
+                    oninput="rnnGradRender()"
+                  />
+                </div>
+              </div>
+            </div>
+            <div id="rnnGradChain"></div>
+            <div id="rnnGradResult"></div>
+            <div class="rnn-gate-box" style="margin-top: 10px">
+              <b>Comment le LSTM/GRU limitent le problème :</b> au lieu d'un
+              chemin purement multiplicatif, la cellule mémoire
+              <span class="fe">C(t)</span> du LSTM (voir onglet « Formules »
+              → catégorie RNN) est mise à jour de façon
+              <b>additive</b> : <span class="fe">C(t) = f⊙C(t−1) + i⊙C̃</span>.
+              Quand la porte d'oubli <span class="fe">f</span> reste proche
+              de 1, le gradient traverse presque sans atténuation, ce qui
+              permet de retenir l'information sur beaucoup plus de pas de
+              temps.
+            </div>
+          </div>
+
+          <!-- ── TAB 4 : ENTRAÎNER (BPTT réel) ── -->
+          <div class="tc" id="rnntab-train">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Un vrai mini char-RNN : il apprend, caractère par caractère, à
+              prédire le caractère suivant d'un texte — par vraie
+              rétropropagation à travers le temps (BPTT) et descente de
+              gradient (Adagrad), exactement comme un RNN de production en
+              modèle de langage réduit à quelques lettres.
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-bottom: 10px;
+                background: #030408;
+                border: 1px solid var(--brd);
+                border-radius: 4px;
+                padding: 8px 10px;
+              "
+            >
+              <div style="display: flex; align-items: center; gap: 5px; flex: 1; min-width: 160px">
+                <span style="font-size: 9px; color: var(--dim)">Texte cible</span>
+                <input
+                  type="text"
+                  id="rnnTrainText"
+                  value="bonjour"
+                  maxlength="24"
+                  style="flex: 1; font-size: 9px"
+                  onchange="rnnTrainSetup()"
+                />
+              </div>
+              <div style="display: flex; align-items: center; gap: 5px">
+                <span style="font-size: 9px; color: var(--dim)">lr</span>
+                <select
+                  id="rnnTrainLr"
+                  data-no-translate
+                  style="font-size: 9px; width: 65px"
+                  onchange="RNN_TRAIN.lr = parseFloat(this.value)"
+                >
+                  <option value="0.03">0.03</option>
+                  <option value="0.05">0.05</option>
+                  <option value="0.1" selected>0.1</option>
+                  <option value="0.2">0.2</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 10px">
+              <button class="btn ok" id="rnnTrainBtn" onclick="rnnTrainToggle()">
+                ▶ Entraîner
+              </button>
+              <button class="btn" onclick="rnnTrainStep(); rnnTrainRender()">
+                ⏭ Un pas
+              </button>
+              <button class="btn warn" onclick="rnnTrainReset()">
+                ↺ Réinitialiser
+              </button>
+            </div>
+            <div id="rnnTrainBody"></div>
+          </div>
+        </div>
+        <div id="rnn-footer">
+          <div
+            style="
+              font-size: 8px;
+              color: var(--dim);
+              flex: 1;
+              align-self: center;
+            "
+          >
+            Formule : h(t) = tanh(Wxh·x(t) + Whh·h(t−1) + bh)
+          </div>
+          <button class="btn" onclick="closeRNNLab()">Fermer</button>
         </div>
       </div>
     </div>
@@ -12519,13 +13790,48 @@
         },
       };
 
+      const CNN_KERNEL_LABELS = {
+        identity: "Identité",
+        blur: "Flou (box blur)",
+        sharpen: "Netteté",
+        sobelx: "Sobel X",
+        sobely: "Sobel Y",
+        laplacian: "Laplacien",
+        emboss: "Emboss",
+        custom: "Personnalisé",
+      };
+
+      // ── Onglets du labo (Convolution / Galerie / Pipeline / Entraînement) ──
+      let cnnActiveTab = "conv";
+      function cnnShowTab(name) {
+        cnnStopAnim();
+        cnnActiveTab = name;
+        ["conv", "gallery", "pipe", "train"].forEach((t) => {
+          document
+            .getElementById("cnntab-" + t)
+            ?.classList.toggle("show", t === name);
+          document
+            .getElementById("cnntab-btn-" + t)
+            ?.classList.toggle("active", t === name);
+        });
+        if (name === "gallery") cnnGalleryRender();
+        else if (name === "pipe") {
+          if (!CNN_PIPE.layers.length) cnnPipeInitDefault();
+          cnnPipeRender();
+        } else if (name === "train") {
+          if (!CNN_TRAIN.kernel) cnnTrainSetup();
+        }
+      }
+
       function openCNNLab() {
         document.getElementById("cnn-modal-bg").classList.add("show");
         if (!CNN.grid.length) cnnSetGridSize(8);
         cnnKernelPresetChange();
+        cnnShowTab("conv");
       }
       function closeCNNLab() {
         cnnStopAnim();
+        cnnTrainStop();
         document.getElementById("cnn-modal-bg").classList.remove("show");
       }
       {
@@ -12542,6 +13848,7 @@
         cnnRenderInputGrid();
         const r = document.getElementById("cnnResults");
         if (r) r.innerHTML = "Dessinez une image et cliquez sur « Calculer ».";
+        if (cnnActiveTab === "gallery") cnnGalleryRender();
       }
       function cnnRenderInputGrid() {
         const el = document.getElementById("cnnInputGrid");
@@ -12561,6 +13868,7 @@
       function cnnToggleCell(y, x) {
         CNN.grid[y][x] = CNN.grid[y][x] > 0 ? 0 : 1;
         cnnRenderInputGrid();
+        if (cnnActiveTab === "gallery") cnnGalleryRender();
       }
       function cnnPreset(name) {
         const n = CNN.size;
@@ -12585,6 +13893,7 @@
         }
         CNN.grid = g;
         cnnRenderInputGrid();
+        if (cnnActiveTab === "gallery") cnnGalleryRender();
       }
 
       function cnnKernelPresetChange() {
@@ -12622,26 +13931,30 @@
         CNN.kernel[y][x] = parseFloat(val) || 0;
       }
 
-      function cnnConv2d(input, kernel, stride, pad) {
+      // Ajoute le padding "same" (zéro-padding centré) ou renvoie l'entrée
+      // telle quelle en padding "valide". Séparé de la convolution elle-même
+      // pour être réutilisable par l'entraînement de noyau (qui a besoin de
+      // garder la matrice paddée pour calculer le gradient).
+      function cnnPadInput(input, kH, kW, pad) {
         const H = input.length,
-          W = input[0].length,
-          kH = kernel.length,
-          kW = kernel[0].length;
-        let padded = input,
-          padY = 0,
-          padX = 0;
-        if (pad === "same") {
-          padY = Math.floor((kH - 1) / 2);
+          W = input[0].length;
+        if (pad !== "same") return { padded: input, padY: 0, padX: 0 };
+        const padY = Math.floor((kH - 1) / 2),
           padX = Math.floor((kW - 1) / 2);
-          padded = Array.from({ length: H + 2 * padY }, (_, y) =>
-            Array.from({ length: W + 2 * padX }, (_, x) => {
-              const yy = y - padY,
-                xx = x - padX;
-              return yy >= 0 && yy < H && xx >= 0 && xx < W ? input[yy][xx] : 0;
-            }),
-          );
-        }
-        const PH = padded.length,
+        const padded = Array.from({ length: H + 2 * padY }, (_, y) =>
+          Array.from({ length: W + 2 * padX }, (_, x) => {
+            const yy = y - padY,
+              xx = x - padX;
+            return yy >= 0 && yy < H && xx >= 0 && xx < W ? input[yy][xx] : 0;
+          }),
+        );
+        return { padded, padY, padX };
+      }
+      // Convolution brute (pas de padding) sur une matrice déjà paddée.
+      function cnnConvRaw(padded, kernel, stride) {
+        const kH = kernel.length,
+          kW = kernel[0].length,
+          PH = padded.length,
           PW = padded[0].length;
         const outH = Math.floor((PH - kH) / stride) + 1,
           outW = Math.floor((PW - kW) / stride) + 1;
@@ -12657,6 +13970,16 @@
                   padded[oy * stride + ky][ox * stride + kx] * kernel[ky][kx];
             out[oy][ox] = s;
           }
+        return out;
+      }
+      function cnnConv2d(input, kernel, stride, pad) {
+        const { padded, padY, padX } = cnnPadInput(
+          input,
+          kernel.length,
+          kernel[0].length,
+          pad,
+        );
+        const out = cnnConvRaw(padded, kernel, stride);
         return { out, padY, padX };
       }
       function cnnRelu(m) {
@@ -12678,9 +14001,31 @@
             );
         return out;
       }
+      function cnnAvgPool2(m) {
+        const H = m.length,
+          W = m[0]?.length || 0,
+          oh = Math.floor(H / 2),
+          ow = Math.floor(W / 2);
+        const out = Array.from({ length: oh }, () => Array(ow).fill(0));
+        for (let y = 0; y < oh; y++)
+          for (let x = 0; x < ow; x++)
+            out[y][x] =
+              (m[2 * y][2 * x] +
+                m[2 * y][2 * x + 1] +
+                m[2 * y + 1][2 * x] +
+                m[2 * y + 1][2 * x + 1]) /
+              4;
+        return out;
+      }
+      // Un chiffre entier s'affiche sans décimales (plus lisible pour les
+      // pixels binaires 0/1), sinon on garde 2 décimales.
+      function cnnNumFmt(v) {
+        return Number.isInteger(v) ? String(v) : v.toFixed(2);
+      }
       function cnnRenderMatrix(m, cell) {
         const vals = m.flat(),
           mx = Math.max(0.001, ...vals.map(Math.abs));
+        const showVal = cell >= 16;
         let html = `<div class="cnn-grid" style="grid-template-columns:repeat(${m[0]?.length || 0},${cell}px)">`;
         for (let y = 0; y < m.length; y++)
           for (let x = 0; x < (m[0]?.length || 0); x++) {
@@ -12690,10 +14035,19 @@
               nv >= 0
                 ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
                 : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
-            html += `<div class="cnn-cell static" style="width:${cell}px;height:${cell}px;background:${bg}" title="${v.toFixed(3)}"></div>`;
+            const label = showVal
+              ? v.toFixed(cell >= 22 ? 2 : 1)
+              : "";
+            html += `<div class="cnn-cell static" style="width:${cell}px;height:${cell}px;background:${bg};font-size:${cell >= 22 ? 8 : 7}px" title="${v.toFixed(3)}">${label}</div>`;
           }
         html += "</div>";
         return html;
+      }
+      // Légende de la palette de couleur (rouge = négatif, vert = positif),
+      // affichée sous les feature maps pour rendre le code couleur lisible
+      // sans avoir à survoler chaque cellule.
+      function cnnColorLegend(label) {
+        return `<div class="cnn-legend"><span>− fort</span><div class="bar"></div><span>fort +</span>${label ? `<span style="margin-left:6px">· ${label}</span>` : ""}</div>`;
       }
 
       function cnnCompute() {
@@ -12701,7 +14055,7 @@
         const stride = parseInt(document.getElementById("cnnStride").value);
         const pad = document.getElementById("cnnPadding").value;
         const useRelu = document.getElementById("cnnRelu").checked;
-        const usePool = document.getElementById("cnnPool").checked;
+        const poolMode = document.getElementById("cnnPoolMode").value;
         const { out } = cnnConv2d(CNN.grid, CNN.kernel, stride, pad);
         const resEl = document.getElementById("cnnResults");
         if (!out.length || !out[0]?.length) {
@@ -12710,22 +14064,60 @@
           return;
         }
         let feature = useRelu ? cnnRelu(out) : out;
-        let pooled =
-          usePool && feature.length >= 2 && feature[0].length >= 2
-            ? cnnMaxPool2(feature)
-            : null;
+        const canPool = feature.length >= 2 && feature[0].length >= 2;
+        let pooled = null;
+        if (poolMode === "max" && canPool) pooled = cnnMaxPool2(feature);
+        else if (poolMode === "avg" && canPool) pooled = cnnAvgPool2(feature);
 
         const n = CNN.size,
           cell = n <= 8 ? 22 : n <= 10 ? 17 : 14;
         let html = `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
-        <div><div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700" data-no-translate>FEATURE MAP (${out.length}×${out[0].length})</div>${cnnRenderMatrix(feature, cell)}</div>`;
-        if (pooled)
-          html += `<div><div style="font-size:8px;color:var(--org);margin-bottom:4px;font-weight:700">APRÈS MAX-POOLING (${pooled.length}×${pooled[0].length})</div>${cnnRenderMatrix(pooled, 24)}</div>`;
+        <div><div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700" data-no-translate>FEATURE MAP (${out.length}×${out[0].length})</div>${cnnRenderMatrix(feature, cell)}${cnnColorLegend("intensité du pixel de sortie")}</div>`;
+        if (pooled) {
+          const poolLbl = poolMode === "avg" ? "MOYENNE" : "MAX";
+          html += `<div><div style="font-size:8px;color:var(--org);margin-bottom:4px;font-weight:700">APRÈS ${poolLbl}-POOLING (${pooled.length}×${pooled[0].length})</div>${cnnRenderMatrix(pooled, 24)}${cnnColorLegend()}</div>`;
+        }
         html += "</div>";
-        html += `<div style="margin-top:8px;font-size:8px;color:var(--dim)">Entrée ${n}×${n} · Noyau 3×3 · Stride ${stride} · Padding ${pad === "same" ? "same" : "valide"} → sortie ${out.length}×${out[0].length}${useRelu ? " · ReLU appliqué" : ""}${pooled ? " · Max-pool 2×2" : ""}</div>`;
+        html += `<div style="margin-top:8px;font-size:8px;color:var(--dim)">Entrée ${n}×${n} · Noyau 3×3 · Stride ${stride} · Padding ${pad === "same" ? "same" : "valide"} → sortie ${out.length}×${out[0].length}${useRelu ? " · ReLU appliqué" : ""}${pooled ? ` · ${poolMode === "avg" ? "Avg" : "Max"}-pool 2×2` : ""}</div>`;
         resEl.innerHTML = html;
       }
 
+      // Construit la feature map "en cours de calcul" : les cases déjà
+      // visitées par l'animation affichent leur vraie valeur (couleur +
+      // chiffre), la case courante pulse en jaune, et les cases futures
+      // restent grisées/pointillées — pour voir la carte se construire
+      // au même rythme que le noyau glisse sur l'entrée.
+      function cnnRenderProgressiveMatrix(m, useRelu, cell) {
+        const H = m.length,
+          W = m[0]?.length || 0;
+        const shown = m.map((row) =>
+          row.map((v) => (useRelu ? Math.max(0, v) : v)),
+        );
+        const mx = Math.max(0.001, ...shown.flat().map(Math.abs));
+        const showVal = cell >= 16;
+        let html = `<div class="cnn-grid" style="grid-template-columns:repeat(${W},${cell}px)">`;
+        let idx = -1;
+        for (let y = 0; y < H; y++)
+          for (let x = 0; x < W; x++) {
+            idx++;
+            if (idx < CNN.animPos) {
+              const v = shown[y][x],
+                nv = v / mx;
+              const bg =
+                nv >= 0
+                  ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
+                  : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
+              const label = showVal ? v.toFixed(cell >= 22 ? 2 : 1) : "";
+              html += `<div class="cnn-cell static" style="width:${cell}px;height:${cell}px;background:${bg};font-size:${cell >= 22 ? 8 : 7}px" title="${v.toFixed(3)}">${label}</div>`;
+            } else if (idx === CNN.animPos) {
+              html += `<div class="cnn-cell current" style="width:${cell}px;height:${cell}px"></div>`;
+            } else {
+              html += `<div class="cnn-cell pending" style="width:${cell}px;height:${cell}px"></div>`;
+            }
+          }
+        html += "</div>";
+        return html;
+      }
       function cnnToggleAnim() {
         if (CNN.animTimer) {
           cnnStopAnim();
@@ -12733,20 +14125,20 @@
         }
         const stride = parseInt(document.getElementById("cnnStride").value);
         const pad = document.getElementById("cnnPadding").value;
+        const useRelu = document.getElementById("cnnRelu").checked;
         const H = CNN.size,
           W = CNN.size;
-        const padY = pad === "same" ? 1 : 0,
-          padX = pad === "same" ? 1 : 0;
-        const PH = H + 2 * padY,
-          PW = W + 2 * padX;
-        const outH = Math.floor((PH - 3) / stride) + 1,
-          outW = Math.floor((PW - 3) / stride) + 1;
-        if (outH <= 0 || outW <= 0) return;
+        const { padded, padY, padX } = cnnPadInput(CNN.grid, 3, 3, pad);
+        const { out: fullOut } = cnnConv2d(CNN.grid, CNN.kernel, stride, pad);
+        if (!fullOut.length || !fullOut[0]?.length) return;
+        const outH = fullOut.length,
+          outW = fullOut[0].length;
         const positions = [];
         for (let oy = 0; oy < outH; oy++)
           for (let ox = 0; ox < outW; ox++) positions.push([oy, ox]);
         CNN.animPos = -1;
         document.getElementById("cnnAnimBtn").textContent = "⏹ Stop";
+        const outCell = W <= 8 ? 22 : W <= 10 ? 17 : 14;
         CNN.animTimer = setInterval(() => {
           CNN.animPos++;
           if (CNN.animPos >= positions.length) {
@@ -12757,24 +14149,1179 @@
           const [oy, ox] = positions[CNN.animPos];
           cnnRenderInputGrid();
           const cells = document.getElementById("cnnInputGrid").children;
+          // Superpose chaque poids du noyau sur la cellule d'entrée qu'il
+          // multiplie, et construit la formule terme à terme en même temps.
+          const terms = [];
           for (let ky = 0; ky < 3; ky++)
             for (let kx = 0; kx < 3; kx++) {
-              const iy = oy * stride + ky - padY,
-                ix = ox * stride + kx - padX;
-              if (iy >= 0 && iy < H && ix >= 0 && ix < W)
-                cells[iy * W + ix]?.classList.add("hl");
+              const py = oy * stride + ky,
+                px = ox * stride + kx;
+              const iy = py - padY,
+                ix = px - padX;
+              const w = CNN.kernel[ky][kx];
+              const pv = padded[py][px];
+              terms.push(`${cnnNumFmt(pv)}×${cnnNumFmt(w)}`);
+              if (iy >= 0 && iy < H && ix >= 0 && ix < W) {
+                const c = cells[iy * W + ix];
+                if (c) {
+                  c.classList.add("hl");
+                  c.innerHTML = `<span class="kw" style="color:${w >= 0 ? "var(--grn)" : "var(--red)"}">${cnnNumFmt(w)}</span>`;
+                }
+              }
             }
-          document.getElementById("cnnResults").innerHTML =
-            `<div style="font-size:9px;color:var(--ylw)">Position ${CNN.animPos + 1}/${positions.length} — fenêtre du noyau en surbrillance sur l'entrée</div>`;
-        }, 350);
+          const raw = fullOut[oy][ox];
+          const activated = useRelu ? Math.max(0, raw) : raw;
+          const html = `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+            <div style="min-width:200px">
+              <div style="font-size:8px;color:var(--ylw);margin-bottom:4px;font-weight:700">CASE (${oy},${ox}) — ${CNN.animPos + 1}/${positions.length}</div>
+              <div class="cnn-formula">Σ = ${terms.join(" + ")}<br>Σ = <b style="color:${raw >= 0 ? "var(--grn)" : "var(--red)"}">${raw.toFixed(3)}</b>${useRelu ? ` → ReLU → <b style="color:var(--a1)">${activated.toFixed(3)}</b>` : ""}</div>
+            </div>
+            <div>
+              <div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700">FEATURE MAP (en construction)</div>
+              ${cnnRenderProgressiveMatrix(fullOut, useRelu, outCell)}
+            </div>
+          </div>`;
+          document.getElementById("cnnResults").innerHTML = html;
+        }, 550);
       }
       function cnnStopAnim() {
         if (CNN.animTimer) {
           clearInterval(CNN.animTimer);
           CNN.animTimer = null;
+          cnnRenderInputGrid();
         }
         const b = document.getElementById("cnnAnimBtn");
         if (b) b.textContent = "▶ Animer pas-à-pas";
+      }
+
+      // ════════════ 10ter. GALERIE DE FILTRES ════════════
+      // Applique les 7 noyaux prédéfinis en une seule fois sur l'image
+      // d'entrée actuelle, pour comparer immédiatement ce que détecte
+      // chaque filtre — sans avoir à changer le sélecteur 7 fois.
+      function cnnGalleryRender() {
+        const el = document.getElementById("cnnGalleryGrid");
+        if (!el) return;
+        if (!CNN.grid.length) {
+          el.innerHTML =
+            '<span style="font-size:9px;color:var(--dim)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+          return;
+        }
+        const useRelu = document.getElementById("cnnGalleryRelu")?.checked;
+        const names = Object.keys(CNN_KERNELS).filter((k) => k !== "custom");
+        const n = CNN.size,
+          cell = n <= 8 ? 18 : n <= 10 ? 14 : 11;
+        let html = "";
+        names.forEach((name) => {
+          const { out } = cnnConv2d(CNN.grid, CNN_KERNELS[name].k, 1, "valid");
+          if (!out.length || !out[0]?.length) return;
+          const feat = useRelu ? cnnRelu(out) : out;
+          html += `<div class="cnn-gallery-item">
+            <div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700;text-transform:uppercase">${CNN_KERNEL_LABELS[name]}</div>
+            ${cnnRenderMatrix(feat, cell)}
+          </div>`;
+        });
+        html += cnnColorLegend();
+        el.innerHTML = html;
+      }
+
+      // ════════════ 10quater. PIPELINE MULTI-COUCHES ════════════
+      // Empile jusqu'à 4 couches convolution → ReLU → pooling, chacune
+      // appliquée à la sortie de la précédente, comme dans un vrai CNN.
+      // Padding "valide" fixe (stride 1) pour bien voir la carte de
+      // features rétrécir couche après couche.
+      const CNN_PIPE = { layers: [] };
+      const CNN_PIPE_MAX = 4;
+      function cnnPipeInitDefault() {
+        CNN_PIPE.layers = [
+          { preset: "sobelx", relu: true, pool: false },
+          { preset: "blur", relu: false, pool: true },
+        ];
+      }
+      function cnnPipeAddLayer() {
+        if (CNN_PIPE.layers.length >= CNN_PIPE_MAX) return;
+        CNN_PIPE.layers.push({ preset: "sharpen", relu: true, pool: false });
+        cnnPipeRender();
+      }
+      function cnnPipeRemoveLayer(i) {
+        if (CNN_PIPE.layers.length <= 1) return;
+        CNN_PIPE.layers.splice(i, 1);
+        cnnPipeRender();
+      }
+      function cnnPipeUpdateLayer(i, field, val) {
+        CNN_PIPE.layers[i][field] = val;
+      }
+      function cnnPipeRender() {
+        const el = document.getElementById("cnnPipeLayers");
+        if (!el) return;
+        const opts = Object.keys(CNN_KERNELS)
+          .filter((k) => k !== "custom")
+          .map((k) => `<option value="${k}">${CNN_KERNEL_LABELS[k]}</option>`)
+          .join("");
+        let html = "";
+        CNN_PIPE.layers.forEach((layer, i) => {
+          html += `<div class="cnn-pipe-layer">
+            <span class="lbl">Couche ${i + 1}</span>
+            <select onchange="cnnPipeUpdateLayer(${i},'preset',this.value)">
+              ${opts.replace(
+                `value="${layer.preset}"`,
+                `value="${layer.preset}" selected`,
+              )}
+            </select>
+            <label style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--dim)"><input type="checkbox" ${layer.relu ? "checked" : ""} onchange="cnnPipeUpdateLayer(${i},'relu',this.checked)"/> ReLU</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--dim)"><input type="checkbox" ${layer.pool ? "checked" : ""} onchange="cnnPipeUpdateLayer(${i},'pool',this.checked)"/> Pool 2×2</label>
+            ${CNN_PIPE.layers.length > 1 ? `<button class="btn danger" onclick="cnnPipeRemoveLayer(${i})" style="padding:3px 6px">✕</button>` : ""}
+          </div>`;
+        });
+        el.innerHTML = html;
+      }
+      function cnnPipeCompute() {
+        const resEl = document.getElementById("cnnPipeResults");
+        if (!resEl) return;
+        if (!CNN.grid.length) {
+          resEl.innerHTML =
+            '<span style="color:var(--red)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+          return;
+        }
+        const H = CNN.size,
+          W = CNN.size;
+        let cur = CNN.grid;
+        let rf = 1,
+          jump = 1; // champ réceptif effectif (formule standard RF/jump)
+        const stages = [
+          { matrix: cur, label: `Entrée ${H}×${W}` },
+        ];
+        let blocked = false;
+        for (let i = 0; i < CNN_PIPE.layers.length; i++) {
+          const layer = CNN_PIPE.layers[i];
+          if (cur.length < 3 || cur[0].length < 3) {
+            blocked = true;
+            break;
+          }
+          const { out } = cnnConv2d(cur, CNN_KERNELS[layer.preset].k, 1, "valid");
+          rf += 2 * jump; // (kernel 3 - 1) * jump
+          let feat = layer.relu ? cnnRelu(out) : out;
+          stages.push({
+            matrix: feat,
+            label: `C${i + 1}: ${CNN_KERNEL_LABELS[layer.preset]}${layer.relu ? " +ReLU" : ""} (${feat.length}×${feat[0]?.length || 0})`,
+          });
+          cur = feat;
+          if (layer.pool && cur.length >= 2 && cur[0].length >= 2) {
+            const pooled = cnnMaxPool2(cur);
+            rf += 1 * jump; // (pool 2 - 1) * jump
+            jump *= 2; // stride du pooling
+            stages.push({
+              matrix: pooled,
+              label: `↳ Max-pool 2×2 (${pooled.length}×${pooled[0].length})`,
+            });
+            cur = pooled;
+          }
+        }
+        const cell = 12;
+        let html = `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">`;
+        stages.forEach((s, i) => {
+          if (i > 0) html += `<div class="cnn-pipe-arrow">→</div>`;
+          html += `<div class="cnn-pipe-stage"><div class="stg-lbl">${s.label}</div>${cnnRenderMatrix(s.matrix, cell)}</div>`;
+        });
+        html += "</div>";
+        html += cnnColorLegend();
+        if (blocked) {
+          html += `<div style="margin-top:10px;color:var(--red);font-size:9px">❌ Carte de features trop petite pour ajouter une couche supplémentaire — augmentez la taille de l'image d'entrée ou retirez une couche.</div>`;
+        }
+        html += `<div style="margin-top:10px;font-size:9px;color:var(--dim)">Champ réceptif effectif après ${stages.length - 1} étape${stages.length - 1 > 1 ? "s" : ""} : chaque pixel de la dernière carte "voit" un patch de <b style="color:var(--a1)">${rf}×${rf}</b> pixels de l'image d'origine (${H}×${W}). C'est ainsi que la profondeur d'un CNN lui permet de capter des motifs de plus en plus larges.</div>`;
+        resEl.innerHTML = html;
+      }
+
+      // ════════════ 10quinquies. ENTRAÎNER UN NOYAU (descente de gradient) ════════════
+      // Un noyau cible (l'un des filtres classiques) sert de "vérité terrain" :
+      // il produit une carte de features de référence sur l'image d'entrée.
+      // Un second noyau, initialisé aléatoirement, apprend à reproduire cette
+      // carte par descente de gradient sur l'erreur quadratique moyenne (MSE) —
+      // exactement le mécanisme par lequel un vrai CNN apprend ses filtres.
+      const CNN_TRAIN = {
+        kernel: null,
+        target: null,
+        padded: null,
+        lr: 0.05,
+        iter: 0,
+        lossHist: [],
+        timer: null,
+      };
+      function cnnMSE(pred, target) {
+        let s = 0,
+          n = 0;
+        for (let y = 0; y < pred.length; y++)
+          for (let x = 0; x < pred[0].length; x++) {
+            const d = pred[y][x] - target[y][x];
+            s += d * d;
+            n++;
+          }
+        return n ? s / n : 0;
+      }
+      function cnnTrainGrad(padded, pred, target) {
+        const outH = pred.length,
+          outW = pred[0].length,
+          N = outH * outW;
+        const grad = [
+          [0, 0, 0],
+          [0, 0, 0],
+          [0, 0, 0],
+        ];
+        for (let oy = 0; oy < outH; oy++)
+          for (let ox = 0; ox < outW; ox++) {
+            const diff = pred[oy][ox] - target[oy][ox];
+            for (let ky = 0; ky < 3; ky++)
+              for (let kx = 0; kx < 3; kx++)
+                grad[ky][kx] += diff * padded[oy + ky][ox + kx];
+          }
+        const scale = N ? 2 / N : 0;
+        for (let ky = 0; ky < 3; ky++)
+          for (let kx = 0; kx < 3; kx++) grad[ky][kx] *= scale;
+        return grad;
+      }
+      function cnnLossSparkline(hist, w, h) {
+        if (hist.length < 2)
+          return `<svg width="${w}" height="${h}"></svg>`;
+        const mx = Math.max(...hist, 1e-6);
+        const pts = hist
+          .map((v, i) => {
+            const x = (i / (hist.length - 1)) * w;
+            const y = h - (v / mx) * (h - 4) - 2;
+            return x.toFixed(1) + "," + y.toFixed(1);
+          })
+          .join(" ");
+        return `<svg width="${w}" height="${h}"><polyline points="${pts}" style="fill:none;stroke:var(--a1);stroke-width:1.5"/></svg>`;
+      }
+      function cnnTrainSetup() {
+        cnnTrainStop();
+        if (!CNN.grid.length) {
+          CNN_TRAIN.kernel = null;
+          const b = document.getElementById("cnnTrainBody");
+          if (b)
+            b.innerHTML =
+              '<span style="font-size:9px;color:var(--red)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+          return;
+        }
+        const { padded } = cnnPadInput(CNN.grid, 3, 3, "same");
+        CNN_TRAIN.padded = padded;
+        const sel = document.getElementById("cnnTrainTarget");
+        const targetPreset = sel ? sel.value : "sobelx";
+        CNN_TRAIN.target = cnnConvRaw(padded, CNN_KERNELS[targetPreset].k, 1);
+        CNN_TRAIN.kernel = Array.from({ length: 3 }, () =>
+          Array.from({ length: 3 }, () => (Math.random() * 2 - 1) * 0.3),
+        );
+        const lrSel = document.getElementById("cnnTrainLr");
+        if (lrSel) CNN_TRAIN.lr = parseFloat(lrSel.value);
+        CNN_TRAIN.iter = 0;
+        CNN_TRAIN.lossHist = [];
+        cnnTrainRender();
+      }
+      function cnnTrainStep() {
+        if (!CNN_TRAIN.kernel) return 0;
+        const pred = cnnConvRaw(CNN_TRAIN.padded, CNN_TRAIN.kernel, 1);
+        const loss = cnnMSE(pred, CNN_TRAIN.target);
+        const grad = cnnTrainGrad(CNN_TRAIN.padded, pred, CNN_TRAIN.target);
+        for (let y = 0; y < 3; y++)
+          for (let x = 0; x < 3; x++)
+            CNN_TRAIN.kernel[y][x] -= CNN_TRAIN.lr * grad[y][x];
+        CNN_TRAIN.iter++;
+        CNN_TRAIN.lossHist.push(loss);
+        if (CNN_TRAIN.lossHist.length > 250) CNN_TRAIN.lossHist.shift();
+        return loss;
+      }
+      function cnnTrainRender() {
+        const el = document.getElementById("cnnTrainBody");
+        if (!el || !CNN_TRAIN.kernel) return;
+        const pred = cnnConvRaw(CNN_TRAIN.padded, CNN_TRAIN.kernel, 1);
+        const loss = CNN_TRAIN.lossHist.length
+          ? CNN_TRAIN.lossHist[CNN_TRAIN.lossHist.length - 1]
+          : cnnMSE(pred, CNN_TRAIN.target);
+        const cell = CNN.size <= 8 ? 20 : CNN.size <= 10 ? 16 : 13;
+        const kernelHtml = (k) => {
+          const mx = Math.max(0.001, ...k.flat().map(Math.abs));
+          let h = `<div class="cnn-grid" style="grid-template-columns:repeat(3,32px)">`;
+          for (let y = 0; y < 3; y++)
+            for (let x = 0; x < 3; x++) {
+              const v = k[y][x],
+                nv = v / mx;
+              const bg =
+                nv >= 0
+                  ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
+                  : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
+              h += `<div class="cnn-cell static" style="width:32px;height:20px;font-size:7px;background:${bg}">${v.toFixed(2)}</div>`;
+            }
+          h += "</div>";
+          return h;
+        };
+        let html = `<div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div class="cnn-train-col">
+            <h3>Noyau appris (itération ${CNN_TRAIN.iter})</h3>
+            ${kernelHtml(CNN_TRAIN.kernel)}
+            <h3 style="margin-top:8px">Carte produite</h3>
+            ${cnnRenderMatrix(pred, cell)}
+          </div>
+          <div class="cnn-train-col">
+            <h3>Noyau cible</h3>
+            ${kernelHtml(
+              CNN_KERNELS[document.getElementById("cnnTrainTarget")?.value || "sobelx"].k,
+            )}
+            <h3 style="margin-top:8px">Carte cible</h3>
+            ${cnnRenderMatrix(CNN_TRAIN.target, cell)}
+            ${cnnColorLegend()}
+          </div>
+          <div class="cnn-train-col">
+            <h3>Perte (MSE)</h3>
+            <div class="cnn-loss-box">
+              ${cnnLossSparkline(CNN_TRAIN.lossHist, 200, 54)}
+              <div style="font-size:10px;color:var(--a1);margin-top:4px" data-no-translate>${loss.toFixed(5)}</div>
+            </div>
+          </div>
+        </div>`;
+        el.innerHTML = html;
+      }
+      function cnnTrainToggle() {
+        if (CNN_TRAIN.timer) {
+          cnnTrainStop();
+          return;
+        }
+        if (!CNN_TRAIN.kernel) cnnTrainSetup();
+        if (!CNN_TRAIN.kernel) return;
+        const btn = document.getElementById("cnnTrainBtn");
+        if (btn) btn.textContent = "⏹ Arrêter";
+        CNN_TRAIN.timer = setInterval(() => {
+          cnnTrainStep();
+          cnnTrainRender();
+          if (CNN_TRAIN.iter >= 300) cnnTrainStop();
+        }, 60);
+      }
+      function cnnTrainStop() {
+        if (CNN_TRAIN.timer) {
+          clearInterval(CNN_TRAIN.timer);
+          CNN_TRAIN.timer = null;
+        }
+        const btn = document.getElementById("cnnTrainBtn");
+        if (btn) btn.textContent = "▶ Entraîner";
+      }
+      function cnnTrainReset() {
+        cnnTrainSetup();
+      }
+
+      // ═══════════════════════════════════════════════
+      // RNN LAB
+      // ═══════════════════════════════════════════════
+
+      // ── Petits utilitaires numériques partagés ──
+      function rnnRandVec(n, scale = 0.6) {
+        return Array.from({ length: n }, () =>
+          +((Math.random() * 2 - 1) * scale).toFixed(2),
+        );
+      }
+      function rnnRandMat(rows, cols, scale = 0.6) {
+        return Array.from({ length: rows }, () => rnnRandVec(cols, scale));
+      }
+      function rnnZerosMat(rows, cols) {
+        return Array.from({ length: rows }, () => Array(cols).fill(0));
+      }
+      function rnnValColor(v, mx) {
+        const nv = mx ? v / mx : 0;
+        return nv >= 0
+          ? `rgb(0,${Math.floor(Math.min(1, nv) * 200)},${Math.floor(Math.min(1, nv) * 100)})`
+          : `rgb(${Math.floor(Math.min(1, -nv) * 255)},0,${Math.floor(Math.min(1, -nv) * 80)})`;
+      }
+      function rnnSparkline(hist, w, h, color) {
+        color = color || "var(--a2)";
+        if (hist.length < 2) return `<svg width="${w}" height="${h}"></svg>`;
+        const mx = Math.max(...hist, 1e-6);
+        const mn = Math.min(...hist, 0);
+        const range = mx - mn || 1;
+        const pts = hist
+          .map((v, i) => {
+            const x = (i / (hist.length - 1)) * w;
+            const y = h - ((v - mn) / range) * (h - 4) - 2;
+            return x.toFixed(1) + "," + y.toFixed(1);
+          })
+          .join(" ");
+        return `<svg width="${w}" height="${h}"><polyline points="${pts}" style="fill:none;stroke:${color};stroke-width:1.5"/></svg>`;
+      }
+      function rnnVecSwatchHTML(vec, mx) {
+        return (
+          `<span class="rnn-vecswatch">` +
+          vec
+            .map(
+              (v) =>
+                `<span data-no-translate title="${v.toFixed(3)}" style="background:${rnnValColor(v, mx)}"></span>`,
+            )
+            .join("") +
+          `</span>`
+        );
+      }
+      // Diagramme SVG de la cellule : x(t) et h(t-1) qui entrent, h(t) qui sort,
+      // avec une boucle pointillée montrant la récurrence (poids partagés).
+      function rnnCellDiagramSVG() {
+        const { H, x, hPrev, h } = RNN_CELL;
+        const active = !!h;
+        const mxPrev = Math.max(0.001, ...hPrev.map(Math.abs));
+        const mxH = h ? Math.max(0.001, ...h.map(Math.abs)) : 1;
+        const sw = Math.min(12, Math.floor(56 / H));
+        function swatchRects(vec, mx, boxX, boxY) {
+          let s = "";
+          vec.forEach((v, i) => {
+            const sx = boxX + 4 + i * (sw + 2);
+            s += `<rect x="${sx}" y="${boxY + 16}" width="${sw}" height="10" rx="1" fill="${rnnValColor(v, mx)}"><title>${v.toFixed(3)}</title></rect>`;
+          });
+          return s;
+        }
+        const xColor = rnnValColor(x, 2);
+        let svg = `<svg viewBox="0 0 320 142" width="320" height="142">`;
+        svg += `<rect class="rnn-dbox h" x="8" y="50" width="72" height="34" rx="4"/>`;
+        svg += `<text class="rnn-dtext lbl" x="44" y="46">h(t−1)</text>`;
+        svg += swatchRects(hPrev, mxPrev, 8, 50);
+        svg += `<rect class="rnn-dbox x" x="8" y="98" width="72" height="28" rx="4"/>`;
+        svg += `<text class="rnn-dtext lbl" x="44" y="94">x(t)</text>`;
+        svg += `<text class="rnn-dtext" data-no-translate x="44" y="116" fill="${xColor}" font-size="10">${x.toFixed(2)}</text>`;
+        svg += `<rect class="rnn-dbox cell" x="128" y="55" width="84" height="52" rx="10"/>`;
+        svg += `<text class="rnn-dtext" x="170" y="78" fill="var(--ylw)" font-size="9">tanh(…)</text>`;
+        svg += `<text class="rnn-dtext lbl" x="170" y="92">Wx·x+Wh·h+b</text>`;
+        svg += `<rect class="rnn-dbox h" x="248" y="50" width="64" height="34" rx="4"/>`;
+        svg += `<text class="rnn-dtext lbl" x="280" y="46">h(t)</text>`;
+        if (h) svg += swatchRects(h, mxH, 248, 50);
+        else
+          svg += `<text class="rnn-dtext" x="280" y="72" fill="var(--dim)" font-size="9">?</text>`;
+        svg += `<path class="rnn-flow-line${active ? " active" : ""}" d="M80,67 L127,72"/>`;
+        svg += `<path class="rnn-flow-line${active ? " active" : ""}" d="M80,112 L127,90"/>`;
+        svg += `<path class="rnn-flow-line${active ? " active" : ""}" d="M212,78 L247,68"/>`;
+        svg += `<path class="rnn-loop-line" d="M280,84 C280,128 44,128 44,84"/>`;
+        svg += `<text class="rnn-dtext lbl" x="162" y="138">↺ pas suivant t → t+1 · mêmes poids (Wx, Wh, b) réutilisés</text>`;
+        svg += `</svg>`;
+        return svg;
+      }
+      function rnnCellUpdateDiagram() {
+        const el = document.getElementById("rnnCellDiagram");
+        if (el) el.innerHTML = rnnCellDiagramSVG();
+      }
+
+      // ── ONGLETS ──
+      let rnnActiveTab = "cell";
+      function rnnShowTab(name) {
+        rnnSeqStopAnim();
+        rnnActiveTab = name;
+        ["cell", "seq", "grad", "train"].forEach((t) => {
+          document
+            .getElementById("rnntab-" + t)
+            ?.classList.toggle("show", t === name);
+          document
+            .getElementById("rnntab-btn-" + t)
+            ?.classList.toggle("active", t === name);
+        });
+        if (name === "cell") {
+          if (!RNN_CELL.Wx.length) rnnCellInit(3);
+          else rnnRenderCell();
+        } else if (name === "seq") {
+          rnnSeqPopulateNeuronSelect();
+          rnnSeqRunAndRender();
+        } else if (name === "grad") {
+          rnnGradRender();
+        } else if (name === "train") {
+          if (!RNN_TRAIN.Wxh) rnnTrainSetup();
+          else rnnTrainRender();
+        }
+      }
+
+      function openRNNLab() {
+        document.getElementById("rnn-modal-bg").classList.add("show");
+        if (!RNN_CELL.Wx.length) rnnCellInit(3);
+        rnnShowTab("cell");
+      }
+      function closeRNNLab() {
+        rnnSeqStopAnim();
+        rnnTrainStop();
+        document.getElementById("rnn-modal-bg").classList.remove("show");
+      }
+      {
+        const _rb = document.getElementById("rnn-modal-bg");
+        if (_rb)
+          _rb.addEventListener("click", (e) => {
+            if (e.target === _rb) closeRNNLab();
+          });
+      }
+
+      // ── TAB 1 : CELLULE ──
+      const RNN_CELL = { H: 3, x: 0.6, hPrev: [], Wx: [], Wh: [], b: [] };
+      function rnnCellInit(H) {
+        RNN_CELL.H = H;
+        RNN_CELL.hPrev = Array(H).fill(0);
+        RNN_CELL.Wx = rnnRandVec(H);
+        RNN_CELL.Wh = rnnRandMat(H, H);
+        RNN_CELL.b = rnnRandVec(H, 0.3);
+        RNN_CELL.h = null;
+        const sel = document.getElementById("rnnH");
+        if (sel) sel.value = String(H);
+        rnnRenderCell();
+      }
+      function rnnCellZeroH() {
+        RNN_CELL.hPrev = Array(RNN_CELL.H).fill(0);
+        RNN_CELL.h = null;
+        rnnRenderCell();
+      }
+      function rnnCellSetX(v) {
+        RNN_CELL.x = parseFloat(v);
+        const lbl = document.getElementById("rnnXVal");
+        if (lbl) lbl.textContent = "x = " + RNN_CELL.x.toFixed(2);
+        rnnCellUpdateDiagram();
+      }
+      function rnnCellEditWx(i, v) {
+        RNN_CELL.Wx[i] = parseFloat(v) || 0;
+      }
+      function rnnCellEditWh(i, k, v) {
+        RNN_CELL.Wh[i][k] = parseFloat(v) || 0;
+      }
+      function rnnCellEditB(i, v) {
+        RNN_CELL.b[i] = parseFloat(v) || 0;
+      }
+      function rnnCellEditHPrev(i, v) {
+        RNN_CELL.hPrev[i] = parseFloat(v) || 0;
+        RNN_CELL.h = null;
+        rnnRenderCell();
+      }
+      function rnnRenderCell() {
+        const el = document.getElementById("rnnCellGrid");
+        if (!el) return;
+        const { H, Wx, Wh, b, hPrev } = RNN_CELL;
+        let html = `<div style="display:flex;gap:16px;flex-wrap:wrap">`;
+        // h(t-1)
+        html += `<div><div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;font-weight:700">h(t−1)</div>`;
+        html += `<div class="cnn-grid" style="grid-template-columns:repeat(1,44px)">`;
+        for (let i = 0; i < H; i++) {
+          html += `<input class="cnn-kernel-input" type="number" step="0.1" value="${hPrev[i]}" onchange="rnnCellEditHPrev(${i},this.value)"/>`;
+        }
+        html += `</div></div>`;
+        // Wx
+        html += `<div><div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;font-weight:700">Wx (entrée)</div>`;
+        html += `<div class="cnn-grid" style="grid-template-columns:repeat(1,44px)">`;
+        for (let i = 0; i < H; i++) {
+          html += `<input class="cnn-kernel-input" type="number" step="0.1" value="${Wx[i]}" onchange="rnnCellEditWx(${i},this.value)"/>`;
+        }
+        html += `</div></div>`;
+        // Wh
+        html += `<div><div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;font-weight:700">Wh (récurrent, ${H}×${H})</div>`;
+        html += `<div class="cnn-grid" style="grid-template-columns:repeat(${H},44px)">`;
+        for (let i = 0; i < H; i++)
+          for (let k = 0; k < H; k++) {
+            html += `<input class="cnn-kernel-input" type="number" step="0.1" value="${Wh[i][k]}" onchange="rnnCellEditWh(${i},${k},this.value)"/>`;
+          }
+        html += `</div></div>`;
+        // b
+        html += `<div><div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;font-weight:700">bh (biais)</div>`;
+        html += `<div class="cnn-grid" style="grid-template-columns:repeat(1,44px)">`;
+        for (let i = 0; i < H; i++) {
+          html += `<input class="cnn-kernel-input" type="number" step="0.1" value="${b[i]}" onchange="rnnCellEditB(${i},this.value)"/>`;
+        }
+        html += `</div></div>`;
+        html += `</div>`;
+        el.innerHTML = html;
+        rnnCellRenderResults();
+      }
+      function rnnCellCompute() {
+        const { H, x, hPrev, Wx, Wh, b } = RNN_CELL;
+        const z = [],
+          h = [];
+        for (let i = 0; i < H; i++) {
+          let zi = Wx[i] * x + b[i];
+          for (let k = 0; k < H; k++) zi += Wh[i][k] * hPrev[k];
+          z.push(zi);
+          h.push(Math.tanh(zi));
+        }
+        RNN_CELL.z = z;
+        RNN_CELL.h = h;
+        rnnCellRenderResults();
+      }
+      function rnnCellRenderResults() {
+        const el = document.getElementById("rnnCellResults");
+        if (!el) return;
+        rnnCellUpdateDiagram();
+        if (!RNN_CELL.h) {
+          el.innerHTML =
+            'Réglez les poids et cliquez sur « Calculer h(t) ».';
+          return;
+        }
+        const { H, x, hPrev, Wx, Wh, b, z, h } = RNN_CELL;
+        let html = "";
+        for (let i = 0; i < H; i++) {
+          const whTerms = Wh[i]
+            .map((w, k) => `${w.toFixed(2)}×${hPrev[k].toFixed(2)}`)
+            .join(" + ");
+          html += `<div class="fs" style="margin-bottom:2px"><span class="fe">z${i + 1} =</span><span class="fvar">${Wx[i].toFixed(2)}</span>×<span class="fval">${x.toFixed(2)}</span> + (${whTerms}) + <span class="fvar">${b[i].toFixed(2)}</span> = <span class="fval">${z[i].toFixed(3)}</span></div>`;
+          html += `<div class="fs" style="margin-bottom:8px"><span class="fe">h${i + 1} = tanh(z${i + 1}) =</span><span class="fval" style="font-size:11px">${h[i].toFixed(4)}</span></div>`;
+        }
+        const mx = Math.max(0.001, ...h.map(Math.abs));
+        html += `<div style="margin-top:6px"><span class="fe">h(t) =</span> <div class="cnn-grid" style="grid-template-columns:repeat(${H},50px);display:inline-grid;vertical-align:middle">`;
+        h.forEach((v) => {
+          html += `<div class="cnn-cell static" style="width:50px;height:22px;font-size:8px;background:${rnnValColor(v, mx)}">${v.toFixed(3)}</div>`;
+        });
+        html += `</div></div>`;
+        el.innerHTML = html;
+      }
+      function rnnCellAdvance() {
+        if (!RNN_CELL.h) rnnCellCompute();
+        RNN_CELL.hPrev = [...RNN_CELL.h];
+        RNN_CELL.h = null;
+        rnnRenderCell();
+      }
+
+      // ── TAB 2 : DÉROULEMENT DANS LE TEMPS ──
+      const RNN_SEQ = { seq: [], hist: [], timer: null, playing: false };
+      function rnnSeqParse() {
+        const inp = document.getElementById("rnnSeqInput");
+        const raw = inp ? inp.value : "";
+        const seq = raw
+          .split(",")
+          .map((s) => parseFloat(s.trim()))
+          .filter((v) => !isNaN(v));
+        RNN_SEQ.seq = seq.length ? seq : [0];
+        return RNN_SEQ.seq;
+      }
+      function rnnSeqPreset(kind) {
+        let seq;
+        if (kind === "impulsion") seq = [1, 0, 0, 0, 0, 0, 0];
+        else if (kind === "alt") seq = [1, -1, 1, -1, 1, -1, 1];
+        else if (kind === "rampe") seq = [0.2, 0.4, 0.6, 0.8, 1, 1, 1];
+        else if (kind === "bruit")
+          seq = Array.from({ length: 7 }, () =>
+            +(Math.random() * 2 - 1).toFixed(2),
+          );
+        else seq = [0, 0, 0, 0, 0, 0];
+        const inp = document.getElementById("rnnSeqInput");
+        if (inp) inp.value = seq.join(", ");
+        rnnSeqRunAndRender();
+      }
+      function rnnSeqPopulateNeuronSelect() {
+        const sel = document.getElementById("rnnSeqNeuron");
+        if (!sel) return;
+        const cur = sel.value;
+        sel.innerHTML = Array.from(
+          { length: RNN_CELL.H },
+          (_, i) => `<option value="${i}">h${i + 1}</option>`,
+        ).join("");
+        if (cur && parseInt(cur) < RNN_CELL.H) sel.value = cur;
+      }
+      function rnnSeqRun() {
+        const { H, Wx, Wh, b } = RNN_CELL;
+        const seq = rnnSeqParse();
+        let h = Array(H).fill(0);
+        const hist = [{ t: 0, x: null, h: [...h] }];
+        for (let t = 0; t < seq.length; t++) {
+          const x = seq[t];
+          const hNew = [];
+          for (let i = 0; i < H; i++) {
+            let zi = Wx[i] * x + b[i];
+            for (let k = 0; k < H; k++) zi += Wh[i][k] * h[k];
+            hNew.push(Math.tanh(zi));
+          }
+          h = hNew;
+          hist.push({ t: t + 1, x, h: [...h] });
+        }
+        RNN_SEQ.hist = hist;
+        return hist;
+      }
+      function rnnSeqRunAndRender() {
+        rnnSeqPopulateNeuronSelect();
+        rnnSeqRun();
+        rnnSeqRenderHeatmap(-1);
+        rnnSeqRenderStrip(-1);
+        rnnSeqRenderChart();
+      }
+      // Heatmap classique RNN : une ligne par unité cachée, une colonne par pas de temps.
+      // C'est LA visualisation qui montre le mieux la mémoire qui persiste ou s'efface.
+      function rnnSeqRenderHeatmap(activeIdx) {
+        const el = document.getElementById("rnnSeqHeatmap");
+        if (!el) return;
+        const hist = RNN_SEQ.hist;
+        if (!hist.length) {
+          el.innerHTML = "";
+          return;
+        }
+        const H = RNN_CELL.H;
+        let allVals = [];
+        hist.forEach((s) => (allVals = allVals.concat(s.h.map(Math.abs))));
+        const mx = Math.max(0.001, ...allVals);
+        let html = `<div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Mémoire dans le temps (ligne = unité cachée, colonne = pas de temps)</div>`;
+        html += `<div class="rnn-heatmap">`;
+        // en-tête des pas de temps
+        html += `<div class="rnn-heatmap-row" style="margin-left:20px">`;
+        hist.forEach((s, idx) => {
+          html += `<div class="rnn-heatmap-lbl" style="${idx === activeIdx ? "color:var(--ylw);font-weight:700" : ""}" data-no-translate>t${s.t}</div>`;
+        });
+        html += `</div>`;
+        for (let i = 0; i < H; i++) {
+          html += `<div class="rnn-heatmap-row"><div class="rnn-heatmap-lbl" style="width:20px;text-align:left;color:var(--a2)" data-no-translate>h${i + 1}</div>`;
+          hist.forEach((s, idx) => {
+            const v = s.h[i] ?? 0;
+            const border =
+              idx === activeIdx ? "outline:1px solid var(--ylw)" : "";
+            html += `<div class="rnn-heatmap-cell" data-no-translate style="background:${rnnValColor(v, mx)};${border}" title="t=${s.t}, h${i + 1}=${v.toFixed(3)}">${v.toFixed(2)}</div>`;
+          });
+          html += `</div>`;
+        }
+        html += `</div>`;
+        el.innerHTML = html;
+      }
+      function rnnSeqRenderStrip(activeIdx) {
+        const el = document.getElementById("rnnSeqStrip");
+        if (!el) return;
+        const hist = RNN_SEQ.hist;
+        let allVals = [];
+        hist.forEach((s) => (allVals = allVals.concat(s.h.map(Math.abs))));
+        const mx = Math.max(0.001, ...allVals);
+        let html = "";
+        hist.forEach((s, idx) => {
+          if (idx > 0) html += `<div class="rnn-arrow">→</div>`;
+          html += `<div class="rnn-step${idx === activeIdx ? " active" : ""}">`;
+          html += `<div class="t-lbl">t=${s.t}</div>`;
+          html += `<div class="t-x" data-no-translate>${s.x === null ? "—" : "x=" + s.x.toFixed(2)}</div>`;
+          html += `<div class="t-h">`;
+          s.h.forEach((v) => {
+            html += `<span data-no-translate style="background:${rnnValColor(v, mx)}">${v.toFixed(2)}</span>`;
+          });
+          html += `</div></div>`;
+        });
+        el.innerHTML = html;
+      }
+      function rnnSeqRenderChart() {
+        const el = document.getElementById("rnnSeqChart");
+        if (!el) return;
+        const nsel = document.getElementById("rnnSeqNeuron");
+        const n = nsel ? parseInt(nsel.value) || 0 : 0;
+        const vals = RNN_SEQ.hist.map((s) => s.h[n] ?? 0);
+        el.innerHTML = `<span class="fe">Trace de h${n + 1} sur la séquence :</span><br>${rnnSparkline(vals, 300, 50, "var(--a1)")}`;
+      }
+      function rnnSeqToggleAnim() {
+        if (RNN_SEQ.timer) {
+          rnnSeqStopAnim();
+          return;
+        }
+        rnnSeqRun();
+        rnnSeqPopulateNeuronSelect();
+        let i = 0;
+        const btn = document.getElementById("rnnSeqAnimBtn");
+        if (btn) btn.textContent = "⏹ Arrêter";
+        RNN_SEQ.timer = setInterval(() => {
+          rnnSeqRenderHeatmap(i);
+          rnnSeqRenderStrip(i);
+          rnnSeqRenderChart();
+          i++;
+          if (i >= RNN_SEQ.hist.length) rnnSeqStopAnim();
+        }, 550);
+      }
+      function rnnSeqStopAnim() {
+        if (RNN_SEQ.timer) {
+          clearInterval(RNN_SEQ.timer);
+          RNN_SEQ.timer = null;
+        }
+        const btn = document.getElementById("rnnSeqAnimBtn");
+        if (btn) btn.textContent = "▶ Animer pas-à-pas";
+      }
+
+      // ── TAB 3 : MÉMOIRE & GRADIENTS ──
+      function rnnGradRender() {
+        const wEl = document.getElementById("rnnGradW");
+        const sEl = document.getElementById("rnnGradS");
+        const resEl = document.getElementById("rnnGradResult");
+        if (!wEl || !sEl || !resEl) return;
+        const w = parseFloat(wEl.value);
+        const s = parseFloat(sEl.value);
+        document.getElementById("rnnGradWLbl").textContent = w.toFixed(2);
+        document.getElementById("rnnGradSLbl").textContent = s.toFixed(2);
+        const T = 20;
+        const factor = w * s;
+        const vals = [];
+        let v = 1;
+        for (let t = 0; t <= T; t++) {
+          vals.push(v);
+          v *= factor;
+        }
+        let verdict, color;
+        if (factor < 0.97) {
+          verdict = "VANISHING — le gradient s'évanouit";
+          color = "var(--red)";
+        } else if (factor > 1.03) {
+          verdict = "EXPLODING — le gradient explose";
+          color = "var(--org)";
+        } else {
+          verdict = "STABLE — ni vanishing ni exploding";
+          color = "var(--grn)";
+        }
+        const finalVal = vals[vals.length - 1];
+        const finalTxt =
+          Math.abs(finalVal) < 1e-4
+            ? finalVal.toExponential(2)
+            : Math.abs(finalVal) > 1e4
+              ? finalVal.toExponential(2)
+              : finalVal.toFixed(4);
+        // barres en échelle log pour rester lisible même en cas d'explosion/vanishing extrême
+        const logVals = vals.map((x) => Math.log10(Math.max(x, 1e-12)));
+        const maxLog = Math.max(...logVals, 0.001);
+        const minLog = Math.min(...logVals, -0.001);
+        const spanLog = maxLog - minLog || 1;
+        let bars = "";
+        vals.forEach((x, i) => {
+          const lg = Math.log10(Math.max(x, 1e-12));
+          const hpx = Math.max(2, ((lg - minLog) / spanLog) * 70);
+          bars += `<div style="display:inline-flex;flex-direction:column;justify-content:flex-end;align-items:center;width:${300 / vals.length - 1}px;height:70px;margin-right:1px" title="t=${i} : ${x.toExponential(2)}"><div style="width:100%;height:${hpx}px;background:${color};opacity:.8;border-radius:1px 1px 0 0"></div></div>`;
+        });
+        // chaîne visuelle : le gradient qui remonte de h(T) vers le passé
+        const chainEl = document.getElementById("rnnGradChain");
+        if (chainEl) {
+          const N = Math.min(12, vals.length);
+          const logValsC = vals
+            .slice(0, N)
+            .map((x) => Math.log10(Math.max(x, 1e-12)));
+          const maxLogC = Math.max(...logValsC, 0.001);
+          const minLogC = Math.min(...logValsC, -0.001);
+          const spanC = maxLogC - minLogC || 1;
+          let chain = `<div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Le gradient remonte le temps : h(T) → h(T−${N - 1})</div>`;
+          chain += `<div class="rnn-chain-wrap">`;
+          for (let i = 0; i < N; i++) {
+            const norm = (logValsC[i] - minLogC) / spanC;
+            const op = (0.15 + norm * 0.85).toFixed(2);
+            chain += `<div class="rnn-chain-node" data-no-translate style="background:${color};opacity:${op}" title="t=T−${i} : ${vals[i].toExponential(2)}">${i === 0 ? "T" : "−" + i}</div>`;
+            if (i < N - 1) {
+              const nextNorm = (logValsC[i + 1] - minLogC) / spanC;
+              const avgNorm = (norm + nextNorm) / 2;
+              const width = (14 + avgNorm * 26).toFixed(0);
+              const aop = (0.2 + avgNorm * 0.8).toFixed(2);
+              chain += `<div class="rnn-chain-arrow" style="width:${width}px;background:${color};opacity:${aop}"></div>`;
+            }
+          }
+          chain += `</div>`;
+          chainEl.innerHTML = chain;
+        }
+        resEl.innerHTML = `
+          <div style="font-size:9px;color:var(--dim);margin-bottom:4px">|∂h(T)/∂h(1)| ≈ (w·s)^T — échelle logarithmique, T de 0 à ${T}</div>
+          <div style="display:flex;align-items:flex-end;height:70px;margin-bottom:8px">${bars}</div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+            <span class="rnn-verdict" style="background:${color};color:#04050a">${verdict}</span>
+            <span style="font-size:9px;color:var(--dim)">facteur par pas (w·s) = <span class="fval" data-no-translate>${factor.toFixed(3)}</span></span>
+            <span style="font-size:9px;color:var(--dim)">après T=${T} pas : <span class="fval" data-no-translate>${finalTxt}</span></span>
+          </div>`;
+      }
+
+      // ── TAB 4 : ENTRAÎNEMENT RÉEL (char-RNN, BPTT + Adagrad) ──
+      const RNN_TRAIN = {
+        text: "bonjour",
+        vocab: [],
+        stoi: {},
+        itos: {},
+        H: 16,
+        Wxh: null,
+        Whh: null,
+        Why: null,
+        bh: null,
+        by: null,
+        mWxh: null,
+        mWhh: null,
+        mWhy: null,
+        mbh: null,
+        mby: null,
+        iter: 0,
+        lossHist: [],
+        smoothLoss: null,
+        timer: null,
+        lr: 0.1,
+        generated: "",
+      };
+      function rnnTrainSetup() {
+        rnnTrainStop();
+        const inp = document.getElementById("rnnTrainText");
+        let text = ((inp ? inp.value : RNN_TRAIN.text) || "")
+          .toLowerCase()
+          .trim();
+        if (text.length < 2) text = "bonjour";
+        RNN_TRAIN.text = text;
+        const chars = [...new Set(text.split(""))];
+        RNN_TRAIN.vocab = chars;
+        RNN_TRAIN.stoi = {};
+        RNN_TRAIN.itos = {};
+        chars.forEach((c, i) => {
+          RNN_TRAIN.stoi[c] = i;
+          RNN_TRAIN.itos[i] = c;
+        });
+        const V = chars.length,
+          H = RNN_TRAIN.H;
+        RNN_TRAIN.Wxh = rnnRandMat(H, V, 0.1);
+        RNN_TRAIN.Whh = rnnRandMat(H, H, 0.1);
+        RNN_TRAIN.Why = rnnRandMat(V, H, 0.1);
+        RNN_TRAIN.bh = Array(H).fill(0);
+        RNN_TRAIN.by = Array(V).fill(0);
+        RNN_TRAIN.mWxh = rnnZerosMat(H, V);
+        RNN_TRAIN.mWhh = rnnZerosMat(H, H);
+        RNN_TRAIN.mWhy = rnnZerosMat(V, H);
+        RNN_TRAIN.mbh = Array(H).fill(0);
+        RNN_TRAIN.mby = Array(V).fill(0);
+        RNN_TRAIN.iter = 0;
+        RNN_TRAIN.lossHist = [];
+        RNN_TRAIN.smoothLoss = null;
+        RNN_TRAIN.generated = "";
+        rnnTrainRender();
+      }
+      function rnnTrainStep() {
+        const T = RNN_TRAIN;
+        if (!T.Wxh || T.text.length < 2) return 0;
+        const { stoi, vocab, H } = T;
+        const V = vocab.length;
+        const inputs = [],
+          targets = [];
+        for (let i = 0; i < T.text.length - 1; i++) {
+          inputs.push(stoi[T.text[i]]);
+          targets.push(stoi[T.text[i + 1]]);
+        }
+        const n = inputs.length;
+        let h = Array(H).fill(0);
+        const xs = [],
+          hs = [h.slice()],
+          ps = [];
+        let loss = 0;
+        for (let t = 0; t < n; t++) {
+          const x = Array(V).fill(0);
+          x[inputs[t]] = 1;
+          xs.push(x);
+          const hNew = Array(H).fill(0);
+          for (let i = 0; i < H; i++) {
+            let zi = T.bh[i];
+            for (let j = 0; j < V; j++) zi += T.Wxh[i][j] * x[j];
+            for (let k = 0; k < H; k++) zi += T.Whh[i][k] * h[k];
+            hNew[i] = Math.tanh(zi);
+          }
+          h = hNew;
+          hs.push(h.slice());
+          const y = Array(V).fill(0);
+          for (let i = 0; i < V; i++) {
+            let yi = T.by[i];
+            for (let k = 0; k < H; k++) yi += T.Why[i][k] * h[k];
+            y[i] = yi;
+          }
+          const mxv = Math.max(...y);
+          const exps = y.map((v) => Math.exp(v - mxv));
+          const sum = exps.reduce((a, b) => a + b, 0);
+          const p = exps.map((v) => v / sum);
+          ps.push(p);
+          loss += -Math.log(Math.max(p[targets[t]], 1e-12));
+        }
+        // ── BPTT ──
+        const dWxh = rnnZerosMat(H, V),
+          dWhh = rnnZerosMat(H, H),
+          dWhy = rnnZerosMat(V, H);
+        const dbh = Array(H).fill(0),
+          dby = Array(V).fill(0);
+        let dhnext = Array(H).fill(0);
+        for (let t = n - 1; t >= 0; t--) {
+          const dy = ps[t].slice();
+          dy[targets[t]] -= 1;
+          for (let i = 0; i < V; i++) {
+            dby[i] += dy[i];
+            for (let k = 0; k < H; k++) dWhy[i][k] += dy[i] * hs[t + 1][k];
+          }
+          const dh = Array(H).fill(0);
+          for (let k = 0; k < H; k++) {
+            let s = 0;
+            for (let i = 0; i < V; i++) s += T.Why[i][k] * dy[i];
+            dh[k] = s + dhnext[k];
+          }
+          const dhraw = dh.map(
+            (v, k) => (1 - hs[t + 1][k] * hs[t + 1][k]) * v,
+          );
+          for (let i = 0; i < H; i++) {
+            dbh[i] += dhraw[i];
+            for (let j = 0; j < V; j++) dWxh[i][j] += dhraw[i] * xs[t][j];
+            for (let k = 0; k < H; k++) dWhh[i][k] += dhraw[i] * hs[t][k];
+          }
+          dhnext = Array(H).fill(0);
+          for (let k = 0; k < H; k++) {
+            let s = 0;
+            for (let i = 0; i < H; i++) s += T.Whh[i][k] * dhraw[i];
+            dhnext[k] = s;
+          }
+        }
+        // clip anti-explosion
+        [dWxh, dWhh, dWhy].forEach((m) =>
+          m.forEach((row) => {
+            for (let i = 0; i < row.length; i++)
+              row[i] = Math.max(-5, Math.min(5, row[i]));
+          }),
+        );
+        [dbh, dby].forEach((vec) => {
+          for (let i = 0; i < vec.length; i++)
+            vec[i] = Math.max(-5, Math.min(5, vec[i]));
+        });
+        // Adagrad
+        function adaUpd(param, dparam, mem) {
+          for (let i = 0; i < param.length; i++) {
+            if (Array.isArray(param[i])) {
+              for (let j = 0; j < param[i].length; j++) {
+                mem[i][j] += dparam[i][j] * dparam[i][j];
+                param[i][j] += (-T.lr * dparam[i][j]) / Math.sqrt(mem[i][j] + 1e-8);
+              }
+            } else {
+              mem[i] += dparam[i] * dparam[i];
+              param[i] += (-T.lr * dparam[i]) / Math.sqrt(mem[i] + 1e-8);
+            }
+          }
+        }
+        adaUpd(T.Wxh, dWxh, T.mWxh);
+        adaUpd(T.Whh, dWhh, T.mWhh);
+        adaUpd(T.Why, dWhy, T.mWhy);
+        adaUpd(T.bh, dbh, T.mbh);
+        adaUpd(T.by, dby, T.mby);
+        T.iter++;
+        T.smoothLoss = T.smoothLoss == null ? loss : T.smoothLoss * 0.98 + loss * 0.02;
+        T.lossHist.push(T.smoothLoss);
+        if (T.lossHist.length > 200) T.lossHist.shift();
+        return loss;
+      }
+      function rnnTrainSample(seedChar, length, temp) {
+        const T = RNN_TRAIN;
+        if (!T.Wxh) return { text: "", confs: [] };
+        const { vocab, stoi, itos, H } = T;
+        const V = vocab.length;
+        let h = Array(H).fill(0);
+        let idx = stoi[seedChar] != null ? stoi[seedChar] : 0;
+        let out = itos[idx];
+        const confs = [1];
+        for (let t = 0; t < length; t++) {
+          const x = Array(V).fill(0);
+          x[idx] = 1;
+          const hNew = Array(H).fill(0);
+          for (let i = 0; i < H; i++) {
+            let zi = T.bh[i];
+            for (let j = 0; j < V; j++) zi += T.Wxh[i][j] * x[j];
+            for (let k = 0; k < H; k++) zi += T.Whh[i][k] * h[k];
+            hNew[i] = Math.tanh(zi);
+          }
+          h = hNew;
+          const y = Array(V).fill(0);
+          for (let i = 0; i < V; i++) {
+            let yi = T.by[i];
+            for (let k = 0; k < H; k++) yi += T.Why[i][k] * h[k];
+            y[i] = yi / temp;
+          }
+          const mxv = Math.max(...y);
+          const exps = y.map((v) => Math.exp(v - mxv));
+          const sum = exps.reduce((a, b) => a + b, 0);
+          const p = exps.map((v) => v / sum);
+          let r = Math.random(),
+            acc = 0,
+            chosen = 0;
+          for (let i = 0; i < V; i++) {
+            acc += p[i];
+            if (r <= acc) {
+              chosen = i;
+              break;
+            }
+          }
+          idx = chosen;
+          out += itos[idx];
+          confs.push(p[chosen]);
+        }
+        return { text: out, confs };
+      }
+      function rnnTrainGenerate() {
+        const T = RNN_TRAIN;
+        if (!T.Wxh) return;
+        const res = rnnTrainSample(T.text[0], 40, 0.6);
+        T.generated = res.text;
+        T.generatedConfs = res.confs;
+        rnnTrainRender();
+      }
+      // Heatmap compacte pour visualiser une matrice de poids (mise à jour en direct pendant l'entraînement)
+      function rnnWeightHeatmapHTML(mat, cellPx) {
+        cellPx = Math.max(3, cellPx || 6);
+        let mx = 0.001;
+        mat.forEach((row) =>
+          row.forEach((v) => {
+            if (Math.abs(v) > mx) mx = Math.abs(v);
+          }),
+        );
+        let html = `<div class="rnn-wmap">`;
+        mat.forEach((row) => {
+          html += `<div class="rnn-wmap-row">`;
+          row.forEach((v) => {
+            html += `<span class="rnn-wmap-cell" title="${v.toFixed(3)}" style="width:${cellPx}px;height:${cellPx}px;background:${rnnValColor(v, mx)}"></span>`;
+          });
+          html += `</div>`;
+        });
+        html += `</div>`;
+        return html;
+      }
+      function rnnTrainRender() {
+        const el = document.getElementById("rnnTrainBody");
+        if (!el || !RNN_TRAIN.Wxh) return;
+        const T = RNN_TRAIN;
+        const loss = T.smoothLoss == null ? 0 : T.smoothLoss;
+        let genHTML = "—";
+        if (T.generated) {
+          genHTML = T.generated
+            .split("")
+            .map((c, i) => {
+              const conf = (T.generatedConfs && T.generatedConfs[i]) ?? 1;
+              const col = `hsl(${Math.round(conf * 120)},75%,55%)`;
+              return `<span data-no-translate title="confiance ${(conf * 100).toFixed(0)}%" style="color:${col}">${c === " " ? "␣" : c}</span>`;
+            })
+            .join("");
+        }
+        let html = `<div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div class="cnn-train-col">
+            <h3>Vocabulaire (${T.vocab.length} caractères)</h3>
+            <div style="font-size:11px;color:var(--a2);margin-bottom:8px" data-no-translate>${T.vocab.map((c) => (c === " " ? "␣" : c)).join(" · ")}</div>
+            <h3>Itération</h3>
+            <div style="font-size:14px;color:var(--a1)" data-no-translate>${T.iter}</div>
+          </div>
+          <div class="cnn-train-col">
+            <h3>Perte (cross-entropy, lissée)</h3>
+            <div class="cnn-loss-box">
+              ${rnnSparkline(T.lossHist, 200, 54, "var(--a2)")}
+              <div style="font-size:10px;color:var(--a2);margin-top:4px" data-no-translate>${loss.toFixed(4)}</div>
+            </div>
+          </div>
+          <div class="cnn-train-col">
+            <h3>Génération (échantillonnage depuis « ${T.text[0]} »)</h3>
+            <div class="cnn-loss-box" style="min-height:54px">
+              <div style="font-size:11px;word-break:break-all;line-height:1.6">${genHTML}</div>
+            </div>
+            <div style="font-size:7px;color:var(--dim);margin-top:3px">🟢 confiance haute · 🔴 confiance basse</div>
+            <button class="btn" style="margin-top:6px;width:100%" onclick="rnnTrainGenerate()">✎ Générer un échantillon</button>
+          </div>
+          <div class="cnn-train-col">
+            <h3>Poids Whh (récurrent, ${T.H}×${T.H})</h3>
+            <div class="cnn-loss-box" style="max-height:100px;overflow:auto">${rnnWeightHeatmapHTML(T.Whh, Math.floor(90 / T.H))}</div>
+            <h3 style="margin-top:6px">Poids Wxh (entrée, ${T.H}×${T.vocab.length})</h3>
+            <div class="cnn-loss-box" style="max-height:100px;overflow:auto">${rnnWeightHeatmapHTML(T.Wxh, Math.floor(120 / T.vocab.length))}</div>
+          </div>
+        </div>`;
+        el.innerHTML = html;
+      }
+      function rnnTrainToggle() {
+        if (RNN_TRAIN.timer) {
+          rnnTrainStop();
+          return;
+        }
+        if (!RNN_TRAIN.Wxh) rnnTrainSetup();
+        if (!RNN_TRAIN.Wxh) return;
+        const btn = document.getElementById("rnnTrainBtn");
+        if (btn) btn.textContent = "⏹ Arrêter";
+        RNN_TRAIN.timer = setInterval(() => {
+          for (let i = 0; i < 3; i++) rnnTrainStep();
+          rnnTrainRender();
+          if (RNN_TRAIN.iter >= 2000) rnnTrainStop();
+        }, 60);
+      }
+      function rnnTrainStop() {
+        if (RNN_TRAIN.timer) {
+          clearInterval(RNN_TRAIN.timer);
+          RNN_TRAIN.timer = null;
+        }
+        const btn = document.getElementById("rnnTrainBtn");
+        if (btn) btn.textContent = "▶ Entraîner";
+      }
+      function rnnTrainReset() {
+        rnnTrainSetup();
       }
 
       // ════════════ 11. KEYBOARD SHORTCUTS ════════════
@@ -12810,12 +15357,16 @@
             "saveload-modal-bg",
             "race-modal-bg",
             "cnn-modal-bg",
+            "rnn-modal-bg",
           ].forEach((id) =>
             document.getElementById(id)?.classList.remove("show"),
           );
           stopBoundaryLive();
           stopRace();
           cnnStopAnim();
+          cnnTrainStop();
+          rnnSeqStopAnim();
+          rnnTrainStop();
         }
       });
 

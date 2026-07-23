@@ -414,7 +414,7 @@ Built with:
 
 Possible future improvements:
 
-- [ ] More architectures (CNN, RNN)
+- [x] More architectures (CNN, RNN)
 - [ ] More datasets
 - [ ] WebGPU acceleration
 - [ ] Model export/import improvements

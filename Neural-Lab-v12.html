@@ -9934,6 +9934,7 @@
           "\\dfrac{\\partial L}{\\partial w} = \\underbrace{\\dfrac{\\partial L}{\\partial a}}_{\\delta} \\cdot \\underbrace{\\dfrac{\\partial a}{\\partial z}}_{f'(z)} \\cdot \\underbrace{\\dfrac{\\partial z}{\\partial w}}_{a_{\\text{prev}}}",
         wgrad: "\\dfrac{\\partial L}{\\partial w_{ij}} = \\delta_j \\cdot a_i",
         drop: "\\tilde{a}_k = \\dfrac{a_k}{p} \\cdot m_k,\\quad m_k\\sim\\text{Bernoulli}(p)",
+        gap: "\\dfrac{\\partial L}{\\partial x(i,j,c)} = \\dfrac{\\delta_c}{H\\cdot W}",
       };
 
       // ── Extra constructive info for loss functions ──
@@ -10039,6 +10040,13 @@
           "RF_l = RF_{l-1} + (k_l - 1)\\prod_{i<l} s_i",
         convparams:
           "N_{\\text{param}} = (k_h \\times k_w \\times C_{\\text{in}} + 1)\\times C_{\\text{out}}",
+        padsame: "p = \\left\\lfloor \\dfrac{k-1}{2} \\right\\rfloor",
+        conv1x1:
+          "S(i,j) = \\sum_{c=1}^{C_{\\text{in}}} I(i,j,c)\\,K(c) + b",
+        dilconv:
+          "N_{\\text{out}} = \\left\\lfloor \\dfrac{N + 2p - d(k-1) - 1}{s} \\right\\rfloor + 1",
+        tconv: "N_{\\text{out}} = (N-1)\\cdot s - 2p + k",
+        gap: "y_c = \\dfrac{1}{H\\cdot W}\\sum_{i=1}^{H}\\sum_{j=1}^{W} x(i,j,c)",
       };
       // Helper: render formula with KaTeX if available, fallback to renderMathEq
       function renderEqAuto(f, display) {
@@ -10645,6 +10653,76 @@
           deriv: "—",
           kw: "parameters count weight sharing cnn",
         },
+        {
+          id: "padsame",
+          cat: "CNN",
+          sub: "Dimensionnement",
+          name: "Padding « same »",
+          eq: "p = ⌊(k − 1) / 2⌋",
+          tags: ["cnn", "padding", "dimension", "same"],
+          range: "—",
+          desc: "Quantité de zéros à ajouter de chaque côté de l'entrée pour que la sortie garde la même taille spatiale que l'entrée (avec stride=1) — le mode « Same » du Labo CNN, par opposition au padding « valide » (p=0).",
+          pros: ["Préserve la résolution spatiale entre les couches", "Évite de perdre l'information des bords"],
+          cons: ["Calcule sur des zéros artificiels", "Léger biais près des bordures"],
+          deriv: "—",
+          kw: "same padding preserve size zero pad valid cnn",
+        },
+        {
+          id: "conv1x1",
+          cat: "CNN",
+          sub: "Convolution",
+          name: "Convolution 1×1",
+          eq: "S(i,j) = Σc I(i,j,c)·K(c) + b",
+          tags: ["cnn", "convolution", "1x1", "bottleneck", "pointwise"],
+          range: "—",
+          desc: "Un noyau 1×1 ne regarde qu'un seul pixel à la fois mais combine tous ses canaux : il ne capte aucune information spatiale, il sert uniquement à changer la profondeur (nombre de canaux) à moindre coût — bottleneck (ResNet), réduction de dimension (Inception).",
+          pros: ["Très peu coûteux en calcul", "Mélange les canaux entre eux", "Ajuste la profondeur à volonté"],
+          cons: ["Aucune information spatiale captée à elle seule"],
+          deriv: "—",
+          kw: "pointwise 1x1 bottleneck channel mixing inception resnet",
+        },
+        {
+          id: "dilconv",
+          cat: "CNN",
+          sub: "Dimensionnement",
+          name: "Convolution dilatée (atrous)",
+          eq: "N_sortie = ⌊(N + 2p − d(k−1) − 1) / s⌋ + 1",
+          tags: ["cnn", "dilatation", "atrous", "champ réceptif", "dimension"],
+          range: "—",
+          desc: "Le taux de dilatation d espace les poids du noyau (des « trous » entre eux) : agrandit le champ réceptif sans ajouter de paramètres ni réduire la résolution de la carte de features — utilisé en segmentation sémantique (DeepLab).",
+          pros: ["Champ réceptif plus large sans plus de paramètres", "Pas de perte de résolution"],
+          cons: ["Peut créer un effet de grille (gridding artifacts)"],
+          deriv: "—",
+          kw: "dilated atrous rate receptive field deeplab segmentation",
+        },
+        {
+          id: "tconv",
+          cat: "CNN",
+          sub: "Convolution",
+          name: "Convolution transposée",
+          eq: "N_sortie = (N − 1)·s − 2p + k",
+          tags: ["cnn", "transposée", "déconvolution", "upsampling"],
+          range: "—",
+          desc: "Opération inverse de la convolution classique : au lieu de réduire la carte de features, elle l'agrandit. Utilisée pour le suréchantillonnage appris — segmentation, autoencodeurs, générateurs de GAN.",
+          pros: ["Apprend l'agrandissement (contrairement à une simple interpolation)"],
+          cons: ["Peut produire un effet de damier (checkerboard artifacts)"],
+          deriv: "—",
+          kw: "transposed deconvolution upsampling gan segmentation checkerboard",
+        },
+        {
+          id: "gap",
+          cat: "CNN",
+          sub: "Pooling",
+          name: "Global Average Pooling",
+          eq: "y_c = (1/(H·W)) ΣΣ x(i,j,c)",
+          tags: ["cnn", "pooling", "global average pooling", "gap"],
+          range: "—",
+          desc: "Réduit chaque carte de features entière à une seule valeur (sa moyenne sur tout H×W) : remplace souvent les couches denses finales d'un CNN (ResNet, MobileNet) → beaucoup moins de paramètres et moins de surapprentissage.",
+          pros: ["Élimine les couches denses finales", "Beaucoup moins de paramètres", "Réduit le surapprentissage"],
+          cons: ["Perd la localisation spatiale fine"],
+          deriv: "∂L/∂x(i,j,c) = δc / (H·W)",
+          kw: "global average pooling resnet mobilenet parameter reduction",
+        },
       ];
       // ── Math rendering for formula library ──
       function renderMathEq(eq) {
@@ -10942,6 +11020,36 @@
             sym: "f'(z)",
             desc: "Dérivée de l'activation",
             keys: ["backprop", "gradient", "fondamental"],
+          },
+          {
+            sym: "I(i,j) / K(m,n)",
+            desc: "Pixel de l'entrée / poids du noyau (kernel)",
+            keys: ["cnn"],
+          },
+          {
+            sym: "k",
+            desc: "Taille du noyau (ex. 3 pour un noyau 3×3)",
+            keys: ["cnn"],
+          },
+          {
+            sym: "s",
+            desc: "Stride — pas de déplacement du noyau/de la fenêtre",
+            keys: ["cnn"],
+          },
+          {
+            sym: "p",
+            desc: "Padding — bordure de zéros ajoutée autour de l'entrée",
+            keys: ["cnn"],
+          },
+          {
+            sym: "N / N_sortie",
+            desc: "Taille spatiale de l'entrée / de la sortie",
+            keys: ["cnn"],
+          },
+          {
+            sym: "Cin / Cout",
+            desc: "Nombre de canaux d'entrée / de sortie",
+            keys: ["cnn"],
           },
         ];
         const relevant = allSym.filter((s) =>

@@ -25,7 +25,7 @@
         --a1: #00e5ff;
         --a2: #bf5fff;
         --grn: #00ff9d;
-        --flashy: #9DFF00;
+        --flashy: #9dff00;
         --ylw: #ffd600;
         --red: #ff3d5a;
         --org: #ff8c2a;
@@ -3652,14 +3652,12 @@
         color: var(--flashy);
       }
       .version a {
-        color: inherit;       /* le lien prend la couleur de .version */
+        color: inherit; /* le lien prend la couleur de .version */
         text-decoration: none; /* optionnel */
       }
       .version a:hover {
         text-decoration: underline; /* optionnel */
       }
-
-
     </style>
   </head>
   <body>
@@ -4938,11 +4936,11 @@
                 style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
               >
                 Convolution pas-à-pas, galerie comparant tous les filtres,
-                pipeline multi-couches avec champ réceptif, entraînement
-                d'un noyau par descente de gradient, et un onglet
+                pipeline multi-couches avec champ réceptif, entraînement d'un
+                noyau par descente de gradient, et un onglet
                 <b style="color: var(--grn)">« Modèle complet »</b> pour
-                construire, entraîner (vraie rétropropagation) et tester un
-                CNN multi-couches sur un dataset d'images créé sur place
+                construire, entraîner (vraie rétropropagation) et tester un CNN
+                multi-couches sur un dataset d'images créé sur place
               </div>
               <button class="btn ok" onclick="openCNNLab()" style="width: 100%">
                 🧠 Ouvrir le labo CNN
@@ -4974,8 +4972,8 @@
                 style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
               >
                 Cellule récurrente pas-à-pas, déroulement dans le temps avec
-                trace de mémoire, démonstration du vanishing/exploding
-                gradient, et entraînement réel (BPTT) d'un mini-RNN
+                trace de mémoire, démonstration du vanishing/exploding gradient,
+                et entraînement réel (BPTT) d'un mini-RNN
                 caractère-par-caractère
               </div>
               <button class="btn on" onclick="openRNNLab()" style="width: 100%">
@@ -6336,10 +6334,9 @@
     <div id="tip"></div>
 
     <script>
-
       const VERSION = "v12";
       const REPO = "https://github.com/sudo-Luca/Neural-Lab";
-      document.querySelectorAll('.version').forEach(el => {
+      document.querySelectorAll(".version").forEach((el) => {
         el.innerHTML = `<a href="${REPO}" target="_blank" title="Dépôt GitHub" data-no-translate>${VERSION}</a>`;
       });
 
@@ -10158,34 +10155,26 @@
         universal:
           "\\forall\\varepsilon>0,\\;\\exists N \\text{ t.q. }|f(x)-\\text{NN}(x)|<\\varepsilon",
         // ── RNN ──
-        rnncell:
-          "h_t = \\tanh(W_{xh}\\,x_t + W_{hh}\\,h_{t-1} + b_h)",
+        rnncell: "h_t = \\tanh(W_{xh}\\,x_t + W_{hh}\\,h_{t-1} + b_h)",
         rnnout: "\\hat{y}_t = \\text{softmax}(W_{hy}\\,h_t + b_y)",
         rnnloss: "L = \\sum_{t=1}^{T} L_t(\\hat{y}_t,\\, y_t)",
-        bptt:
-          "\\dfrac{\\partial L}{\\partial h_t} = \\dfrac{\\partial L_t}{\\partial h_t} + W_{hh}^{\\top}\\dfrac{\\partial L}{\\partial h_{t+1}}\\odot\\tanh'(z_{t+1})",
+        bptt: "\\dfrac{\\partial L}{\\partial h_t} = \\dfrac{\\partial L_t}{\\partial h_t} + W_{hh}^{\\top}\\dfrac{\\partial L}{\\partial h_{t+1}}\\odot\\tanh'(z_{t+1})",
         rnnvanish:
           "\\dfrac{\\partial h_T}{\\partial h_1} = \\prod_{t=2}^{T} W_{hh}^{\\top}\\,\\text{diag}\\big(\\tanh'(z_t)\\big)",
-        lstm:
-          "\\begin{aligned} f_t &= \\sigma(W_f[h_{t-1},x_t]+b_f) \\\\ i_t &= \\sigma(W_i[h_{t-1},x_t]+b_i) \\\\ \\tilde{C}_t &= \\tanh(W_C[h_{t-1},x_t]+b_C) \\\\ C_t &= f_t \\odot C_{t-1} + i_t \\odot \\tilde{C}_t \\\\ o_t &= \\sigma(W_o[h_{t-1},x_t]+b_o) \\\\ h_t &= o_t \\odot \\tanh(C_t) \\end{aligned}",
-        gru:
-          "\\begin{aligned} z_t &= \\sigma(W_z[h_{t-1},x_t]) \\\\ r_t &= \\sigma(W_r[h_{t-1},x_t]) \\\\ \\tilde{h}_t &= \\tanh(W[r_t \\odot h_{t-1},\\,x_t]) \\\\ h_t &= (1-z_t)\\odot h_{t-1} + z_t \\odot \\tilde{h}_t \\end{aligned}",
+        lstm: "\\begin{aligned} f_t &= \\sigma(W_f[h_{t-1},x_t]+b_f) \\\\ i_t &= \\sigma(W_i[h_{t-1},x_t]+b_i) \\\\ \\tilde{C}_t &= \\tanh(W_C[h_{t-1},x_t]+b_C) \\\\ C_t &= f_t \\odot C_{t-1} + i_t \\odot \\tilde{C}_t \\\\ o_t &= \\sigma(W_o[h_{t-1},x_t]+b_o) \\\\ h_t &= o_t \\odot \\tanh(C_t) \\end{aligned}",
+        gru: "\\begin{aligned} z_t &= \\sigma(W_z[h_{t-1},x_t]) \\\\ r_t &= \\sigma(W_r[h_{t-1},x_t]) \\\\ \\tilde{h}_t &= \\tanh(W[r_t \\odot h_{t-1},\\,x_t]) \\\\ h_t &= (1-z_t)\\odot h_{t-1} + z_t \\odot \\tilde{h}_t \\end{aligned}",
         // ── CNN ──
-        conv2d:
-          "S(i,j) = \\sum_{m}\\sum_{n} I(i+m,\\,j+n)\\,K(m,n) + b",
+        conv2d: "S(i,j) = \\sum_{m}\\sum_{n} I(i+m,\\,j+n)\\,K(m,n) + b",
         convout:
           "N_{\\text{out}} = \\left\\lfloor \\dfrac{N + 2p - k}{s} \\right\\rfloor + 1",
-        maxpool:
-          "y(i,j) = \\max_{(m,n)\\in R} x(i\\cdot s+m,\\; j\\cdot s+n)",
+        maxpool: "y(i,j) = \\max_{(m,n)\\in R} x(i\\cdot s+m,\\; j\\cdot s+n)",
         avgpool:
           "y(i,j) = \\dfrac{1}{|R|}\\sum_{(m,n)\\in R} x(i\\cdot s+m,\\; j\\cdot s+n)",
-        recfield:
-          "RF_l = RF_{l-1} + (k_l - 1)\\prod_{i<l} s_i",
+        recfield: "RF_l = RF_{l-1} + (k_l - 1)\\prod_{i<l} s_i",
         convparams:
           "N_{\\text{param}} = (k_h \\times k_w \\times C_{\\text{in}} + 1)\\times C_{\\text{out}}",
         padsame: "p = \\left\\lfloor \\dfrac{k-1}{2} \\right\\rfloor",
-        conv1x1:
-          "S(i,j) = \\sum_{c=1}^{C_{\\text{in}}} I(i,j,c)\\,K(c) + b",
+        conv1x1: "S(i,j) = \\sum_{c=1}^{C_{\\text{in}}} I(i,j,c)\\,K(c) + b",
         dilconv:
           "N_{\\text{out}} = \\left\\lfloor \\dfrac{N + 2p - d(k-1) - 1}{s} \\right\\rfloor + 1",
         tconv: "N_{\\text{out}} = (N-1)\\cdot s - 2p + k",
@@ -10721,7 +10710,11 @@
           tags: ["cnn", "convolution", "kernel", "filtre"],
           range: "—",
           desc: "Fait glisser un noyau (kernel) sur l'image et calcule une somme pondérée locale à chaque position : détecte contours, textures et motifs.",
-          pros: ["Partage de poids", "Peu de paramètres", "Invariance par translation"],
+          pros: [
+            "Partage de poids",
+            "Peu de paramètres",
+            "Invariance par translation",
+          ],
           cons: ["Champ réceptif local (nécessite de la profondeur)"],
           deriv: "∂L/∂K(m,n) = ΣΣ δ(i,j)·I(i+m,j+n)",
           kw: "convolution kernel filter feature map cnn slide",
@@ -10749,7 +10742,11 @@
           tags: ["cnn", "pooling", "sous-échantillonnage"],
           range: "—",
           desc: "Garde la valeur maximale de chaque fenêtre : réduit la dimension, apporte une invariance aux petites translations et met en avant les activations fortes.",
-          pros: ["Réduit le calcul", "Invariance translation", "Pas de paramètres"],
+          pros: [
+            "Réduit le calcul",
+            "Invariance translation",
+            "Pas de paramètres",
+          ],
           cons: ["Perd l'information fine"],
           deriv: "∂L/∂x = δ uniquement sur l'argmax, 0 ailleurs",
           kw: "max pooling downsampling subsampling cnn",
@@ -10805,8 +10802,14 @@
           tags: ["cnn", "padding", "dimension", "same"],
           range: "—",
           desc: "Quantité de zéros à ajouter de chaque côté de l'entrée pour que la sortie garde la même taille spatiale que l'entrée (avec stride=1) — le mode « Same » du Labo CNN, par opposition au padding « valide » (p=0).",
-          pros: ["Préserve la résolution spatiale entre les couches", "Évite de perdre l'information des bords"],
-          cons: ["Calcule sur des zéros artificiels", "Léger biais près des bordures"],
+          pros: [
+            "Préserve la résolution spatiale entre les couches",
+            "Évite de perdre l'information des bords",
+          ],
+          cons: [
+            "Calcule sur des zéros artificiels",
+            "Léger biais près des bordures",
+          ],
           deriv: "—",
           kw: "same padding preserve size zero pad valid cnn",
         },
@@ -10819,7 +10822,11 @@
           tags: ["cnn", "convolution", "1x1", "bottleneck", "pointwise"],
           range: "—",
           desc: "Un noyau 1×1 ne regarde qu'un seul pixel à la fois mais combine tous ses canaux : il ne capte aucune information spatiale, il sert uniquement à changer la profondeur (nombre de canaux) à moindre coût — bottleneck (ResNet), réduction de dimension (Inception).",
-          pros: ["Très peu coûteux en calcul", "Mélange les canaux entre eux", "Ajuste la profondeur à volonté"],
+          pros: [
+            "Très peu coûteux en calcul",
+            "Mélange les canaux entre eux",
+            "Ajuste la profondeur à volonté",
+          ],
           cons: ["Aucune information spatiale captée à elle seule"],
           deriv: "—",
           kw: "pointwise 1x1 bottleneck channel mixing inception resnet",
@@ -10833,7 +10840,10 @@
           tags: ["cnn", "dilatation", "atrous", "champ réceptif", "dimension"],
           range: "—",
           desc: "Le taux de dilatation d espace les poids du noyau (des « trous » entre eux) : agrandit le champ réceptif sans ajouter de paramètres ni réduire la résolution de la carte de features — utilisé en segmentation sémantique (DeepLab).",
-          pros: ["Champ réceptif plus large sans plus de paramètres", "Pas de perte de résolution"],
+          pros: [
+            "Champ réceptif plus large sans plus de paramètres",
+            "Pas de perte de résolution",
+          ],
           cons: ["Peut créer un effet de grille (gridding artifacts)"],
           deriv: "—",
           kw: "dilated atrous rate receptive field deeplab segmentation",
@@ -10847,7 +10857,9 @@
           tags: ["cnn", "transposée", "déconvolution", "upsampling"],
           range: "—",
           desc: "Opération inverse de la convolution classique : au lieu de réduire la carte de features, elle l'agrandit. Utilisée pour le suréchantillonnage appris — segmentation, autoencodeurs, générateurs de GAN.",
-          pros: ["Apprend l'agrandissement (contrairement à une simple interpolation)"],
+          pros: [
+            "Apprend l'agrandissement (contrairement à une simple interpolation)",
+          ],
           cons: ["Peut produire un effet de damier (checkerboard artifacts)"],
           deriv: "—",
           kw: "transposed deconvolution upsampling gan segmentation checkerboard",
@@ -10861,7 +10873,11 @@
           tags: ["cnn", "pooling", "global average pooling", "gap"],
           range: "—",
           desc: "Réduit chaque carte de features entière à une seule valeur (sa moyenne sur tout H×W) : remplace souvent les couches denses finales d'un CNN (ResNet, MobileNet) → beaucoup moins de paramètres et moins de surapprentissage.",
-          pros: ["Élimine les couches denses finales", "Beaucoup moins de paramètres", "Réduit le surapprentissage"],
+          pros: [
+            "Élimine les couches denses finales",
+            "Beaucoup moins de paramètres",
+            "Réduit le surapprentissage",
+          ],
           cons: ["Perd la localisation spatiale fine"],
           deriv: "∂L/∂x(i,j,c) = δc / (H·W)",
           kw: "global average pooling resnet mobilenet parameter reduction",
@@ -12258,9 +12274,9 @@
             choisissez un noyau (kernel), et observez la feature map produite —
             la brique de base des CNN (réseaux de neurones convolutifs). Une
             fois ces briques comprises, direction l'onglet
-            <b style="color: var(--a1)">« 🧠 Modèle complet »</b> pour
-            assembler un vrai classifieur multi-couches et l'entraîner sur un
-            dataset d'images que vous créez vous-même.
+            <b style="color: var(--a1)">« 🧠 Modèle complet »</b> pour assembler
+            un vrai classifieur multi-couches et l'entraîner sur un dataset
+            d'images que vous créez vous-même.
           </div>
 
           <div class="tabs">
@@ -12278,11 +12294,7 @@
             >
               Galerie de filtres
             </div>
-            <div
-              class="tab"
-              id="cnntab-btn-pipe"
-              onclick="cnnShowTab('pipe')"
-            >
+            <div class="tab" id="cnntab-btn-pipe" onclick="cnnShowTab('pipe')">
               Pipeline multi-couches
             </div>
             <div
@@ -12303,175 +12315,184 @@
           </div>
 
           <div class="tc show" id="cnntab-conv">
-          <div
-            style="
-              display: flex;
-              gap: 14px;
-              flex-wrap: wrap;
-              margin-bottom: 10px;
-            "
-          >
-            <div style="flex: 1; min-width: 210px">
-              <div
-                style="
-                  font-size: 8px;
-                  color: var(--dim);
-                  text-transform: uppercase;
-                  letter-spacing: 0.1em;
-                  margin-bottom: 5px;
-                  font-weight: 700;
-                "
-              >
-                1. Image d'entrée
-              </div>
-              <div
-                style="
-                  display: flex;
-                  gap: 5px;
-                  margin-bottom: 6px;
-                  align-items: center;
-                "
-              >
-                <span style="font-size: 9px; color: var(--dim)">Taille</span>
-                <select
-                  id="cnnSize"
-                  style="flex: 1; font-size: 9px;" data-no-translate
-                  onchange="cnnSetGridSize(parseInt(this.value))"
-                >
-                  <option value="6">6×6</option>
-                  <option value="8" selected>8×8</option>
-                  <option value="10">10×10</option>
-                  <option value="12">12×12</option>
-                </select>
-              </div>
-              <div id="cnnInputGrid" class="cnn-grid"></div>
-              <div class="btn-row" style="margin-top: 6px">
-                <button class="btn" onclick="cnnPreset('croix')">
-                  ✚ Croix
-                </button>
-                <button class="btn" onclick="cnnPreset('carre')">
-                  ▢ Carré
-                </button>
-                <button class="btn" onclick="cnnPreset('diag')">╲ Diag.</button>
-                <button class="btn" onclick="cnnPreset('alea')">
-                  🎲 Aléa.
-                </button>
-                <button class="btn" onclick="cnnPreset('vide')">↺ Vide</button>
-              </div>
-              <div style="font-size: 8px; color: var(--dim); margin-top: 4px">
-                Cliquez une cellule pour basculer 0 ↔ 1 (pixel noir/blanc).
-              </div>
-            </div>
-
-            <div style="flex: 1; min-width: 190px">
-              <div
-                style="
-                  font-size: 8px;
-                  color: var(--dim);
-                  text-transform: uppercase;
-                  letter-spacing: 0.1em;
-                  margin-bottom: 5px;
-                  font-weight: 700;
-                "
-              >
-                2. Noyau (kernel) 3×3
-              </div>
-              <select
-                id="cnnKernelPreset"
-                style="width: 100%; font-size: 9px; margin-bottom: 6px"
-                onchange="cnnKernelPresetChange()"
-              >
-                <option value="identity">Identité</option>
-                <option value="blur">Flou (box blur)</option>
-                <option value="sharpen">Netteté</option>
-                <option value="sobelx" selected>
-                  Sobel X (contours verticaux)
-                </option>
-                <option value="sobely">Sobel Y (contours horizontaux)</option>
-                <option value="laplacian">Laplacien (contours)</option>
-                <option value="emboss">Emboss (relief)</option>
-                <option value="custom">Personnalisé…</option>
-              </select>
-              <div id="cnnKernelGrid" class="cnn-grid"></div>
-              <div
-                id="cnnKernelDesc"
-                style="
-                  font-size: 8px;
-                  color: var(--dim);
-                  margin-top: 6px;
-                  line-height: 1.6;
-                "
-              ></div>
-            </div>
-          </div>
-
-          <div
-            style="
-              display: flex;
-              gap: 12px;
-              flex-wrap: wrap;
-              align-items: center;
-              margin-bottom: 10px;
-              background: #030408;
-              border: 1px solid var(--brd);
-              border-radius: 4px;
-              padding: 8px 10px;
-            "
-          >
-            <div style="display: flex; align-items: center; gap: 5px">
-              <span style="font-size: 9px; color: var(--dim)">Stride</span>
-              <select id="cnnStride" style="font-size: 9px; width: 50px">
-                <option value="1">1</option>
-                <option value="2">2</option>
-              </select>
-            </div>
-            <div style="display: flex; align-items: center; gap: 5px">
-              <span style="font-size: 9px; color: var(--dim)">Padding</span>
-              <select id="cnnPadding" style="font-size: 9px; width: 78px">
-                <option value="valid">Valide</option>
-                <option value="same">Same</option>
-              </select>
-            </div>
-            <label
+            <div
               style="
                 display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                color: var(--dim);
+                gap: 14px;
+                flex-wrap: wrap;
+                margin-bottom: 10px;
               "
-              ><input type="checkbox" id="cnnRelu" /> ReLU</label
             >
-            <div style="display: flex; align-items: center; gap: 5px">
-              <span style="font-size: 9px; color: var(--dim)">Pooling</span>
-              <select id="cnnPoolMode" style="font-size: 9px; width: 100px">
-                <option value="none">Aucun</option>
-                <option value="max">Max 2×2</option>
-                <option value="avg">Moyenne 2×2</option>
-              </select>
+              <div style="flex: 1; min-width: 210px">
+                <div
+                  style="
+                    font-size: 8px;
+                    color: var(--dim);
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    margin-bottom: 5px;
+                    font-weight: 700;
+                  "
+                >
+                  1. Image d'entrée
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    gap: 5px;
+                    margin-bottom: 6px;
+                    align-items: center;
+                  "
+                >
+                  <span style="font-size: 9px; color: var(--dim)">Taille</span>
+                  <select
+                    id="cnnSize"
+                    style="flex: 1; font-size: 9px"
+                    data-no-translate
+                    onchange="cnnSetGridSize(parseInt(this.value))"
+                  >
+                    <option value="6">6×6</option>
+                    <option value="8" selected>8×8</option>
+                    <option value="10">10×10</option>
+                    <option value="12">12×12</option>
+                  </select>
+                </div>
+                <div id="cnnInputGrid" class="cnn-grid"></div>
+                <div class="btn-row" style="margin-top: 6px">
+                  <button class="btn" onclick="cnnPreset('croix')">
+                    ✚ Croix
+                  </button>
+                  <button class="btn" onclick="cnnPreset('carre')">
+                    ▢ Carré
+                  </button>
+                  <button class="btn" onclick="cnnPreset('diag')">
+                    ╲ Diag.
+                  </button>
+                  <button class="btn" onclick="cnnPreset('alea')">
+                    🎲 Aléa.
+                  </button>
+                  <button class="btn" onclick="cnnPreset('vide')">
+                    ↺ Vide
+                  </button>
+                </div>
+                <div style="font-size: 8px; color: var(--dim); margin-top: 4px">
+                  Cliquez une cellule pour basculer 0 ↔ 1 (pixel noir/blanc).
+                </div>
+              </div>
+
+              <div style="flex: 1; min-width: 190px">
+                <div
+                  style="
+                    font-size: 8px;
+                    color: var(--dim);
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    margin-bottom: 5px;
+                    font-weight: 700;
+                  "
+                >
+                  2. Noyau (kernel) 3×3
+                </div>
+                <select
+                  id="cnnKernelPreset"
+                  style="width: 100%; font-size: 9px; margin-bottom: 6px"
+                  onchange="cnnKernelPresetChange()"
+                >
+                  <option value="identity">Identité</option>
+                  <option value="blur">Flou (box blur)</option>
+                  <option value="sharpen">Netteté</option>
+                  <option value="sobelx" selected>
+                    Sobel X (contours verticaux)
+                  </option>
+                  <option value="sobely">Sobel Y (contours horizontaux)</option>
+                  <option value="laplacian">Laplacien (contours)</option>
+                  <option value="emboss">Emboss (relief)</option>
+                  <option value="custom">Personnalisé…</option>
+                </select>
+                <div id="cnnKernelGrid" class="cnn-grid"></div>
+                <div
+                  id="cnnKernelDesc"
+                  style="
+                    font-size: 8px;
+                    color: var(--dim);
+                    margin-top: 6px;
+                    line-height: 1.6;
+                  "
+                ></div>
+              </div>
             </div>
-          </div>
 
-          <div class="btn-row" style="margin-bottom: 10px">
-            <button class="btn ok" onclick="cnnCompute()" style="flex: 1">
-              ⬡ Calculer la convolution
-            </button>
-            <button class="btn warn" id="cnnAnimBtn" onclick="cnnToggleAnim()">
-              ▶ Animer pas-à-pas
-            </button>
-          </div>
+            <div
+              style="
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-bottom: 10px;
+                background: #030408;
+                border: 1px solid var(--brd);
+                border-radius: 4px;
+                padding: 8px 10px;
+              "
+            >
+              <div style="display: flex; align-items: center; gap: 5px">
+                <span style="font-size: 9px; color: var(--dim)">Stride</span>
+                <select id="cnnStride" style="font-size: 9px; width: 50px">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: center; gap: 5px">
+                <span style="font-size: 9px; color: var(--dim)">Padding</span>
+                <select id="cnnPadding" style="font-size: 9px; width: 78px">
+                  <option value="valid">Valide</option>
+                  <option value="same">Same</option>
+                </select>
+              </div>
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  font-size: 9px;
+                  color: var(--dim);
+                "
+                ><input type="checkbox" id="cnnRelu" /> ReLU</label
+              >
+              <div style="display: flex; align-items: center; gap: 5px">
+                <span style="font-size: 9px; color: var(--dim)">Pooling</span>
+                <select id="cnnPoolMode" style="font-size: 9px; width: 100px">
+                  <option value="none">Aucun</option>
+                  <option value="max">Max 2×2</option>
+                  <option value="avg">Moyenne 2×2</option>
+                </select>
+              </div>
+            </div>
 
-          <div id="cnnResults" style="font-size: 9px; color: var(--dim)">
-            Dessinez une image et cliquez sur « Calculer ».
-          </div>
+            <div class="btn-row" style="margin-bottom: 10px">
+              <button class="btn ok" onclick="cnnCompute()" style="flex: 1">
+                ⬡ Calculer la convolution
+              </button>
+              <button
+                class="btn warn"
+                id="cnnAnimBtn"
+                onclick="cnnToggleAnim()"
+              >
+                ▶ Animer pas-à-pas
+              </button>
+            </div>
+
+            <div id="cnnResults" style="font-size: 9px; color: var(--dim)">
+              Dessinez une image et cliquez sur « Calculer ».
+            </div>
           </div>
 
           <div class="tc" id="cnntab-gallery">
             <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
-              Applique les 7 noyaux prédéfinis à l'image d'entrée en même
-              temps, pour comparer d'un coup d'œil ce que détecte chaque
-              filtre (contours, flou, relief…). Dessinez l'image dans
-              l'onglet « Convolution », puis revenez ici.
+              Applique les 7 noyaux prédéfinis à l'image d'entrée en même temps,
+              pour comparer d'un coup d'œil ce que détecte chaque filtre
+              (contours, flou, relief…). Dessinez l'image dans l'onglet «
+              Convolution », puis revenez ici.
             </div>
             <label
               style="
@@ -12499,10 +12520,10 @@
 
           <div class="tc" id="cnntab-pipe">
             <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
-              Empilez plusieurs couches convolution → ReLU → pooling, comme
-              dans un vrai CNN. Chaque couche s'applique à la sortie de la
-              précédente : observez la carte de features rétrécir et le
-              champ réceptif grandir à mesure que le réseau s'approfondit.
+              Empilez plusieurs couches convolution → ReLU → pooling, comme dans
+              un vrai CNN. Chaque couche s'applique à la sortie de la précédente
+              : observez la carte de features rétrécir et le champ réceptif
+              grandir à mesure que le réseau s'approfondit.
             </div>
             <div id="cnnPipeLayers"></div>
             <div class="btn-row" style="margin: 8px 0 12px">
@@ -12513,24 +12534,19 @@
                 ⬡ Calculer le pipeline
               </button>
             </div>
-            <div
-              id="cnnPipeResults"
-              style="font-size: 9px; color: var(--dim)"
-            >
-              Configurez vos couches puis cliquez sur « Calculer le
-              pipeline ».
+            <div id="cnnPipeResults" style="font-size: 9px; color: var(--dim)">
+              Configurez vos couches puis cliquez sur « Calculer le pipeline ».
             </div>
           </div>
 
           <div class="tc" id="cnntab-train">
             <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
               Un CNN n'utilise pas des noyaux écrits à la main : il les
-              <em>apprend</em> par descente de gradient. Ci-dessous, un
-              noyau cible (l'un des filtres classiques) produit une carte de
-              features de référence ; un second noyau, initialisé au
-              hasard, essaie de la reproduire en ajustant ses 9 poids pas à
-              pas — exactement comme les couches convolutives d'un vrai
-              réseau pendant l'entraînement.
+              <em>apprend</em> par descente de gradient. Ci-dessous, un noyau
+              cible (l'un des filtres classiques) produit une carte de features
+              de référence ; un second noyau, initialisé au hasard, essaie de la
+              reproduire en ajustant ses 9 poids pas à pas — exactement comme
+              les couches convolutives d'un vrai réseau pendant l'entraînement.
             </div>
             <div style="font-size: 8px; color: var(--dim); margin-bottom: 10px">
               💡 Ici, un seul noyau apprend à imiter un filtre fixe. Pour
@@ -12588,10 +12604,20 @@
               </div>
             </div>
             <div class="btn-row" style="margin-bottom: 10px">
-              <button class="btn ok" id="cnnTrainBtn" onclick="cnnTrainToggle()">
+              <button
+                class="btn ok"
+                id="cnnTrainBtn"
+                onclick="cnnTrainToggle()"
+              >
                 ▶ Entraîner
               </button>
-              <button class="btn" onclick="cnnTrainStep(); cnnTrainRender()">
+              <button
+                class="btn"
+                onclick="
+                  cnnTrainStep();
+                  cnnTrainRender();
+                "
+              >
                 ⏭ Un pas
               </button>
               <button class="btn warn" onclick="cnnTrainReset()">
@@ -12604,12 +12630,11 @@
           <!-- ── MODÈLE COMPLET (config réseau + dataset + test) ── -->
           <div class="tc" id="cnntab-model">
             <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
-              Construisez un vrai petit CNN multi-couches (convolution →
-              ReLU → pooling, empilé une ou deux fois, puis couche(s)
-              dense(s) → softmax), entraînez-le par rétropropagation
-              complète sur un jeu d'images que <em>vous</em> dessinez et
-              étiquetez, puis testez ses prédictions sur de nouveaux
-              dessins.
+              Construisez un vrai petit CNN multi-couches (convolution → ReLU →
+              pooling, empilé une ou deux fois, puis couche(s) dense(s) →
+              softmax), entraînez-le par rétropropagation complète sur un jeu
+              d'images que <em>vous</em> dessinez et étiquetez, puis testez ses
+              prédictions sur de nouveaux dessins.
             </div>
 
             <div class="tabs" style="margin-bottom: 12px">
@@ -12704,7 +12729,10 @@
                   <select
                     id="cmLr"
                     data-no-translate
-                    onchange="if (CNN_MODEL.built) CNN_MODEL.lr = parseFloat(this.value)"
+                    onchange="
+                      if (CNN_MODEL.built)
+                        CNN_MODEL.lr = parseFloat(this.value);
+                    "
                   >
                     <option value="0.01">0.01</option>
                     <option value="0.03" selected>0.03</option>
@@ -12745,7 +12773,11 @@
               </div>
 
               <div class="btn-row" style="margin-bottom: 10px">
-                <button class="btn ok" onclick="cnnModelBuild()" style="flex: 1">
+                <button
+                  class="btn ok"
+                  onclick="cnnModelBuild()"
+                  style="flex: 1"
+                >
                   🏗 Construire le modèle
                 </button>
               </div>
@@ -12760,13 +12792,19 @@
                 </button>
                 <button
                   class="btn"
-                  onclick="cnnModelEpoch(); cnnModelRenderTrain()"
+                  onclick="
+                    cnnModelEpoch();
+                    cnnModelRenderTrain();
+                  "
                 >
                   ⏭ 1 époque
                 </button>
                 <button
                   class="btn"
-                  onclick="cnnModelEpochs(10); cnnModelRenderTrain()"
+                  onclick="
+                    cnnModelEpochs(10);
+                    cnnModelRenderTrain();
+                  "
                 >
                   ⏩ +10 époques
                 </button>
@@ -12780,12 +12818,13 @@
 
             <!-- ── DATASET ── -->
             <div class="tc" id="cnnmtab-dataset">
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 8px"
+              >
                 Créez les images qui serviront à entraîner le modèle :
                 définissez des classes, dessinez une forme, assignez-lui une
-                classe, puis ajoutez-la au dataset. Plus vous ajoutez
-                d'exemples variés par classe, mieux le modèle apprendra à
-                les distinguer.
+                classe, puis ajoutez-la au dataset. Plus vous ajoutez d'exemples
+                variés par classe, mieux le modèle apprendra à les distinguer.
               </div>
 
               <lbl>Classes</lbl>
@@ -12797,54 +12836,94 @@
                   placeholder="Nom de la classe…"
                   style="flex: 1; font-size: 9px"
                   maxlength="16"
-                  onkeydown="if(event.key==='Enter') cnnModelAddClass()"
+                  onkeydown="if (event.key === 'Enter') cnnModelAddClass();"
                 />
                 <button class="btn go" onclick="cnnModelAddClass()">
                   + Ajouter
                 </button>
               </div>
 
-              <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px">
+              <div
+                style="
+                  display: flex;
+                  gap: 14px;
+                  flex-wrap: wrap;
+                  margin-top: 10px;
+                "
+              >
                 <div style="flex: 1; min-width: 190px">
                   <lbl>Dessin de l'exemple</lbl>
                   <div id="cnnDsDraftGrid" class="cnn-grid"></div>
                   <div class="btn-row" style="margin-top: 6px">
-                    <button class="btn" onclick="cnnModelDraftPreset('croix')">✚</button>
-                    <button class="btn" onclick="cnnModelDraftPreset('carre')">▢</button>
-                    <button class="btn" onclick="cnnModelDraftPreset('diag')">╲</button>
-                    <button class="btn" onclick="cnnModelDraftPreset('rond')">◯</button>
-                    <button class="btn" onclick="cnnModelDraftPreset('alea')">🎲</button>
-                    <button class="btn" onclick="cnnModelDraftPreset('vide')">↺</button>
+                    <button class="btn" onclick="cnnModelDraftPreset('croix')">
+                      ✚
+                    </button>
+                    <button class="btn" onclick="cnnModelDraftPreset('carre')">
+                      ▢
+                    </button>
+                    <button class="btn" onclick="cnnModelDraftPreset('diag')">
+                      ╲
+                    </button>
+                    <button class="btn" onclick="cnnModelDraftPreset('rond')">
+                      ◯
+                    </button>
+                    <button class="btn" onclick="cnnModelDraftPreset('alea')">
+                      🎲
+                    </button>
+                    <button class="btn" onclick="cnnModelDraftPreset('vide')">
+                      ↺
+                    </button>
                   </div>
                   <div class="btn-row" style="margin-top: 6px">
-                    <button class="btn" onclick="cnnModelImportFromConv()" style="flex: 1">
+                    <button
+                      class="btn"
+                      onclick="cnnModelImportFromConv()"
+                      style="flex: 1"
+                    >
                       📥 Importer le dessin de l'onglet Convolution
                     </button>
                   </div>
                 </div>
                 <div style="flex: 1; min-width: 190px">
                   <lbl>Classe de cet exemple</lbl>
-                  <select id="cnnDsDraftClass" style="width: 100%; margin-bottom: 8px"></select>
+                  <select
+                    id="cnnDsDraftClass"
+                    style="width: 100%; margin-bottom: 8px"
+                  ></select>
                   <div class="btn-row">
-                    <button class="btn ok" onclick="cnnModelAddSample(false)" style="flex: 1">
+                    <button
+                      class="btn ok"
+                      onclick="cnnModelAddSample(false)"
+                      style="flex: 1"
+                    >
                       + Ajouter au dataset
                     </button>
                   </div>
                   <div class="btn-row" style="margin-top: 5px">
-                    <button class="btn ok" onclick="cnnModelAddSample(true)" style="flex: 1">
+                    <button
+                      class="btn ok"
+                      onclick="cnnModelAddSample(true)"
+                      style="flex: 1"
+                    >
                       + Ajouter avec 5 variations auto
                     </button>
                   </div>
-                  <div style="font-size: 8px; color: var(--dim); margin-top: 5px">
-                    Les variations ajoutent automatiquement un léger décalage
-                    et du bruit aléatoire pour aider le modèle à généraliser
-                    plutôt que mémoriser un seul dessin.
+                  <div
+                    style="font-size: 8px; color: var(--dim); margin-top: 5px"
+                  >
+                    Les variations ajoutent automatiquement un léger décalage et
+                    du bruit aléatoire pour aider le modèle à généraliser plutôt
+                    que mémoriser un seul dessin.
                   </div>
                 </div>
               </div>
 
               <div class="btn-row" style="margin-top: 12px">
-                <button class="btn go" onclick="cnnModelGenerateDemo()" style="flex: 1">
+                <button
+                  class="btn go"
+                  onclick="cnnModelGenerateDemo()"
+                  style="flex: 1"
+                >
                   ✨ Générer un jeu de données de démo
                 </button>
                 <button class="btn danger" onclick="cnnModelClearDataset()">
@@ -12852,7 +12931,10 @@
                 </button>
               </div>
 
-              <div id="cnnModelDsStats" style="font-size: 9px; color: var(--dim); margin-top: 8px"></div>
+              <div
+                id="cnnModelDsStats"
+                style="font-size: 9px; color: var(--dim); margin-top: 8px"
+              ></div>
               <div id="cnnModelDsGrid" class="cnn-ds-grid"></div>
 
               <div style="margin-top: 12px">
@@ -12863,17 +12945,25 @@
                   placeholder='{"size":10,"classes":["Croix","Carré"],"samples":[{"grid":[[0,1,...]],"label":"Croix"}]}'
                 ></textarea>
                 <div class="btn-row">
-                  <button class="btn" onclick="cnnModelImportJSON()" style="flex: 1">
+                  <button
+                    class="btn"
+                    onclick="cnnModelImportJSON()"
+                    style="flex: 1"
+                  >
                     Importer JSON
                   </button>
-                  <button class="btn" onclick="cnnModelExportJSON()">Exporter</button>
+                  <button class="btn" onclick="cnnModelExportJSON()">
+                    Exporter
+                  </button>
                 </div>
               </div>
             </div>
 
             <!-- ── TEST ── -->
             <div class="tc" id="cnnmtab-test">
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 8px"
+              >
                 Dessinez une image (ou importez le dessin de l'onglet
                 Convolution) et demandez au modèle entraîné de prédire sa
                 classe.
@@ -12884,20 +12974,40 @@
                   <lbl>Image à tester</lbl>
                   <div id="cnnTestGrid" class="cnn-grid"></div>
                   <div class="btn-row" style="margin-top: 6px">
-                    <button class="btn" onclick="cnnModelTestPreset('croix')">✚</button>
-                    <button class="btn" onclick="cnnModelTestPreset('carre')">▢</button>
-                    <button class="btn" onclick="cnnModelTestPreset('diag')">╲</button>
-                    <button class="btn" onclick="cnnModelTestPreset('rond')">◯</button>
-                    <button class="btn" onclick="cnnModelTestPreset('alea')">🎲</button>
-                    <button class="btn" onclick="cnnModelTestPreset('vide')">↺</button>
+                    <button class="btn" onclick="cnnModelTestPreset('croix')">
+                      ✚
+                    </button>
+                    <button class="btn" onclick="cnnModelTestPreset('carre')">
+                      ▢
+                    </button>
+                    <button class="btn" onclick="cnnModelTestPreset('diag')">
+                      ╲
+                    </button>
+                    <button class="btn" onclick="cnnModelTestPreset('rond')">
+                      ◯
+                    </button>
+                    <button class="btn" onclick="cnnModelTestPreset('alea')">
+                      🎲
+                    </button>
+                    <button class="btn" onclick="cnnModelTestPreset('vide')">
+                      ↺
+                    </button>
                   </div>
                   <div class="btn-row" style="margin-top: 6px">
-                    <button class="btn" onclick="cnnModelTestImportFromConv()" style="flex: 1">
+                    <button
+                      class="btn"
+                      onclick="cnnModelTestImportFromConv()"
+                      style="flex: 1"
+                    >
                       📥 Importer depuis Convolution
                     </button>
                   </div>
                   <div class="btn-row" style="margin-top: 10px">
-                    <button class="btn ok" onclick="cnnModelPredict()" style="flex: 1">
+                    <button
+                      class="btn ok"
+                      onclick="cnnModelPredict()"
+                      style="flex: 1"
+                    >
                       🔮 Prédire
                     </button>
                   </div>
@@ -12968,10 +13078,10 @@
             </defs>
           </svg>
           <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
-            Expérimentez avec les réseaux de neurones récurrents : une
-            cellule qui réutilise ses propres poids à chaque pas de temps,
-            en combinant l'entrée courante et sa <em>mémoire</em> du passé
-            (l'état caché) — la brique de base des RNN.
+            Expérimentez avec les réseaux de neurones récurrents : une cellule
+            qui réutilise ses propres poids à chaque pas de temps, en combinant
+            l'entrée courante et sa <em>mémoire</em> du passé (l'état caché) —
+            la brique de base des RNN.
           </div>
 
           <div class="tabs">
@@ -12982,18 +13092,10 @@
             >
               Cellule
             </div>
-            <div
-              class="tab"
-              id="rnntab-btn-seq"
-              onclick="rnnShowTab('seq')"
-            >
+            <div class="tab" id="rnntab-btn-seq" onclick="rnnShowTab('seq')">
               Déroulement
             </div>
-            <div
-              class="tab"
-              id="rnntab-btn-grad"
-              onclick="rnnShowTab('grad')"
-            >
+            <div class="tab" id="rnntab-btn-grad" onclick="rnnShowTab('grad')">
               Mémoire & gradients
             </div>
             <div
@@ -13108,10 +13210,10 @@
           <!-- ── TAB 2 : DÉROULEMENT ── -->
           <div class="tc" id="rnntab-seq">
             <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
-              On « déroule » la même cellule (mêmes poids que l'onglet
-              Cellule) sur une séquence entière : à chaque pas, l'état
-              caché est recalculé à partir de l'entrée du pas et de l'état
-              du pas précédent. Observez comment la <em>mémoire</em>
+              On « déroule » la même cellule (mêmes poids que l'onglet Cellule)
+              sur une séquence entière : à chaque pas, l'état caché est
+              recalculé à partir de l'entrée du pas et de l'état du pas
+              précédent. Observez comment la <em>mémoire</em>
               (l'état caché) évolue, se renforce ou s'efface.
             </div>
             <div
@@ -13136,22 +13238,40 @@
               <button class="btn" onclick="rnnSeqPreset('alt')">
                 Alternance
               </button>
-              <button class="btn" onclick="rnnSeqPreset('rampe')">
-                Rampe
-              </button>
+              <button class="btn" onclick="rnnSeqPreset('rampe')">Rampe</button>
               <button class="btn" onclick="rnnSeqPreset('bruit')">
                 🎲 Bruit
               </button>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px">
-              <span style="font-size: 9px; color: var(--dim)">Neurone tracé</span>
-              <select id="rnnSeqNeuron" data-no-translate style="width: 70px; font-size: 9px">
-              </select>
+            <div
+              style="
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                margin-bottom: 8px;
+              "
+            >
+              <span style="font-size: 9px; color: var(--dim)"
+                >Neurone tracé</span
+              >
+              <select
+                id="rnnSeqNeuron"
+                data-no-translate
+                style="width: 70px; font-size: 9px"
+              ></select>
               <div class="btn-row" style="margin: 0; flex: 1">
-                <button class="btn ok" onclick="rnnSeqRunAndRender()" style="flex: 1">
+                <button
+                  class="btn ok"
+                  onclick="rnnSeqRunAndRender()"
+                  style="flex: 1"
+                >
                   ⬡ Dérouler
                 </button>
-                <button class="btn warn" id="rnnSeqAnimBtn" onclick="rnnSeqToggleAnim()">
+                <button
+                  class="btn warn"
+                  id="rnnSeqAnimBtn"
+                  onclick="rnnSeqToggleAnim()"
+                >
                   ▶ Animer pas-à-pas
                 </button>
               </div>
@@ -13170,17 +13290,22 @@
               Pendant l'entraînement, le gradient qui remonte de
               <span class="fe">h(T)</span> jusqu'à
               <span class="fe">h(1)</span> traverse un produit de T termes
-              (règle de la chaîne appliquée T fois). Approximation
-              simplifiée : chaque terme ≈
-              <span class="fe">w</span> (magnitude effective de Whh) ×
-              <span class="fe">s</span> (dérivée moyenne de tanh, qui sature
-              vers 0). Ajustez les curseurs pour voir le résultat après T
+              (règle de la chaîne appliquée T fois). Approximation simplifiée :
+              chaque terme ≈ <span class="fe">w</span> (magnitude effective de
+              Whh) × <span class="fe">s</span> (dérivée moyenne de tanh, qui
+              sature vers 0). Ajustez les curseurs pour voir le résultat après T
               pas de temps.
             </div>
             <div class="rnn-gate-box">
               <div style="display: flex; gap: 16px; flex-wrap: wrap">
                 <div style="flex: 1; min-width: 180px">
-                  <span style="color: var(--dim); font-size: 8px; text-transform: uppercase">
+                  <span
+                    style="
+                      color: var(--dim);
+                      font-size: 8px;
+                      text-transform: uppercase;
+                    "
+                  >
                     Magnitude de Whh — <b id="rnnGradWLbl">1.00</b>
                   </span>
                   <input
@@ -13194,7 +13319,13 @@
                   />
                 </div>
                 <div style="flex: 1; min-width: 180px">
-                  <span style="color: var(--dim); font-size: 8px; text-transform: uppercase">
+                  <span
+                    style="
+                      color: var(--dim);
+                      font-size: 8px;
+                      text-transform: uppercase;
+                    "
+                  >
                     Saturation moyenne tanh'(z) — <b id="rnnGradSLbl">0.50</b>
                   </span>
                   <input
@@ -13214,13 +13345,12 @@
             <div class="rnn-gate-box" style="margin-top: 10px">
               <b>Comment le LSTM/GRU limitent le problème :</b> au lieu d'un
               chemin purement multiplicatif, la cellule mémoire
-              <span class="fe">C(t)</span> du LSTM (voir onglet « Formules »
-              → catégorie RNN) est mise à jour de façon
-              <b>additive</b> : <span class="fe">C(t) = f⊙C(t−1) + i⊙C̃</span>.
-              Quand la porte d'oubli <span class="fe">f</span> reste proche
-              de 1, le gradient traverse presque sans atténuation, ce qui
-              permet de retenir l'information sur beaucoup plus de pas de
-              temps.
+              <span class="fe">C(t)</span> du LSTM (voir onglet « Formules » →
+              catégorie RNN) est mise à jour de façon <b>additive</b> :
+              <span class="fe">C(t) = f⊙C(t−1) + i⊙C̃</span>. Quand la porte
+              d'oubli <span class="fe">f</span> reste proche de 1, le gradient
+              traverse presque sans atténuation, ce qui permet de retenir
+              l'information sur beaucoup plus de pas de temps.
             </div>
           </div>
 
@@ -13229,11 +13359,10 @@
             <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
               Un vrai mini char-RNN : il apprend, caractère par caractère, à
               prédire le caractère suivant d'un texte — par vraie
-              rétropropagation à travers le temps (BPTT) et descente de
-              gradient (Adagrad), exactement comme un RNN de production en
-              modèle de langage réduit à quelques lettres. Composez votre
-              dataset, réglez le modèle, entraînez-le, puis testez ce qu'il a
-              appris.
+              rétropropagation à travers le temps (BPTT) et descente de gradient
+              (Adagrad), exactement comme un RNN de production en modèle de
+              langage réduit à quelques lettres. Composez votre dataset, réglez
+              le modèle, entraînez-le, puis testez ce qu'il a appris.
             </div>
 
             <div class="tabs" style="margin-bottom: 12px">
@@ -13269,11 +13398,13 @@
 
             <!-- ── SOUS-ONGLET 1 : DATASET ── -->
             <div class="tc show" id="rnntrain-sub-dataset">
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 8px"
+              >
                 Composez le texte sur lequel le mini-RNN va s'entraîner,
                 caractère par caractère. Un texte plus long et plus varié
-                demande plus d'itérations mais donne un modèle plus
-                intéressant à tester ensuite.
+                demande plus d'itérations mais donne un modèle plus intéressant
+                à tester ensuite.
               </div>
               <lbl>Corpus d'entraînement</lbl>
               <textarea
@@ -13281,7 +13412,9 @@
                 rows="4"
                 maxlength="600"
                 placeholder="Tapez ou collez votre texte ici…"
-              >bonjour le monde, comment allez vous aujourd'hui</textarea>
+              >
+bonjour le monde, comment allez vous aujourd'hui</textarea
+              >
               <div class="btn-row">
                 <button class="btn" onclick="rnnDatasetPreset('mot')">
                   Un mot
@@ -13300,7 +13433,11 @@
                 </button>
               </div>
               <div class="btn-row" style="margin-top: 8px">
-                <button class="btn ok" onclick="rnnDatasetApply()" style="flex: 1">
+                <button
+                  class="btn ok"
+                  onclick="rnnDatasetApply()"
+                  style="flex: 1"
+                >
                   ✔ Valider ce dataset
                 </button>
               </div>
@@ -13313,11 +13450,13 @@
 
             <!-- ── SOUS-ONGLET 2 : MODÈLE ── -->
             <div class="tc" id="rnntrain-sub-model">
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 8px"
+              >
                 Choisissez la taille de la mémoire du réseau et les
                 hyperparamètres d'entraînement, puis construisez le modèle :
-                ceci initialise des poids aléatoires (Wxh, Whh, Why) adaptés
-                à la taille du vocabulaire de votre dataset.
+                ceci initialise des poids aléatoires (Wxh, Whh, Why) adaptés à
+                la taille du vocabulaire de votre dataset.
               </div>
               <div
                 style="
@@ -13362,7 +13501,10 @@
                   <select
                     id="rnnMdlLr"
                     data-no-translate
-                    onchange="if (RNN_TRAIN.built) RNN_TRAIN.lr = parseFloat(this.value)"
+                    onchange="
+                      if (RNN_TRAIN.built)
+                        RNN_TRAIN.lr = parseFloat(this.value);
+                    "
                   >
                     <option value="0.03">0.03</option>
                     <option value="0.05">0.05</option>
@@ -13376,7 +13518,10 @@
                   <select
                     id="rnnMdlClip"
                     data-no-translate
-                    onchange="if (RNN_TRAIN.built) RNN_TRAIN.clip = parseFloat(this.value)"
+                    onchange="
+                      if (RNN_TRAIN.built)
+                        RNN_TRAIN.clip = parseFloat(this.value);
+                    "
                   >
                     <option value="1">±1</option>
                     <option value="5" selected>±5</option>
@@ -13386,12 +13531,16 @@
               </div>
 
               <div id="rnnModelArchBox" class="cnn-arch-box">
-                Validez un dataset dans l'onglet « 1. Dataset », puis cliquez
-                « Construire le modèle ».
+                Validez un dataset dans l'onglet « 1. Dataset », puis cliquez «
+                Construire le modèle ».
               </div>
 
               <div class="btn-row">
-                <button class="btn ok" onclick="rnnModelBuild()" style="flex: 1">
+                <button
+                  class="btn ok"
+                  onclick="rnnModelBuild()"
+                  style="flex: 1"
+                >
                   🏗 Construire le modèle
                 </button>
                 <button class="btn warn" onclick="rnnModelResetWeights()">
@@ -13402,19 +13551,37 @@
 
             <!-- ── SOUS-ONGLET 3 : ENTRAÎNEMENT ── -->
             <div class="tc" id="rnntrain-sub-run">
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 8px"
+              >
                 Entraînement par mini-fenêtres : à chaque pas, on tire une
                 fenêtre aléatoire du corpus, on calcule la perte par BPTT sur
                 toute la fenêtre, puis on met à jour les poids (Adagrad).
               </div>
               <div class="btn-row" style="margin-bottom: 10px">
-                <button class="btn ok" id="rnnTrainBtn" onclick="rnnTrainToggle()">
+                <button
+                  class="btn ok"
+                  id="rnnTrainBtn"
+                  onclick="rnnTrainToggle()"
+                >
                   ▶ Entraîner
                 </button>
-                <button class="btn" onclick="rnnTrainStep(); rnnTrainRender()">
+                <button
+                  class="btn"
+                  onclick="
+                    rnnTrainStep();
+                    rnnTrainRender();
+                  "
+                >
                   ⏭ Un pas
                 </button>
-                <button class="btn" onclick="rnnTrainSteps(50); rnnTrainRender()">
+                <button
+                  class="btn"
+                  onclick="
+                    rnnTrainSteps(50);
+                    rnnTrainRender();
+                  "
+                >
                   ⏩ +50 pas
                 </button>
                 <button class="btn warn" onclick="rnnModelResetWeights()">
@@ -13426,10 +13593,12 @@
 
             <!-- ── SOUS-ONGLET 4 : TEST ── -->
             <div class="tc" id="rnntrain-sub-test">
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
-                Testez le modèle entraîné : donnez-lui un texte de départ
-                (« amorce ») et regardez ce qu'il prédit comme caractère
-                suivant, ou laissez-le générer une suite complète.
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 8px"
+              >
+                Testez le modèle entraîné : donnez-lui un texte de départ («
+                amorce ») et regardez ce qu'il prédit comme caractère suivant,
+                ou laissez-le générer une suite complète.
               </div>
               <div style="display: flex; gap: 14px; flex-wrap: wrap">
                 <div style="flex: 1; min-width: 220px">
@@ -13441,7 +13610,10 @@
                     placeholder="Tapez le début d'un texte…"
                     oninput="rnnTestPredictNext()"
                   />
-                  <lbl>Température — <span id="rnnTestTempVal" data-no-translate>0.6</span></lbl>
+                  <lbl
+                    >Température —
+                    <span id="rnnTestTempVal" data-no-translate>0.6</span></lbl
+                  >
                   <input
                     type="range"
                     id="rnnTestTemp"
@@ -13449,7 +13621,10 @@
                     max="1.5"
                     step="0.05"
                     value="0.6"
-                    oninput="document.getElementById('rnnTestTempVal').textContent=this.value"
+                    oninput="
+                      document.getElementById('rnnTestTempVal').textContent =
+                        this.value
+                    "
                   />
                   <lbl>Longueur à générer</lbl>
                   <select id="rnnTestLen" data-no-translate>
@@ -13459,7 +13634,11 @@
                     <option value="150">150</option>
                   </select>
                   <div class="btn-row" style="margin-top: 8px">
-                    <button class="btn ok" onclick="rnnTestGenerate()" style="flex: 1">
+                    <button
+                      class="btn ok"
+                      onclick="rnnTestGenerate()"
+                      style="flex: 1"
+                    >
                       ✎ Générer
                     </button>
                   </div>
@@ -13477,7 +13656,11 @@
               <div
                 id="rnnTestOutput"
                 class="cnn-loss-box"
-                style="min-height: 54px; word-break: break-all; line-height: 1.6"
+                style="
+                  min-height: 54px;
+                  word-break: break-all;
+                  line-height: 1.6;
+                "
               ></div>
               <div style="font-size: 7px; color: var(--dim); margin-top: 3px">
                 🟢 confiance haute · 🔴 confiance basse
@@ -14715,9 +14898,7 @@
               nv >= 0
                 ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
                 : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
-            const label = showVal
-              ? v.toFixed(cell >= 22 ? 2 : 1)
-              : "";
+            const label = showVal ? v.toFixed(cell >= 22 ? 2 : 1) : "";
             html += `<div class="cnn-cell static" style="width:${cell}px;height:${cell}px;background:${bg};font-size:${cell >= 22 ? 8 : 7}px" title="${v.toFixed(3)}">${label}</div>`;
           }
         html += "</div>";
@@ -14883,7 +15064,7 @@
         if (!el) return;
         if (!CNN.grid.length) {
           el.innerHTML =
-            '<span style="font-size:9px;color:var(--dim)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+            "<span style=\"font-size:9px;color:var(--dim)\">Dessinez d'abord une image dans l'onglet « Convolution ».</span>";
           return;
         }
         const useRelu = document.getElementById("cnnGalleryRelu")?.checked;
@@ -14959,7 +15140,7 @@
         if (!resEl) return;
         if (!CNN.grid.length) {
           resEl.innerHTML =
-            '<span style="color:var(--red)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+            "<span style=\"color:var(--red)\">Dessinez d'abord une image dans l'onglet « Convolution ».</span>";
           return;
         }
         const H = CNN.size,
@@ -14967,9 +15148,7 @@
         let cur = CNN.grid;
         let rf = 1,
           jump = 1; // champ réceptif effectif (formule standard RF/jump)
-        const stages = [
-          { matrix: cur, label: `Entrée ${H}×${W}` },
-        ];
+        const stages = [{ matrix: cur, label: `Entrée ${H}×${W}` }];
         let blocked = false;
         for (let i = 0; i < CNN_PIPE.layers.length; i++) {
           const layer = CNN_PIPE.layers[i];
@@ -14977,7 +15156,12 @@
             blocked = true;
             break;
           }
-          const { out } = cnnConv2d(cur, CNN_KERNELS[layer.preset].k, 1, "valid");
+          const { out } = cnnConv2d(
+            cur,
+            CNN_KERNELS[layer.preset].k,
+            1,
+            "valid",
+          );
           rf += 2 * jump; // (kernel 3 - 1) * jump
           let feat = layer.relu ? cnnRelu(out) : out;
           stages.push({
@@ -15059,8 +15243,7 @@
         return grad;
       }
       function cnnLossSparkline(hist, w, h, color) {
-        if (hist.length < 2)
-          return `<svg width="${w}" height="${h}"></svg>`;
+        if (hist.length < 2) return `<svg width="${w}" height="${h}"></svg>`;
         const mx = Math.max(...hist, 1e-6);
         const pts = hist
           .map((v, i) => {
@@ -15078,7 +15261,7 @@
           const b = document.getElementById("cnnTrainBody");
           if (b)
             b.innerHTML =
-              '<span style="font-size:9px;color:var(--red)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+              "<span style=\"font-size:9px;color:var(--red)\">Dessinez d'abord une image dans l'onglet « Convolution ».</span>";
           return;
         }
         const { padded } = cnnPadInput(CNN.grid, 3, 3, "same");
@@ -15142,7 +15325,9 @@
           <div class="cnn-train-col">
             <h3>Noyau cible</h3>
             ${kernelHtml(
-              CNN_KERNELS[document.getElementById("cnnTrainTarget")?.value || "sobelx"].k,
+              CNN_KERNELS[
+                document.getElementById("cnnTrainTarget")?.value || "sobelx"
+              ].k,
             )}
             <h3 style="margin-top:8px">Carte cible</h3>
             ${cnnRenderMatrix(CNN_TRAIN.target, cell)}
@@ -15354,7 +15539,11 @@
           alert("Dessinez d'abord une image dans l'onglet « Convolution ».");
           return;
         }
-        CNN_MODEL.draft = cnnModelResizeGrid(CNN.grid, CNN.size, CNN_MODEL.size);
+        CNN_MODEL.draft = cnnModelResizeGrid(
+          CNN.grid,
+          CNN.size,
+          CNN_MODEL.size,
+        );
         cnnModelRenderDraftGrid();
       }
 
@@ -15387,7 +15576,11 @@
           alert("Dessinez d'abord une image dans l'onglet « Convolution ».");
           return;
         }
-        CNN_MODEL.testGrid = cnnModelResizeGrid(CNN.grid, CNN.size, CNN_MODEL.size);
+        CNN_MODEL.testGrid = cnnModelResizeGrid(
+          CNN.grid,
+          CNN.size,
+          CNN_MODEL.size,
+        );
         cnnModelRenderTestGrid();
       }
 
@@ -15430,7 +15623,9 @@
         } else {
           el.innerHTML = CNN_MODEL.classes
             .map((c, i) => {
-              const count = CNN_MODEL.dataset.filter((s) => s.label === c).length;
+              const count = CNN_MODEL.dataset.filter(
+                (s) => s.label === c,
+              ).length;
               return `<span class="cnn-class-chip"><span class="dot" style="background:${cnnModelClassColor(i)}"></span>${c} (${count})<button onclick="cnnModelRemoveClass(${i})" title="Supprimer la classe">✕</button></span>`;
             })
             .join("");
@@ -15523,13 +15718,22 @@
           return;
         }
         const perClass = CNN_MODEL.classes
-          .map((c) => `${c}: ${CNN_MODEL.dataset.filter((s) => s.label === c).length}`)
+          .map(
+            (c) =>
+              `${c}: ${CNN_MODEL.dataset.filter((s) => s.label === c).length}`,
+          )
           .join(" · ");
         let warn = "";
         if (CNN_MODEL.classes.length < 2)
-          warn = ' <span style="color:var(--red)">— ajoutez au moins 2 classes</span>';
-        else if (CNN_MODEL.classes.some((c) => !CNN_MODEL.dataset.some((s) => s.label === c)))
-          warn = ' <span style="color:var(--org)">— une classe n\'a encore aucun exemple</span>';
+          warn =
+            ' <span style="color:var(--red)">— ajoutez au moins 2 classes</span>';
+        else if (
+          CNN_MODEL.classes.some(
+            (c) => !CNN_MODEL.dataset.some((s) => s.label === c),
+          )
+        )
+          warn =
+            ' <span style="color:var(--org)">— une classe n\'a encore aucun exemple</span>';
         el.innerHTML = `${n} exemple(s) — ${perClass}${warn}`;
       }
       function cnnModelRenderDatasetGrid() {
@@ -15569,7 +15773,12 @@
         cnnModelTrainStop();
         CNN_MODEL.classes = ["Croix", "Carré", "Diagonale", "Cercle"];
         CNN_MODEL.dataset = [];
-        const shapeMap = { Croix: "croix", Carré: "carre", Diagonale: "diag", Cercle: "rond" };
+        const shapeMap = {
+          Croix: "croix",
+          Carré: "carre",
+          Diagonale: "diag",
+          Cercle: "rond",
+        };
         CNN_MODEL.classes.forEach((label) => {
           const base = cnnModelShape(shapeMap[label], CNN_MODEL.size);
           CNN_MODEL.dataset.push({ grid: base, label });
@@ -15585,15 +15794,25 @@
 
       // ── Import / export JSON ──
       function cnnModelExportJSON() {
-        const data = { size: CNN_MODEL.size, classes: CNN_MODEL.classes, samples: CNN_MODEL.dataset };
+        const data = {
+          size: CNN_MODEL.size,
+          classes: CNN_MODEL.classes,
+          samples: CNN_MODEL.dataset,
+        };
         const el = document.getElementById("cnnDsJSON");
         if (el) el.value = JSON.stringify(data);
       }
       function cnnModelImportJSON() {
         try {
           const data = JSON.parse(document.getElementById("cnnDsJSON").value);
-          if (!data.size || !Array.isArray(data.classes) || !Array.isArray(data.samples))
-            throw new Error("structure invalide (attendu: size, classes[], samples[])");
+          if (
+            !data.size ||
+            !Array.isArray(data.classes) ||
+            !Array.isArray(data.samples)
+          )
+            throw new Error(
+              "structure invalide (attendu: size, classes[], samples[])",
+            );
           cnnModelTrainStop();
           CNN_MODEL.size = data.size;
           CNN_MODEL.classes = data.classes;
@@ -15601,8 +15820,12 @@
           CNN_MODEL.built = false;
           const sizeSel = document.getElementById("cmSize");
           if (sizeSel) sizeSel.value = String(data.size);
-          CNN_MODEL.draft = Array.from({ length: data.size }, () => Array(data.size).fill(0));
-          CNN_MODEL.testGrid = Array.from({ length: data.size }, () => Array(data.size).fill(0));
+          CNN_MODEL.draft = Array.from({ length: data.size }, () =>
+            Array(data.size).fill(0),
+          );
+          CNN_MODEL.testGrid = Array.from({ length: data.size }, () =>
+            Array(data.size).fill(0),
+          );
           cnnModelRenderClasses();
           cnnModelRenderDsStats();
           cnnModelRenderDatasetGrid();
@@ -15661,7 +15884,10 @@
           const W = Array.from({ length: filters }, () =>
             Array.from({ length: inCh }, () =>
               Array.from({ length: 3 }, () =>
-                Array.from({ length: 3 }, () => (Math.random() * 2 - 1) * scale),
+                Array.from(
+                  { length: 3 },
+                  () => (Math.random() * 2 - 1) * scale,
+                ),
               ),
             ),
           );
@@ -15676,19 +15902,32 @@
         if (hidden > 0) {
           const scaleH = Math.sqrt(2 / flatLen);
           CNN_MODEL.hidW = Array.from({ length: hidden }, () =>
-            Array.from({ length: flatLen }, () => (Math.random() * 2 - 1) * scaleH),
+            Array.from(
+              { length: flatLen },
+              () => (Math.random() * 2 - 1) * scaleH,
+            ),
           );
           CNN_MODEL.hidB = Array(hidden).fill(0);
           const scaleO = Math.sqrt(2 / hidden);
-          CNN_MODEL.outW = Array.from({ length: CNN_MODEL.classes.length }, () =>
-            Array.from({ length: hidden }, () => (Math.random() * 2 - 1) * scaleO),
+          CNN_MODEL.outW = Array.from(
+            { length: CNN_MODEL.classes.length },
+            () =>
+              Array.from(
+                { length: hidden },
+                () => (Math.random() * 2 - 1) * scaleO,
+              ),
           );
         } else {
           CNN_MODEL.hidW = null;
           CNN_MODEL.hidB = null;
           const scaleO = Math.sqrt(2 / flatLen);
-          CNN_MODEL.outW = Array.from({ length: CNN_MODEL.classes.length }, () =>
-            Array.from({ length: flatLen }, () => (Math.random() * 2 - 1) * scaleO),
+          CNN_MODEL.outW = Array.from(
+            { length: CNN_MODEL.classes.length },
+            () =>
+              Array.from(
+                { length: flatLen },
+                () => (Math.random() * 2 - 1) * scaleO,
+              ),
           );
         }
         CNN_MODEL.outB = Array(CNN_MODEL.classes.length).fill(0);
@@ -15718,7 +15957,9 @@
         for (let b = 0; b < a.blocks; b++) {
           parts.push(`Conv(${a.filters} filtres 3×3, same) + ReLU`);
           if (a.pool && CNN_MODEL.blockDims[b] >= 2)
-            parts.push(`↳ MaxPool 2×2 (→ ${CNN_MODEL.outDims[b]}×${CNN_MODEL.outDims[b]})`);
+            parts.push(
+              `↳ MaxPool 2×2 (→ ${CNN_MODEL.outDims[b]}×${CNN_MODEL.outDims[b]})`,
+            );
         }
         parts.push(`Flatten (${CNN_MODEL.flatLen})`);
         if (a.hidden > 0) parts.push(`Dense(${a.hidden}) + ReLU`);
@@ -15734,9 +15975,12 @@
         }
         if (a.hidden > 0) {
           nParams += a.hidden * CNN_MODEL.flatLen + a.hidden;
-          nParams += CNN_MODEL.classes.length * a.hidden + CNN_MODEL.classes.length;
+          nParams +=
+            CNN_MODEL.classes.length * a.hidden + CNN_MODEL.classes.length;
         } else {
-          nParams += CNN_MODEL.classes.length * CNN_MODEL.flatLen + CNN_MODEL.classes.length;
+          nParams +=
+            CNN_MODEL.classes.length * CNN_MODEL.flatLen +
+            CNN_MODEL.classes.length;
         }
 
         el.innerHTML =
@@ -15754,7 +15998,12 @@
         const argmax = Array.from({ length: oh }, () => Array(ow).fill(0));
         for (let y = 0; y < oh; y++)
           for (let x = 0; x < ow; x++) {
-            const vals = [m[2 * y][2 * x], m[2 * y][2 * x + 1], m[2 * y + 1][2 * x], m[2 * y + 1][2 * x + 1]];
+            const vals = [
+              m[2 * y][2 * x],
+              m[2 * y][2 * x + 1],
+              m[2 * y + 1][2 * x],
+              m[2 * y + 1][2 * x + 1],
+            ];
             let mi = 0;
             for (let i = 1; i < 4; i++) if (vals[i] > vals[mi]) mi = i;
             out[y][x] = vals[mi];
@@ -15768,21 +16017,28 @@
           Bv = CNN_MODEL.convB[b];
         const H = inputChannels[0].length,
           Wd = inputChannels[0][0].length;
-        const paddedChannels = inputChannels.map((ch) => cnnPadInput(ch, 3, 3, "same").padded);
+        const paddedChannels = inputChannels.map(
+          (ch) => cnnPadInput(ch, 3, 3, "same").padded,
+        );
         const zMaps = [],
           aMaps = [];
         for (let f = 0; f < filters; f++) {
           const out = Array.from({ length: H }, () => Array(Wd).fill(Bv[f]));
           for (let c = 0; c < inputChannels.length; c++) {
             const raw = cnnConvRaw(paddedChannels[c], Wt[f][c], 1);
-            for (let y = 0; y < H; y++) for (let x = 0; x < Wd; x++) out[y][x] += raw[y][x];
+            for (let y = 0; y < H; y++)
+              for (let x = 0; x < Wd; x++) out[y][x] += raw[y][x];
           }
           zMaps.push(out);
           aMaps.push(cnnRelu(out));
         }
         let pooled = aMaps,
           argmax = null;
-        if (CNN_MODEL.arch.pool && aMaps[0].length >= 2 && aMaps[0][0].length >= 2) {
+        if (
+          CNN_MODEL.arch.pool &&
+          aMaps[0].length >= 2 &&
+          aMaps[0][0].length >= 2
+        ) {
           const res = aMaps.map((m) => cnnModelMaxPool2WithArgmax(m));
           pooled = res.map((r) => r.out);
           argmax = res.map((r) => r.argmax);
@@ -15799,7 +16055,8 @@
           inputChannels = res.pooled;
         }
         const flat = [];
-        for (const m of inputChannels) for (const row of m) for (const v of row) flat.push(v);
+        for (const m of inputChannels)
+          for (const row of m) for (const v of row) flat.push(v);
         cache.flat = flat;
         let inFeat = flat,
           hiddenPre = null,
@@ -15839,13 +16096,15 @@
         const dOutW = CNN_MODEL.outW.map((row) => row.map(() => 0));
         const dOutB = Array(numClasses).fill(0);
         for (let i = 0; i < numClasses; i++) {
-          for (let j = 0; j < inFeat.length; j++) dOutW[i][j] += dLogits[i] * inFeat[j];
+          for (let j = 0; j < inFeat.length; j++)
+            dOutW[i][j] += dLogits[i] * inFeat[j];
           dOutB[i] += dLogits[i];
         }
         const dInFeat = Array(inFeat.length).fill(0);
         for (let j = 0; j < inFeat.length; j++) {
           let s = 0;
-          for (let i = 0; i < numClasses; i++) s += dLogits[i] * CNN_MODEL.outW[i][j];
+          for (let i = 0; i < numClasses; i++)
+            s += dLogits[i] * CNN_MODEL.outW[i][j];
           dInFeat[j] = s;
         }
 
@@ -15854,18 +16113,22 @@
           dHidB = null;
         if (CNN_MODEL.arch.hidden > 0) {
           const hiddenPre = cache.hiddenPre;
-          const dHiddenPre = dInFeat.map((v, i) => v * (hiddenPre[i] > 0 ? 1 : 0));
+          const dHiddenPre = dInFeat.map(
+            (v, i) => v * (hiddenPre[i] > 0 ? 1 : 0),
+          );
           dHidW = CNN_MODEL.hidW.map((row) => row.map(() => 0));
           dHidB = Array(CNN_MODEL.hidW.length).fill(0);
           const flat = cache.flat;
           for (let i = 0; i < dHiddenPre.length; i++) {
-            for (let j = 0; j < flat.length; j++) dHidW[i][j] += dHiddenPre[i] * flat[j];
+            for (let j = 0; j < flat.length; j++)
+              dHidW[i][j] += dHiddenPre[i] * flat[j];
             dHidB[i] += dHiddenPre[i];
           }
           dFlat = Array(flat.length).fill(0);
           for (let j = 0; j < flat.length; j++) {
             let s = 0;
-            for (let i = 0; i < dHiddenPre.length; i++) s += dHiddenPre[i] * CNN_MODEL.hidW[i][j];
+            for (let i = 0; i < dHiddenPre.length; i++)
+              s += dHiddenPre[i] * CNN_MODEL.hidW[i][j];
             dFlat[j] = s;
           }
         } else {
@@ -15903,7 +16166,9 @@
             Wd = blk.zMaps[0][0].length;
           let dAct;
           if (blk.argmax) {
-            dAct = Array.from({ length: Fb }, () => Array.from({ length: Hd }, () => Array(Wd).fill(0)));
+            dAct = Array.from({ length: Fb }, () =>
+              Array.from({ length: Hd }, () => Array(Wd).fill(0)),
+            );
             const oh = blk.pooled[0].length,
               ow = blk.pooled[0][0].length;
             for (let f = 0; f < Fb; f++)
@@ -15918,7 +16183,9 @@
             dAct = dPooled;
           }
           const dZ = dAct.map((m, f) =>
-            m.map((row, y) => row.map((v, x) => v * (blk.zMaps[f][y][x] > 0 ? 1 : 0))),
+            m.map((row, y) =>
+              row.map((v, x) => v * (blk.zMaps[f][y][x] > 0 ? 1 : 0)),
+            ),
           );
           const inCh = blk.paddedChannels.length;
           const dInputPadded = Array.from({ length: inCh }, () => {
@@ -15928,7 +16195,8 @@
           });
           for (let f = 0; f < Fb; f++) {
             let bsum = 0;
-            for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) bsum += dZ[f][y][x];
+            for (let y = 0; y < Hd; y++)
+              for (let x = 0; x < Wd; x++) bsum += dZ[f][y][x];
             dConvB[b][f] += bsum;
             for (let c = 0; c < inCh; c++) {
               const padded = blk.paddedChannels[c];
@@ -15936,7 +16204,8 @@
                 for (let kx = 0; kx < 3; kx++) {
                   let s = 0;
                   for (let y = 0; y < Hd; y++)
-                    for (let x = 0; x < Wd; x++) s += dZ[f][y][x] * padded[y + ky][x + kx];
+                    for (let x = 0; x < Wd; x++)
+                      s += dZ[f][y][x] * padded[y + ky][x + kx];
                   dConvW[b][f][c][ky][kx] += s;
                 }
               const weight = CNN_MODEL.convW[b][f][c];
@@ -15945,12 +16214,15 @@
                   const g = dZ[f][y][x];
                   if (!g) continue;
                   for (let ky = 0; ky < 3; ky++)
-                    for (let kx = 0; kx < 3; kx++) dInputPadded[c][y + ky][x + kx] += g * weight[ky][kx];
+                    for (let kx = 0; kx < 3; kx++)
+                      dInputPadded[c][y + ky][x + kx] += g * weight[ky][kx];
                 }
             }
           }
           if (b > 0) {
-            dPooled = dInputPadded.map((chp) => chp.slice(1, -1).map((row) => row.slice(1, -1)));
+            dPooled = dInputPadded.map((chp) =>
+              chp.slice(1, -1).map((row) => row.slice(1, -1)),
+            );
           }
         }
 
@@ -15960,12 +16232,14 @@
         for (let i = 0; i < CNN_MODEL.outW.length; i++)
           for (let j = 0; j < CNN_MODEL.outW[i].length; j++)
             CNN_MODEL.outW[i][j] -= lr * grads.dOutW[i][j];
-        for (let i = 0; i < CNN_MODEL.outB.length; i++) CNN_MODEL.outB[i] -= lr * grads.dOutB[i];
+        for (let i = 0; i < CNN_MODEL.outB.length; i++)
+          CNN_MODEL.outB[i] -= lr * grads.dOutB[i];
         if (CNN_MODEL.arch.hidden > 0) {
           for (let i = 0; i < CNN_MODEL.hidW.length; i++)
             for (let j = 0; j < CNN_MODEL.hidW[i].length; j++)
               CNN_MODEL.hidW[i][j] -= lr * grads.dHidW[i][j];
-          for (let i = 0; i < CNN_MODEL.hidB.length; i++) CNN_MODEL.hidB[i] -= lr * grads.dHidB[i];
+          for (let i = 0; i < CNN_MODEL.hidB.length; i++)
+            CNN_MODEL.hidB[i] -= lr * grads.dHidB[i];
         }
         for (let b = 0; b < CNN_MODEL.arch.blocks; b++) {
           for (let f = 0; f < CNN_MODEL.arch.filters; f++) {
@@ -15973,7 +16247,8 @@
             for (let c = 0; c < CNN_MODEL.convW[b][f].length; c++)
               for (let ky = 0; ky < 3; ky++)
                 for (let kx = 0; kx < 3; kx++)
-                  CNN_MODEL.convW[b][f][c][ky][kx] -= lr * grads.dConvW[b][f][c][ky][kx];
+                  CNN_MODEL.convW[b][f][c][ky][kx] -=
+                    lr * grads.dConvW[b][f][c][ky][kx];
           }
         }
       }
@@ -15997,7 +16272,8 @@
           const { probs, cache } = cnnModelForward(sample.grid);
           totalLoss += -Math.log(Math.max(probs[labelIdx], 1e-9));
           let pred = 0;
-          for (let i = 1; i < probs.length; i++) if (probs[i] > probs[pred]) pred = i;
+          for (let i = 1; i < probs.length; i++)
+            if (probs[i] > probs[pred]) pred = i;
           if (pred === labelIdx) correct++;
           const grads = cnnModelBackward(cache, labelIdx);
           cnnModelApplyGrad(grads, CNN_MODEL.lr);
@@ -16079,7 +16355,8 @@
         }
         const { probs } = cnnModelForward(CNN_MODEL.testGrid);
         let pred = 0;
-        for (let i = 1; i < probs.length; i++) if (probs[i] > probs[pred]) pred = i;
+        for (let i = 1; i < probs.length; i++)
+          if (probs[i] > probs[pred]) pred = i;
         let html = `<div style="font-size:11px;margin-bottom:8px">Prédiction : <b style="color:${cnnModelClassColor(pred)}">${CNN_MODEL.classes[pred]}</b> <span data-no-translate>(${(probs[pred] * 100).toFixed(1)}%)</span></div>`;
         CNN_MODEL.classes.forEach((c, i) => {
           html += `<div class="cnn-prob-row"><span class="nm" style="color:${cnnModelClassColor(i)}">${c}</span><div class="bar-bg"><div class="bar-fg" style="width:${(probs[i] * 100).toFixed(1)}%;background:${cnnModelClassColor(i)}"></div></div><span class="pct" data-no-translate>${(probs[i] * 100).toFixed(1)}%</span></div>`;
@@ -16103,7 +16380,8 @@
         CNN_MODEL.dataset.forEach((s, idx) => {
           const { probs } = cnnModelForward(s.grid);
           let pred = 0;
-          for (let i = 1; i < probs.length; i++) if (probs[i] > probs[pred]) pred = i;
+          for (let i = 1; i < probs.length; i++)
+            if (probs[i] > probs[pred]) pred = i;
           const predLabel = CNN_MODEL.classes[pred];
           const ok = predLabel === s.label;
           if (ok) correct++;
@@ -16120,8 +16398,9 @@
 
       // ── Petits utilitaires numériques partagés ──
       function rnnRandVec(n, scale = 0.6) {
-        return Array.from({ length: n }, () =>
-          +((Math.random() * 2 - 1) * scale).toFixed(2),
+        return Array.from(
+          { length: n },
+          () => +((Math.random() * 2 - 1) * scale).toFixed(2),
         );
       }
       function rnnRandMat(rows, cols, scale = 0.6) {
@@ -16347,8 +16626,7 @@
         if (!el) return;
         rnnCellUpdateDiagram();
         if (!RNN_CELL.h) {
-          el.innerHTML =
-            'Réglez les poids et cliquez sur « Calculer h(t) ».';
+          el.innerHTML = "Réglez les poids et cliquez sur « Calculer h(t) ».";
           return;
         }
         const { H, x, hPrev, Wx, Wh, b, z, h } = RNN_CELL;
@@ -16393,8 +16671,9 @@
         else if (kind === "alt") seq = [1, -1, 1, -1, 1, -1, 1];
         else if (kind === "rampe") seq = [0.2, 0.4, 0.6, 0.8, 1, 1, 1];
         else if (kind === "bruit")
-          seq = Array.from({ length: 7 }, () =>
-            +(Math.random() * 2 - 1).toFixed(2),
+          seq = Array.from(
+            { length: 7 },
+            () => +(Math.random() * 2 - 1).toFixed(2),
           );
         else seq = [0, 0, 0, 0, 0, 0];
         const inp = document.getElementById("rnnSeqInput");
@@ -16693,7 +16972,7 @@
         const body = document.getElementById("rnnTrainBody");
         if (body)
           body.innerHTML =
-            '<span style="color:var(--dim);font-size:9px">Construisez d\'abord le modèle dans l\'onglet « 2. Modèle ».</span>';
+            "<span style=\"color:var(--dim);font-size:9px\">Construisez d'abord le modèle dans l'onglet « 2. Modèle ».</span>";
       }
       function rnnDatasetRenderStats() {
         const el = document.getElementById("rnnDsStats");
@@ -16718,7 +16997,7 @@
         if (!T.corpus || T.corpus.length < 2) {
           if (arch)
             arch.innerHTML =
-              '<span style="color:var(--red)">Validez d\'abord un dataset dans l\'onglet « 1. Dataset ».</span>';
+              "<span style=\"color:var(--red)\">Validez d'abord un dataset dans l'onglet « 1. Dataset ».</span>";
           return false;
         }
         const chars = [...new Set(T.corpus.split(""))];
@@ -16728,10 +17007,20 @@
               '<span style="color:var(--red)">Le corpus doit contenir au moins 2 caractères différents.</span>';
           return false;
         }
-        const H = parseInt(document.getElementById("rnnMdlH")?.value || "16", 10);
-        const seqLen = parseInt(document.getElementById("rnnMdlSeq")?.value || "16", 10);
-        const lr = parseFloat(document.getElementById("rnnMdlLr")?.value || "0.1");
-        const clip = parseFloat(document.getElementById("rnnMdlClip")?.value || "5");
+        const H = parseInt(
+          document.getElementById("rnnMdlH")?.value || "16",
+          10,
+        );
+        const seqLen = parseInt(
+          document.getElementById("rnnMdlSeq")?.value || "16",
+          10,
+        );
+        const lr = parseFloat(
+          document.getElementById("rnnMdlLr")?.value || "0.1",
+        );
+        const clip = parseFloat(
+          document.getElementById("rnnMdlClip")?.value || "5",
+        );
         T.vocab = chars;
         T.stoi = {};
         T.itos = {};
@@ -16809,7 +17098,8 @@
         const { stoi, vocab, H, corpus, seqLen } = T;
         const V = vocab.length;
         const maxStart = Math.max(0, corpus.length - seqLen - 1);
-        const start = maxStart > 0 ? Math.floor(Math.random() * (maxStart + 1)) : 0;
+        const start =
+          maxStart > 0 ? Math.floor(Math.random() * (maxStart + 1)) : 0;
         const n = Math.min(seqLen, corpus.length - start - 1);
         if (n < 1) return 0;
         const inputs = [],
@@ -16869,9 +17159,7 @@
             for (let i = 0; i < V; i++) s += T.Why[i][k] * dy[i];
             dh[k] = s + dhnext[k];
           }
-          const dhraw = dh.map(
-            (v, k) => (1 - hs[t + 1][k] * hs[t + 1][k]) * v,
-          );
+          const dhraw = dh.map((v, k) => (1 - hs[t + 1][k] * hs[t + 1][k]) * v);
           for (let i = 0; i < H; i++) {
             dbh[i] += dhraw[i];
             for (let j = 0; j < V; j++) dWxh[i][j] += dhraw[i] * xs[t][j];
@@ -16902,7 +17190,8 @@
             if (Array.isArray(param[i])) {
               for (let j = 0; j < param[i].length; j++) {
                 mem[i][j] += dparam[i][j] * dparam[i][j];
-                param[i][j] += (-T.lr * dparam[i][j]) / Math.sqrt(mem[i][j] + 1e-8);
+                param[i][j] +=
+                  (-T.lr * dparam[i][j]) / Math.sqrt(mem[i][j] + 1e-8);
               }
             } else {
               mem[i] += dparam[i] * dparam[i];
@@ -16916,7 +17205,8 @@
         adaUpd(T.bh, dbh, T.mbh);
         adaUpd(T.by, dby, T.mby);
         T.iter++;
-        T.smoothLoss = T.smoothLoss == null ? loss : T.smoothLoss * 0.98 + loss * 0.02;
+        T.smoothLoss =
+          T.smoothLoss == null ? loss : T.smoothLoss * 0.98 + loss * 0.02;
         T.lossHist.push(T.smoothLoss);
         if (T.lossHist.length > 200) T.lossHist.shift();
         return loss;
@@ -16992,8 +17282,7 @@
           const col = rnnCharColor(i);
           html += `<div class="cnn-prob-row"><span class="nm" data-no-translate style="color:${col}">'${c}'</span><div class="bar-bg"><div class="bar-fg" style="width:${(p[i] * 100).toFixed(1)}%;background:${col}"></div></div><span class="pct" data-no-translate>${(p[i] * 100).toFixed(1)}%</span></div>`;
         });
-        el.innerHTML =
-          html || '<span style="color:var(--dim)">—</span>';
+        el.innerHTML = html || '<span style="color:var(--dim)">—</span>';
       }
       function rnnTestGenerate() {
         const outEl = document.getElementById("rnnTestOutput");
@@ -17007,8 +17296,13 @@
         const seedInput = document.getElementById("rnnTestSeed");
         let seed = (seedInput ? seedInput.value : "").toLowerCase().trim();
         if (!seed) seed = T.vocab[0] || "";
-        const temp = parseFloat(document.getElementById("rnnTestTemp")?.value || "0.6");
-        const len = parseInt(document.getElementById("rnnTestLen")?.value || "40", 10);
+        const temp = parseFloat(
+          document.getElementById("rnnTestTemp")?.value || "0.6",
+        );
+        const len = parseInt(
+          document.getElementById("rnnTestLen")?.value || "40",
+          10,
+        );
         const { h, lastIdx } = rnnPrimeHidden(seed);
         let curH = h;
         let idx = lastIdx != null ? lastIdx : T.stoi[T.vocab[0]] || 0;
@@ -17037,7 +17331,10 @@
         T.generatedConfs = confs;
         const primedHTML = seed
           .split("")
-          .map((c) => `<span data-no-translate style="color:var(--dim)">${c === " " ? "␣" : c}</span>`)
+          .map(
+            (c) =>
+              `<span data-no-translate style="color:var(--dim)">${c === " " ? "␣" : c}</span>`,
+          )
           .join("");
         const genHTML = out
           .split("")
@@ -17076,7 +17373,7 @@
         const T = RNN_TRAIN;
         if (!T.built) {
           el.innerHTML =
-            '<span style="color:var(--dim);font-size:9px">Construisez d\'abord le modèle dans l\'onglet « 2. Modèle ».</span>';
+            "<span style=\"color:var(--dim);font-size:9px\">Construisez d'abord le modèle dans l'onglet « 2. Modèle ».</span>";
           return;
         }
         const loss = T.smoothLoss == null ? 0 : T.smoothLoss;

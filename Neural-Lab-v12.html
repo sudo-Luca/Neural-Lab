@@ -2826,6 +2826,126 @@
         border-radius: 4px;
         padding: 8px 10px;
       }
+      /* ══════════ CNN — MODÈLE COMPLET ══════════ */
+      .cnn-class-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #0d1020;
+        border: 1px solid var(--brd);
+        border-radius: 12px;
+        padding: 3px 6px 3px 10px;
+        font-size: 9px;
+        color: var(--text);
+        margin: 2px 4px 2px 0;
+      }
+      .cnn-class-chip .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .cnn-class-chip button {
+        background: none;
+        border: none;
+        color: var(--dim);
+        cursor: pointer;
+        font-size: 10px;
+        padding: 0 2px;
+        line-height: 1;
+      }
+      .cnn-class-chip button:hover {
+        color: var(--red);
+      }
+      .cnn-ds-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .cnn-ds-item {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 4px;
+        text-align: center;
+        position: relative;
+        width: fit-content;
+      }
+      .cnn-ds-item .lbl {
+        font-size: 7px;
+        margin-top: 2px;
+        max-width: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cnn-ds-item .rm {
+        position: absolute;
+        top: 1px;
+        right: 2px;
+        background: none;
+        border: none;
+        color: var(--red);
+        cursor: pointer;
+        font-size: 9px;
+        padding: 0;
+        line-height: 1;
+      }
+      .cnn-prob-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 5px;
+        font-size: 9px;
+      }
+      .cnn-prob-row .nm {
+        width: 66px;
+        flex-shrink: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cnn-prob-row .bar-bg {
+        flex: 1;
+        height: 10px;
+        background: #0a0c18;
+        border: 1px solid var(--brd);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .cnn-prob-row .bar-fg {
+        height: 100%;
+      }
+      .cnn-prob-row .pct {
+        width: 36px;
+        flex-shrink: 0;
+        text-align: right;
+        color: var(--dim);
+        font-family: "JetBrains Mono", monospace;
+      }
+      .cnn-arch-box {
+        background: #030408;
+        border: 1px solid var(--a1);
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-size: 9px;
+        color: var(--text);
+        line-height: 1.7;
+        margin-bottom: 10px;
+      }
+      .cnn-test-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 8px;
+        margin-top: 6px;
+      }
+      .cnn-test-table td,
+      .cnn-test-table th {
+        padding: 3px 5px;
+        border-bottom: 1px solid var(--brd);
+        text-align: left;
+      }
       /* ══════════ RNN LAB ══════════ */
       #rnn-modal-bg {
         position: fixed;
@@ -3293,6 +3413,19 @@
         }
         .tabs {
           overflow-x: auto;
+        }
+
+        /* Les onglets internes des modals Labo CNN / Labo RNN ont un
+           "overflow: hidden" (desktop-only, juste pour arrondir les coins)
+           qui, à cette largeur, coupe purement et simplement les onglets
+           qui ne tiennent pas — dont « 🧠 Modèle complet », le dernier de
+           la liste. On restaure le défilement horizontal ici pour qu'ils
+           restent tous atteignables au doigt. */
+        #cnn-body .tabs,
+        #rnn-body .tabs {
+          overflow-x: auto;
+          overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
         }
 
         /* ── BOTTOM NAVIGATION ── */
@@ -4805,8 +4938,11 @@
                 style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
               >
                 Convolution pas-à-pas, galerie comparant tous les filtres,
-                pipeline multi-couches avec champ réceptif, et entraînement
-                d'un noyau par descente de gradient
+                pipeline multi-couches avec champ réceptif, entraînement
+                d'un noyau par descente de gradient, et un onglet
+                <b style="color: var(--grn)">« Modèle complet »</b> pour
+                construire, entraîner (vraie rétropropagation) et tester un
+                CNN multi-couches sur un dataset d'images créé sur place
               </div>
               <button class="btn ok" onclick="openCNNLab()" style="width: 100%">
                 🧠 Ouvrir le labo CNN
@@ -8527,6 +8663,13 @@
             analyzeGradients();
           }, 50);
         }
+        // Sur mobile, ces onglets vivent dans le panneau "Détails" (#right).
+        // Si l'action vient d'ailleurs (ex: tap sur un neurone/connexion dans
+        // le panneau Réseau), il faut aussi basculer le panneau mobile actif
+        // sinon le résultat s'affiche hors écran et semble ne rien faire.
+        if (typeof mobNav === "function" && window.innerWidth <= 900) {
+          mobNav("right");
+        }
       }
 
       function tog(key) {
@@ -12113,7 +12256,11 @@
           <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
             Expérimentez avec les couches convolutives : dessinez une image,
             choisissez un noyau (kernel), et observez la feature map produite —
-            la brique de base des CNN (réseaux de neurones convolutifs).
+            la brique de base des CNN (réseaux de neurones convolutifs). Une
+            fois ces briques comprises, direction l'onglet
+            <b style="color: var(--a1)">« 🧠 Modèle complet »</b> pour
+            assembler un vrai classifieur multi-couches et l'entraîner sur un
+            dataset d'images que vous créez vous-même.
           </div>
 
           <div class="tabs">
@@ -12144,6 +12291,14 @@
               onclick="cnnShowTab('train')"
             >
               Entraîner un noyau
+            </div>
+            <div
+              class="tab"
+              id="cnntab-btn-model"
+              onclick="cnnShowTab('model')"
+              style="color: var(--grn)"
+            >
+              🧠 Modèle complet
             </div>
           </div>
 
@@ -12377,6 +12532,12 @@
               pas — exactement comme les couches convolutives d'un vrai
               réseau pendant l'entraînement.
             </div>
+            <div style="font-size: 8px; color: var(--dim); margin-bottom: 10px">
+              💡 Ici, un seul noyau apprend à imiter un filtre fixe. Pour
+              entraîner un vrai <b style="color: var(--a1)">classifieur</b>
+              (plusieurs couches + choix du dataset + test), voir l'onglet
+              <b style="color: var(--grn)">« 🧠 Modèle complet »</b>.
+            </div>
             <div
               style="
                 display: flex;
@@ -12438,6 +12599,322 @@
               </button>
             </div>
             <div id="cnnTrainBody"></div>
+          </div>
+
+          <!-- ── MODÈLE COMPLET (config réseau + dataset + test) ── -->
+          <div class="tc" id="cnntab-model">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Construisez un vrai petit CNN multi-couches (convolution →
+              ReLU → pooling, empilé une ou deux fois, puis couche(s)
+              dense(s) → softmax), entraînez-le par rétropropagation
+              complète sur un jeu d'images que <em>vous</em> dessinez et
+              étiquetez, puis testez ses prédictions sur de nouveaux
+              dessins.
+            </div>
+
+            <div class="tabs" style="margin-bottom: 12px">
+              <div
+                class="tab active"
+                id="cnnmtab-btn-config"
+                onclick="cnnModelShowSubtab('config')"
+              >
+                1. Configuration
+              </div>
+              <div
+                class="tab"
+                id="cnnmtab-btn-dataset"
+                onclick="cnnModelShowSubtab('dataset')"
+              >
+                2. Dataset
+              </div>
+              <div
+                class="tab"
+                id="cnnmtab-btn-test"
+                onclick="cnnModelShowSubtab('test')"
+              >
+                3. Test
+              </div>
+            </div>
+
+            <!-- ── CONFIG ── -->
+            <div class="tc show" id="cnnmtab-config">
+              <div
+                style="
+                  display: flex;
+                  gap: 12px;
+                  flex-wrap: wrap;
+                  margin-bottom: 10px;
+                  background: #030408;
+                  border: 1px solid var(--brd);
+                  border-radius: 4px;
+                  padding: 8px 10px;
+                "
+              >
+                <div style="flex: 1; min-width: 130px">
+                  <lbl>Taille des images</lbl>
+                  <select
+                    id="cmSize"
+                    data-no-translate
+                    onchange="cnnModelSetSize(parseInt(this.value))"
+                  >
+                    <option value="8">8×8</option>
+                    <option value="10" selected>10×10</option>
+                    <option value="12">12×12</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 130px">
+                  <lbl>Couches convolutives</lbl>
+                  <select
+                    id="cmBlocks"
+                    data-no-translate
+                    onchange="cnnModelConfigChanged()"
+                  >
+                    <option value="1">1 couche</option>
+                    <option value="2" selected>2 couches</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 130px">
+                  <lbl>Filtres par couche</lbl>
+                  <select
+                    id="cmFilters"
+                    data-no-translate
+                    onchange="cnnModelConfigChanged()"
+                  >
+                    <option value="2">2</option>
+                    <option value="4" selected>4</option>
+                    <option value="6">6</option>
+                    <option value="8">8</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 130px">
+                  <lbl>Neurones cachés (dense)</lbl>
+                  <select
+                    id="cmHidden"
+                    data-no-translate
+                    onchange="cnnModelConfigChanged()"
+                  >
+                    <option value="0">Aucun (direct)</option>
+                    <option value="4">4</option>
+                    <option value="8" selected>8</option>
+                    <option value="16">16</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 130px">
+                  <lbl>Taux d'apprentissage</lbl>
+                  <select
+                    id="cmLr"
+                    data-no-translate
+                    onchange="if (CNN_MODEL.built) CNN_MODEL.lr = parseFloat(this.value)"
+                  >
+                    <option value="0.01">0.01</option>
+                    <option value="0.03" selected>0.03</option>
+                    <option value="0.1">0.1</option>
+                    <option value="0.3">0.3</option>
+                  </select>
+                </div>
+                <div
+                  style="
+                    flex: 1;
+                    min-width: 190px;
+                    display: flex;
+                    align-items: center;
+                  "
+                >
+                  <label
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 5px;
+                      font-size: 9px;
+                      color: var(--dim);
+                    "
+                    ><input
+                      type="checkbox"
+                      id="cmPool"
+                      checked
+                      onchange="cnnModelConfigChanged()"
+                    />
+                    Max-pooling 2×2 après chaque couche</label
+                  >
+                </div>
+              </div>
+
+              <div id="cnnModelArchBox" class="cnn-arch-box">
+                Configurez, ajoutez un dataset dans l'onglet « 2. Dataset »,
+                puis cliquez « Construire le modèle ».
+              </div>
+
+              <div class="btn-row" style="margin-bottom: 10px">
+                <button class="btn ok" onclick="cnnModelBuild()" style="flex: 1">
+                  🏗 Construire le modèle
+                </button>
+              </div>
+
+              <div class="btn-row" style="margin-bottom: 10px">
+                <button
+                  class="btn go"
+                  id="cnnModelTrainBtn"
+                  onclick="cnnModelTrainToggle()"
+                >
+                  ▶ Entraîner
+                </button>
+                <button
+                  class="btn"
+                  onclick="cnnModelEpoch(); cnnModelRenderTrain()"
+                >
+                  ⏭ 1 époque
+                </button>
+                <button
+                  class="btn"
+                  onclick="cnnModelEpochs(10); cnnModelRenderTrain()"
+                >
+                  ⏩ +10 époques
+                </button>
+                <button class="btn warn" onclick="cnnModelResetWeights()">
+                  ↺ Réinitialiser les poids
+                </button>
+              </div>
+
+              <div id="cnnModelTrainBody"></div>
+            </div>
+
+            <!-- ── DATASET ── -->
+            <div class="tc" id="cnnmtab-dataset">
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+                Créez les images qui serviront à entraîner le modèle :
+                définissez des classes, dessinez une forme, assignez-lui une
+                classe, puis ajoutez-la au dataset. Plus vous ajoutez
+                d'exemples variés par classe, mieux le modèle apprendra à
+                les distinguer.
+              </div>
+
+              <lbl>Classes</lbl>
+              <div id="cnnModelClasses" style="margin-bottom: 6px"></div>
+              <div style="display: flex; gap: 5px; margin-bottom: 4px">
+                <input
+                  type="text"
+                  id="cnnNewClassName"
+                  placeholder="Nom de la classe…"
+                  style="flex: 1; font-size: 9px"
+                  maxlength="16"
+                  onkeydown="if(event.key==='Enter') cnnModelAddClass()"
+                />
+                <button class="btn go" onclick="cnnModelAddClass()">
+                  + Ajouter
+                </button>
+              </div>
+
+              <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px">
+                <div style="flex: 1; min-width: 190px">
+                  <lbl>Dessin de l'exemple</lbl>
+                  <div id="cnnDsDraftGrid" class="cnn-grid"></div>
+                  <div class="btn-row" style="margin-top: 6px">
+                    <button class="btn" onclick="cnnModelDraftPreset('croix')">✚</button>
+                    <button class="btn" onclick="cnnModelDraftPreset('carre')">▢</button>
+                    <button class="btn" onclick="cnnModelDraftPreset('diag')">╲</button>
+                    <button class="btn" onclick="cnnModelDraftPreset('rond')">◯</button>
+                    <button class="btn" onclick="cnnModelDraftPreset('alea')">🎲</button>
+                    <button class="btn" onclick="cnnModelDraftPreset('vide')">↺</button>
+                  </div>
+                  <div class="btn-row" style="margin-top: 6px">
+                    <button class="btn" onclick="cnnModelImportFromConv()" style="flex: 1">
+                      📥 Importer le dessin de l'onglet Convolution
+                    </button>
+                  </div>
+                </div>
+                <div style="flex: 1; min-width: 190px">
+                  <lbl>Classe de cet exemple</lbl>
+                  <select id="cnnDsDraftClass" style="width: 100%; margin-bottom: 8px"></select>
+                  <div class="btn-row">
+                    <button class="btn ok" onclick="cnnModelAddSample(false)" style="flex: 1">
+                      + Ajouter au dataset
+                    </button>
+                  </div>
+                  <div class="btn-row" style="margin-top: 5px">
+                    <button class="btn ok" onclick="cnnModelAddSample(true)" style="flex: 1">
+                      + Ajouter avec 5 variations auto
+                    </button>
+                  </div>
+                  <div style="font-size: 8px; color: var(--dim); margin-top: 5px">
+                    Les variations ajoutent automatiquement un léger décalage
+                    et du bruit aléatoire pour aider le modèle à généraliser
+                    plutôt que mémoriser un seul dessin.
+                  </div>
+                </div>
+              </div>
+
+              <div class="btn-row" style="margin-top: 12px">
+                <button class="btn go" onclick="cnnModelGenerateDemo()" style="flex: 1">
+                  ✨ Générer un jeu de données de démo
+                </button>
+                <button class="btn danger" onclick="cnnModelClearDataset()">
+                  🗑 Vider le dataset
+                </button>
+              </div>
+
+              <div id="cnnModelDsStats" style="font-size: 9px; color: var(--dim); margin-top: 8px"></div>
+              <div id="cnnModelDsGrid" class="cnn-ds-grid"></div>
+
+              <div style="margin-top: 12px">
+                <lbl>Import / export JSON</lbl>
+                <textarea
+                  id="cnnDsJSON"
+                  rows="3"
+                  placeholder='{"size":10,"classes":["Croix","Carré"],"samples":[{"grid":[[0,1,...]],"label":"Croix"}]}'
+                ></textarea>
+                <div class="btn-row">
+                  <button class="btn" onclick="cnnModelImportJSON()" style="flex: 1">
+                    Importer JSON
+                  </button>
+                  <button class="btn" onclick="cnnModelExportJSON()">Exporter</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── TEST ── -->
+            <div class="tc" id="cnnmtab-test">
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+                Dessinez une image (ou importez le dessin de l'onglet
+                Convolution) et demandez au modèle entraîné de prédire sa
+                classe.
+              </div>
+
+              <div style="display: flex; gap: 14px; flex-wrap: wrap">
+                <div style="flex: 1; min-width: 190px">
+                  <lbl>Image à tester</lbl>
+                  <div id="cnnTestGrid" class="cnn-grid"></div>
+                  <div class="btn-row" style="margin-top: 6px">
+                    <button class="btn" onclick="cnnModelTestPreset('croix')">✚</button>
+                    <button class="btn" onclick="cnnModelTestPreset('carre')">▢</button>
+                    <button class="btn" onclick="cnnModelTestPreset('diag')">╲</button>
+                    <button class="btn" onclick="cnnModelTestPreset('rond')">◯</button>
+                    <button class="btn" onclick="cnnModelTestPreset('alea')">🎲</button>
+                    <button class="btn" onclick="cnnModelTestPreset('vide')">↺</button>
+                  </div>
+                  <div class="btn-row" style="margin-top: 6px">
+                    <button class="btn" onclick="cnnModelTestImportFromConv()" style="flex: 1">
+                      📥 Importer depuis Convolution
+                    </button>
+                  </div>
+                  <div class="btn-row" style="margin-top: 10px">
+                    <button class="btn ok" onclick="cnnModelPredict()" style="flex: 1">
+                      🔮 Prédire
+                    </button>
+                  </div>
+                </div>
+                <div style="flex: 1; min-width: 220px">
+                  <lbl>Prédiction</lbl>
+                  <div id="cnnModelPredictResult" style="margin-top: 6px"></div>
+                </div>
+              </div>
+
+              <div class="btn-row" style="margin-top: 14px">
+                <button class="btn" onclick="cnnModelTestAll()" style="flex: 1">
+                  📊 Tester tout le dataset
+                </button>
+              </div>
+              <div id="cnnModelTestAllResult"></div>
+            </div>
           </div>
         </div>
         <div id="cnn-footer">
@@ -12747,66 +13224,265 @@
             </div>
           </div>
 
-          <!-- ── TAB 4 : ENTRAÎNER (BPTT réel) ── -->
+          <!-- ── TAB 4 : ENTRAÎNER (BPTT réel) — atelier complet ── -->
           <div class="tc" id="rnntab-train">
             <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
               Un vrai mini char-RNN : il apprend, caractère par caractère, à
               prédire le caractère suivant d'un texte — par vraie
               rétropropagation à travers le temps (BPTT) et descente de
               gradient (Adagrad), exactement comme un RNN de production en
-              modèle de langage réduit à quelques lettres.
+              modèle de langage réduit à quelques lettres. Composez votre
+              dataset, réglez le modèle, entraînez-le, puis testez ce qu'il a
+              appris.
             </div>
-            <div
-              style="
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-                align-items: center;
-                margin-bottom: 10px;
-                background: #030408;
-                border: 1px solid var(--brd);
-                border-radius: 4px;
-                padding: 8px 10px;
-              "
-            >
-              <div style="display: flex; align-items: center; gap: 5px; flex: 1; min-width: 160px">
-                <span style="font-size: 9px; color: var(--dim)">Texte cible</span>
-                <input
-                  type="text"
-                  id="rnnTrainText"
-                  value="bonjour"
-                  maxlength="24"
-                  style="flex: 1; font-size: 9px"
-                  onchange="rnnTrainSetup()"
-                />
+
+            <div class="tabs" style="margin-bottom: 12px">
+              <div
+                class="tab active"
+                id="rnntrain-btn-dataset"
+                onclick="rnnTrainShowSub('dataset')"
+              >
+                1. Dataset
               </div>
-              <div style="display: flex; align-items: center; gap: 5px">
-                <span style="font-size: 9px; color: var(--dim)">lr</span>
-                <select
-                  id="rnnTrainLr"
-                  data-no-translate
-                  style="font-size: 9px; width: 65px"
-                  onchange="RNN_TRAIN.lr = parseFloat(this.value)"
-                >
-                  <option value="0.03">0.03</option>
-                  <option value="0.05">0.05</option>
-                  <option value="0.1" selected>0.1</option>
-                  <option value="0.2">0.2</option>
-                </select>
+              <div
+                class="tab"
+                id="rnntrain-btn-model"
+                onclick="rnnTrainShowSub('model')"
+              >
+                2. Modèle
+              </div>
+              <div
+                class="tab"
+                id="rnntrain-btn-run"
+                onclick="rnnTrainShowSub('run')"
+              >
+                3. Entraînement
+              </div>
+              <div
+                class="tab"
+                id="rnntrain-btn-test"
+                onclick="rnnTrainShowSub('test')"
+              >
+                4. Test
               </div>
             </div>
-            <div class="btn-row" style="margin-bottom: 10px">
-              <button class="btn ok" id="rnnTrainBtn" onclick="rnnTrainToggle()">
-                ▶ Entraîner
-              </button>
-              <button class="btn" onclick="rnnTrainStep(); rnnTrainRender()">
-                ⏭ Un pas
-              </button>
-              <button class="btn warn" onclick="rnnTrainReset()">
-                ↺ Réinitialiser
-              </button>
+
+            <!-- ── SOUS-ONGLET 1 : DATASET ── -->
+            <div class="tc show" id="rnntrain-sub-dataset">
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+                Composez le texte sur lequel le mini-RNN va s'entraîner,
+                caractère par caractère. Un texte plus long et plus varié
+                demande plus d'itérations mais donne un modèle plus
+                intéressant à tester ensuite.
+              </div>
+              <lbl>Corpus d'entraînement</lbl>
+              <textarea
+                id="rnnDsCorpus"
+                rows="4"
+                maxlength="600"
+                placeholder="Tapez ou collez votre texte ici…"
+              >bonjour le monde, comment allez vous aujourd'hui</textarea>
+              <div class="btn-row">
+                <button class="btn" onclick="rnnDatasetPreset('mot')">
+                  Un mot
+                </button>
+                <button class="btn" onclick="rnnDatasetPreset('phrase')">
+                  Phrase
+                </button>
+                <button class="btn" onclick="rnnDatasetPreset('poeme')">
+                  Petit poème
+                </button>
+                <button class="btn" onclick="rnnDatasetPreset('alphabet')">
+                  Alphabet
+                </button>
+                <button class="btn" onclick="rnnDatasetPreset('nombres')">
+                  Nombres
+                </button>
+              </div>
+              <div class="btn-row" style="margin-top: 8px">
+                <button class="btn ok" onclick="rnnDatasetApply()" style="flex: 1">
+                  ✔ Valider ce dataset
+                </button>
+              </div>
+              <div
+                id="rnnDsStats"
+                class="cnn-loss-box"
+                style="margin-top: 10px; font-size: 9px"
+              ></div>
             </div>
-            <div id="rnnTrainBody"></div>
+
+            <!-- ── SOUS-ONGLET 2 : MODÈLE ── -->
+            <div class="tc" id="rnntrain-sub-model">
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+                Choisissez la taille de la mémoire du réseau et les
+                hyperparamètres d'entraînement, puis construisez le modèle :
+                ceci initialise des poids aléatoires (Wxh, Whh, Why) adaptés
+                à la taille du vocabulaire de votre dataset.
+              </div>
+              <div
+                style="
+                  display: flex;
+                  gap: 12px;
+                  flex-wrap: wrap;
+                  margin-bottom: 10px;
+                  background: #030408;
+                  border: 1px solid var(--brd);
+                  border-radius: 4px;
+                  padding: 8px 10px;
+                "
+              >
+                <div style="flex: 1; min-width: 140px">
+                  <lbl>Taille de l'état caché (H)</lbl>
+                  <select
+                    id="rnnMdlH"
+                    data-no-translate
+                    onchange="rnnModelConfigChanged()"
+                  >
+                    <option value="8">8</option>
+                    <option value="16" selected>16</option>
+                    <option value="32">32</option>
+                    <option value="64">64</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 140px">
+                  <lbl>Fenêtre BPTT (pas de temps)</lbl>
+                  <select
+                    id="rnnMdlSeq"
+                    data-no-translate
+                    onchange="rnnModelConfigChanged()"
+                  >
+                    <option value="8">8</option>
+                    <option value="16" selected>16</option>
+                    <option value="25">25</option>
+                    <option value="40">40</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 140px">
+                  <lbl>Taux d'apprentissage</lbl>
+                  <select
+                    id="rnnMdlLr"
+                    data-no-translate
+                    onchange="if (RNN_TRAIN.built) RNN_TRAIN.lr = parseFloat(this.value)"
+                  >
+                    <option value="0.03">0.03</option>
+                    <option value="0.05">0.05</option>
+                    <option value="0.1" selected>0.1</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 140px">
+                  <lbl>Écrêtage du gradient</lbl>
+                  <select
+                    id="rnnMdlClip"
+                    data-no-translate
+                    onchange="if (RNN_TRAIN.built) RNN_TRAIN.clip = parseFloat(this.value)"
+                  >
+                    <option value="1">±1</option>
+                    <option value="5" selected>±5</option>
+                    <option value="10">±10</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="rnnModelArchBox" class="cnn-arch-box">
+                Validez un dataset dans l'onglet « 1. Dataset », puis cliquez
+                « Construire le modèle ».
+              </div>
+
+              <div class="btn-row">
+                <button class="btn ok" onclick="rnnModelBuild()" style="flex: 1">
+                  🏗 Construire le modèle
+                </button>
+                <button class="btn warn" onclick="rnnModelResetWeights()">
+                  ↺ Réinitialiser les poids
+                </button>
+              </div>
+            </div>
+
+            <!-- ── SOUS-ONGLET 3 : ENTRAÎNEMENT ── -->
+            <div class="tc" id="rnntrain-sub-run">
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+                Entraînement par mini-fenêtres : à chaque pas, on tire une
+                fenêtre aléatoire du corpus, on calcule la perte par BPTT sur
+                toute la fenêtre, puis on met à jour les poids (Adagrad).
+              </div>
+              <div class="btn-row" style="margin-bottom: 10px">
+                <button class="btn ok" id="rnnTrainBtn" onclick="rnnTrainToggle()">
+                  ▶ Entraîner
+                </button>
+                <button class="btn" onclick="rnnTrainStep(); rnnTrainRender()">
+                  ⏭ Un pas
+                </button>
+                <button class="btn" onclick="rnnTrainSteps(50); rnnTrainRender()">
+                  ⏩ +50 pas
+                </button>
+                <button class="btn warn" onclick="rnnModelResetWeights()">
+                  ↺ Réinitialiser les poids
+                </button>
+              </div>
+              <div id="rnnTrainBody"></div>
+            </div>
+
+            <!-- ── SOUS-ONGLET 4 : TEST ── -->
+            <div class="tc" id="rnntrain-sub-test">
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px">
+                Testez le modèle entraîné : donnez-lui un texte de départ
+                (« amorce ») et regardez ce qu'il prédit comme caractère
+                suivant, ou laissez-le générer une suite complète.
+              </div>
+              <div style="display: flex; gap: 14px; flex-wrap: wrap">
+                <div style="flex: 1; min-width: 220px">
+                  <lbl>Texte d'amorce</lbl>
+                  <input
+                    type="text"
+                    id="rnnTestSeed"
+                    maxlength="40"
+                    placeholder="Tapez le début d'un texte…"
+                    oninput="rnnTestPredictNext()"
+                  />
+                  <lbl>Température — <span id="rnnTestTempVal" data-no-translate>0.6</span></lbl>
+                  <input
+                    type="range"
+                    id="rnnTestTemp"
+                    min="0.2"
+                    max="1.5"
+                    step="0.05"
+                    value="0.6"
+                    oninput="document.getElementById('rnnTestTempVal').textContent=this.value"
+                  />
+                  <lbl>Longueur à générer</lbl>
+                  <select id="rnnTestLen" data-no-translate>
+                    <option value="20">20</option>
+                    <option value="40" selected>40</option>
+                    <option value="80">80</option>
+                    <option value="150">150</option>
+                  </select>
+                  <div class="btn-row" style="margin-top: 8px">
+                    <button class="btn ok" onclick="rnnTestGenerate()" style="flex: 1">
+                      ✎ Générer
+                    </button>
+                  </div>
+                </div>
+                <div style="flex: 1; min-width: 220px">
+                  <lbl>Prédiction du prochain caractère</lbl>
+                  <div
+                    id="rnnTestNextProbs"
+                    class="cnn-loss-box"
+                    style="min-height: 54px"
+                  ></div>
+                </div>
+              </div>
+              <lbl style="margin-top: 10px">Texte généré (gris = amorce)</lbl>
+              <div
+                id="rnnTestOutput"
+                class="cnn-loss-box"
+                style="min-height: 54px; word-break: break-all; line-height: 1.6"
+              ></div>
+              <div style="font-size: 7px; color: var(--dim); margin-top: 3px">
+                🟢 confiance haute · 🔴 confiance basse
+              </div>
+            </div>
           </div>
         </div>
         <div id="rnn-footer">
@@ -13806,7 +14482,7 @@
       function cnnShowTab(name) {
         cnnStopAnim();
         cnnActiveTab = name;
-        ["conv", "gallery", "pipe", "train"].forEach((t) => {
+        ["conv", "gallery", "pipe", "train", "model"].forEach((t) => {
           document
             .getElementById("cnntab-" + t)
             ?.classList.toggle("show", t === name);
@@ -13820,6 +14496,9 @@
           cnnPipeRender();
         } else if (name === "train") {
           if (!CNN_TRAIN.kernel) cnnTrainSetup();
+        } else if (name === "model") {
+          if (!CNN_MODEL.draft.length) cnnModelInitDefault();
+          cnnModelShowSubtab(cnnModelActiveSub);
         }
       }
 
@@ -13832,6 +14511,7 @@
       function closeCNNLab() {
         cnnStopAnim();
         cnnTrainStop();
+        cnnModelTrainStop();
         document.getElementById("cnn-modal-bg").classList.remove("show");
       }
       {
@@ -14378,7 +15058,7 @@
           for (let kx = 0; kx < 3; kx++) grad[ky][kx] *= scale;
         return grad;
       }
-      function cnnLossSparkline(hist, w, h) {
+      function cnnLossSparkline(hist, w, h, color) {
         if (hist.length < 2)
           return `<svg width="${w}" height="${h}"></svg>`;
         const mx = Math.max(...hist, 1e-6);
@@ -14389,7 +15069,7 @@
             return x.toFixed(1) + "," + y.toFixed(1);
           })
           .join(" ");
-        return `<svg width="${w}" height="${h}"><polyline points="${pts}" style="fill:none;stroke:var(--a1);stroke-width:1.5"/></svg>`;
+        return `<svg width="${w}" height="${h}"><polyline points="${pts}" style="fill:none;stroke:${color || "var(--a1)"};stroke-width:1.5"/></svg>`;
       }
       function cnnTrainSetup() {
         cnnTrainStop();
@@ -14503,6 +15183,935 @@
       }
       function cnnTrainReset() {
         cnnTrainSetup();
+      }
+
+      // ════════════ 10sexies. MODÈLE COMPLET (config + dataset + test) ════════════
+      // Un vrai petit CNN multi-couches : 1 ou 2 blocs Conv(same,3×3)+ReLU
+      // [+MaxPool2×2], puis Flatten → Dense(ReLU) optionnelle → Dense+Softmax.
+      // Entraînement par rétropropagation complète (SGD par exemple, un
+      // « pas » = un exemple, une « époque » = tout le dataset mélangé) sur
+      // un dataset d'images 0/1 dessinées et étiquetées par l'utilisateur.
+      const CNN_MODEL_PALETTE = [
+        "#00e5ff",
+        "#bf5fff",
+        "#ff8c2a",
+        "#00ff9d",
+        "#ffd600",
+        "#ff3d5a",
+        "#5fd0ff",
+        "#e792ff",
+      ];
+      function cnnModelClassColor(i) {
+        return CNN_MODEL_PALETTE[i % CNN_MODEL_PALETTE.length];
+      }
+      const CNN_MODEL = {
+        size: 10,
+        classes: [],
+        dataset: [], // {grid:[[0/1..]], label:string}
+        draft: [],
+        testGrid: [],
+        built: false,
+        arch: null, // {blocks,filters,hidden,pool}
+        lr: 0.03,
+        blockDims: [],
+        outDims: [],
+        flatLen: 0,
+        convW: [],
+        convB: [],
+        hidW: null,
+        hidB: null,
+        outW: null,
+        outB: null,
+        epoch: 0,
+        lossHist: [],
+        accHist: [],
+        timer: null,
+      };
+      let cnnModelActiveSub = "config";
+
+      function cnnModelInitDefault() {
+        const n = CNN_MODEL.size || 10;
+        CNN_MODEL.draft = Array.from({ length: n }, () => Array(n).fill(0));
+        CNN_MODEL.testGrid = Array.from({ length: n }, () => Array(n).fill(0));
+      }
+
+      function cnnModelShowSubtab(name) {
+        cnnModelActiveSub = name;
+        ["config", "dataset", "test"].forEach((t) => {
+          document
+            .getElementById("cnnmtab-" + t)
+            ?.classList.toggle("show", t === name);
+          document
+            .getElementById("cnnmtab-btn-" + t)
+            ?.classList.toggle("active", t === name);
+        });
+        if (name === "dataset") {
+          cnnModelRenderClasses();
+          cnnModelRenderDraftGrid();
+          cnnModelRenderDsStats();
+          cnnModelRenderDatasetGrid();
+        } else if (name === "test") {
+          cnnModelRenderTestGrid();
+        } else if (name === "config") {
+          cnnModelRenderArch();
+          cnnModelRenderTrain();
+        }
+      }
+
+      // ── Formes réutilisables (dessin d'exemple / test / démo) ──
+      function cnnModelShape(name, n) {
+        const g = Array.from({ length: n }, () => Array(n).fill(0));
+        if (name === "croix") {
+          const mid = Math.floor(n / 2);
+          for (let i = 0; i < n; i++) {
+            g[mid][i] = 1;
+            g[i][mid] = 1;
+          }
+        } else if (name === "carre") {
+          const m = Math.floor(n * 0.25),
+            M = n - m;
+          for (let y = m; y < M; y++)
+            for (let x = m; x < M; x++)
+              if (y === m || y === M - 1 || x === m || x === M - 1) g[y][x] = 1;
+        } else if (name === "diag") {
+          for (let i = 0; i < n; i++) g[i][i] = 1;
+        } else if (name === "rond") {
+          const c = (n - 1) / 2,
+            r = n * 0.35;
+          for (let y = 0; y < n; y++)
+            for (let x = 0; x < n; x++) {
+              const d = Math.sqrt((y - c) ** 2 + (x - c) ** 2);
+              if (Math.abs(d - r) < 0.9) g[y][x] = 1;
+            }
+        } else if (name === "alea") {
+          for (let y = 0; y < n; y++)
+            for (let x = 0; x < n; x++) g[y][x] = Math.random() > 0.6 ? 1 : 0;
+        }
+        return g;
+      }
+      // Petit décalage aléatoire + bruit poivre-et-sel : sert à générer des
+      // variantes d'un même exemple pour que le modèle apprenne à
+      // généraliser plutôt qu'à mémoriser un dessin unique.
+      function cnnModelAugment(grid) {
+        const n = grid.length;
+        let g = grid.map((r) => [...r]);
+        const dy = Math.floor(Math.random() * 3) - 1,
+          dx = Math.floor(Math.random() * 3) - 1;
+        if (dy !== 0 || dx !== 0) {
+          const shifted = Array.from({ length: n }, () => Array(n).fill(0));
+          for (let y = 0; y < n; y++)
+            for (let x = 0; x < n; x++) {
+              const sy = y - dy,
+                sx = x - dx;
+              if (sy >= 0 && sy < n && sx >= 0 && sx < n)
+                shifted[y][x] = g[sy][sx];
+            }
+          g = shifted;
+        }
+        for (let y = 0; y < n; y++)
+          for (let x = 0; x < n; x++)
+            if (Math.random() < 0.04) g[y][x] = g[y][x] > 0 ? 0 : 1;
+        return g;
+      }
+      function cnnModelResizeGrid(grid, fromN, toN) {
+        if (fromN === toN) return grid.map((r) => [...r]);
+        const out = Array.from({ length: toN }, () => Array(toN).fill(0));
+        for (let y = 0; y < toN; y++)
+          for (let x = 0; x < toN; x++) {
+            const sy = Math.min(fromN - 1, Math.floor((y * fromN) / toN));
+            const sx = Math.min(fromN - 1, Math.floor((x * fromN) / toN));
+            out[y][x] = grid[sy][sx];
+          }
+        return out;
+      }
+
+      // ── Grille de dessin (dataset) ──
+      function cnnModelRenderDraftGrid() {
+        const el = document.getElementById("cnnDsDraftGrid");
+        if (!el || !CNN_MODEL.draft.length) return;
+        const n = CNN_MODEL.size,
+          cell = n <= 8 ? 20 : n <= 10 ? 16 : 13;
+        el.style.gridTemplateColumns = `repeat(${n},${cell}px)`;
+        let html = "";
+        for (let y = 0; y < n; y++)
+          for (let x = 0; x < n; x++) {
+            const v = CNN_MODEL.draft[y][x],
+              g = Math.round(v * 255);
+            html += `<div class="cnn-cell" style="width:${cell}px;height:${cell}px;background:rgb(${g},${g},${g})" onclick="cnnModelToggleDraftCell(${y},${x})"></div>`;
+          }
+        el.innerHTML = html;
+      }
+      function cnnModelToggleDraftCell(y, x) {
+        CNN_MODEL.draft[y][x] = CNN_MODEL.draft[y][x] > 0 ? 0 : 1;
+        cnnModelRenderDraftGrid();
+      }
+      function cnnModelDraftPreset(name) {
+        CNN_MODEL.draft = cnnModelShape(name, CNN_MODEL.size);
+        cnnModelRenderDraftGrid();
+      }
+      function cnnModelImportFromConv() {
+        if (!CNN.grid.length) {
+          alert("Dessinez d'abord une image dans l'onglet « Convolution ».");
+          return;
+        }
+        CNN_MODEL.draft = cnnModelResizeGrid(CNN.grid, CNN.size, CNN_MODEL.size);
+        cnnModelRenderDraftGrid();
+      }
+
+      // ── Grille de test ──
+      function cnnModelRenderTestGrid() {
+        const el = document.getElementById("cnnTestGrid");
+        if (!el || !CNN_MODEL.testGrid.length) return;
+        const n = CNN_MODEL.size,
+          cell = n <= 8 ? 20 : n <= 10 ? 16 : 13;
+        el.style.gridTemplateColumns = `repeat(${n},${cell}px)`;
+        let html = "";
+        for (let y = 0; y < n; y++)
+          for (let x = 0; x < n; x++) {
+            const v = CNN_MODEL.testGrid[y][x],
+              g = Math.round(v * 255);
+            html += `<div class="cnn-cell" style="width:${cell}px;height:${cell}px;background:rgb(${g},${g},${g})" onclick="cnnModelToggleTestCell(${y},${x})"></div>`;
+          }
+        el.innerHTML = html;
+      }
+      function cnnModelToggleTestCell(y, x) {
+        CNN_MODEL.testGrid[y][x] = CNN_MODEL.testGrid[y][x] > 0 ? 0 : 1;
+        cnnModelRenderTestGrid();
+      }
+      function cnnModelTestPreset(name) {
+        CNN_MODEL.testGrid = cnnModelShape(name, CNN_MODEL.size);
+        cnnModelRenderTestGrid();
+      }
+      function cnnModelTestImportFromConv() {
+        if (!CNN.grid.length) {
+          alert("Dessinez d'abord une image dans l'onglet « Convolution ».");
+          return;
+        }
+        CNN_MODEL.testGrid = cnnModelResizeGrid(CNN.grid, CNN.size, CNN_MODEL.size);
+        cnnModelRenderTestGrid();
+      }
+
+      // ── Taille des images (invalide le dataset si elle change) ──
+      function cnnModelSetSize(n) {
+        if (
+          CNN_MODEL.dataset.length &&
+          !confirm(
+            "Changer la taille des images efface le dataset actuel (les tailles ne seraient plus compatibles). Continuer ?",
+          )
+        ) {
+          const sel = document.getElementById("cmSize");
+          if (sel) sel.value = String(CNN_MODEL.size);
+          return;
+        }
+        CNN_MODEL.size = n;
+        CNN_MODEL.dataset = [];
+        CNN_MODEL.draft = Array.from({ length: n }, () => Array(n).fill(0));
+        CNN_MODEL.testGrid = Array.from({ length: n }, () => Array(n).fill(0));
+        CNN_MODEL.built = false;
+        cnnModelRenderClasses();
+        cnnModelRenderDsStats();
+        cnnModelRenderDatasetGrid();
+        cnnModelRenderDraftGrid();
+        cnnModelRenderTestGrid();
+        cnnModelRenderArch();
+      }
+      function cnnModelConfigChanged() {
+        CNN_MODEL.built = false;
+        cnnModelRenderArch();
+      }
+
+      // ── Classes ──
+      function cnnModelRenderClasses() {
+        const el = document.getElementById("cnnModelClasses");
+        if (!el) return;
+        if (!CNN_MODEL.classes.length) {
+          el.innerHTML =
+            '<span style="font-size:9px;color:var(--dim)">Aucune classe pour l\'instant — ajoutez-en une ci-dessous, ou générez un jeu de démo.</span>';
+        } else {
+          el.innerHTML = CNN_MODEL.classes
+            .map((c, i) => {
+              const count = CNN_MODEL.dataset.filter((s) => s.label === c).length;
+              return `<span class="cnn-class-chip"><span class="dot" style="background:${cnnModelClassColor(i)}"></span>${c} (${count})<button onclick="cnnModelRemoveClass(${i})" title="Supprimer la classe">✕</button></span>`;
+            })
+            .join("");
+        }
+        const sel = document.getElementById("cnnDsDraftClass");
+        if (sel) {
+          const cur = sel.value;
+          sel.innerHTML = CNN_MODEL.classes
+            .map((c) => `<option value="${c}">${c}</option>`)
+            .join("");
+          if (CNN_MODEL.classes.includes(cur)) sel.value = cur;
+        }
+      }
+      function cnnModelAddClass() {
+        const inp = document.getElementById("cnnNewClassName");
+        const name = (inp.value || "").trim();
+        if (!name) return;
+        if (CNN_MODEL.classes.includes(name)) {
+          alert("Cette classe existe déjà.");
+          return;
+        }
+        if (CNN_MODEL.classes.length >= 8) {
+          alert("Maximum 8 classes.");
+          return;
+        }
+        CNN_MODEL.classes.push(name);
+        inp.value = "";
+        CNN_MODEL.built = false;
+        cnnModelRenderClasses();
+        cnnModelRenderDsStats();
+        cnnModelRenderArch();
+      }
+      function cnnModelRemoveClass(i) {
+        const name = CNN_MODEL.classes[i];
+        const count = CNN_MODEL.dataset.filter((s) => s.label === name).length;
+        if (
+          count > 0 &&
+          !confirm(
+            `Supprimer la classe « ${name} » effacera aussi ses ${count} exemple(s) du dataset. Continuer ?`,
+          )
+        )
+          return;
+        CNN_MODEL.classes.splice(i, 1);
+        CNN_MODEL.dataset = CNN_MODEL.dataset.filter((s) => s.label !== name);
+        CNN_MODEL.built = false;
+        cnnModelRenderClasses();
+        cnnModelRenderDsStats();
+        cnnModelRenderDatasetGrid();
+        cnnModelRenderArch();
+      }
+
+      // ── Échantillons du dataset ──
+      function cnnModelAddSample(withVariations) {
+        const sel = document.getElementById("cnnDsDraftClass");
+        if (!sel || !sel.value) {
+          alert("Ajoutez d'abord au moins une classe.");
+          return;
+        }
+        const label = sel.value;
+        const base = CNN_MODEL.draft.map((r) => [...r]);
+        CNN_MODEL.dataset.push({ grid: base, label });
+        if (withVariations) {
+          for (let i = 0; i < 5; i++)
+            CNN_MODEL.dataset.push({ grid: cnnModelAugment(base), label });
+        }
+        cnnModelRenderClasses();
+        cnnModelRenderDsStats();
+        cnnModelRenderDatasetGrid();
+      }
+      function cnnModelDeleteSample(idx) {
+        CNN_MODEL.dataset.splice(idx, 1);
+        cnnModelRenderClasses();
+        cnnModelRenderDsStats();
+        cnnModelRenderDatasetGrid();
+      }
+      function cnnModelClearDataset() {
+        if (!CNN_MODEL.dataset.length) return;
+        if (!confirm("Vider tout le dataset ?")) return;
+        CNN_MODEL.dataset = [];
+        cnnModelRenderClasses();
+        cnnModelRenderDsStats();
+        cnnModelRenderDatasetGrid();
+      }
+      function cnnModelRenderDsStats() {
+        const el = document.getElementById("cnnModelDsStats");
+        if (!el) return;
+        const n = CNN_MODEL.dataset.length;
+        if (!n) {
+          el.textContent = "Dataset vide.";
+          return;
+        }
+        const perClass = CNN_MODEL.classes
+          .map((c) => `${c}: ${CNN_MODEL.dataset.filter((s) => s.label === c).length}`)
+          .join(" · ");
+        let warn = "";
+        if (CNN_MODEL.classes.length < 2)
+          warn = ' <span style="color:var(--red)">— ajoutez au moins 2 classes</span>';
+        else if (CNN_MODEL.classes.some((c) => !CNN_MODEL.dataset.some((s) => s.label === c)))
+          warn = ' <span style="color:var(--org)">— une classe n\'a encore aucun exemple</span>';
+        el.innerHTML = `${n} exemple(s) — ${perClass}${warn}`;
+      }
+      function cnnModelRenderDatasetGrid() {
+        const el = document.getElementById("cnnModelDsGrid");
+        if (!el) return;
+        if (!CNN_MODEL.dataset.length) {
+          el.innerHTML =
+            '<span style="font-size:9px;color:var(--dim)">Aucun exemple pour l\'instant.</span>';
+          return;
+        }
+        const cell = 4;
+        let html = "";
+        CNN_MODEL.dataset.forEach((s, idx) => {
+          const ci = CNN_MODEL.classes.indexOf(s.label);
+          const color = ci >= 0 ? cnnModelClassColor(ci) : "#888";
+          let grid = `<div class="cnn-grid" style="grid-template-columns:repeat(${s.grid.length},${cell}px);gap:1px">`;
+          for (const row of s.grid)
+            for (const v of row) {
+              const g = Math.round(v * 255);
+              grid += `<div style="width:${cell}px;height:${cell}px;background:rgb(${g},${g},${g})"></div>`;
+            }
+          grid += "</div>";
+          html += `<div class="cnn-ds-item"><button class="rm" onclick="cnnModelDeleteSample(${idx})" title="Supprimer">✕</button>${grid}<div class="lbl" style="color:${color}">${s.label}</div></div>`;
+        });
+        el.innerHTML = html;
+      }
+
+      // ── Jeu de données de démonstration (4 formes, augmentées) ──
+      function cnnModelGenerateDemo() {
+        if (
+          (CNN_MODEL.dataset.length || CNN_MODEL.classes.length) &&
+          !confirm(
+            "Ceci remplace les classes et le dataset actuels par un jeu de démo (Croix / Carré / Diagonale / Cercle). Continuer ?",
+          )
+        )
+          return;
+        cnnModelTrainStop();
+        CNN_MODEL.classes = ["Croix", "Carré", "Diagonale", "Cercle"];
+        CNN_MODEL.dataset = [];
+        const shapeMap = { Croix: "croix", Carré: "carre", Diagonale: "diag", Cercle: "rond" };
+        CNN_MODEL.classes.forEach((label) => {
+          const base = cnnModelShape(shapeMap[label], CNN_MODEL.size);
+          CNN_MODEL.dataset.push({ grid: base, label });
+          for (let i = 0; i < 9; i++)
+            CNN_MODEL.dataset.push({ grid: cnnModelAugment(base), label });
+        });
+        CNN_MODEL.built = false;
+        cnnModelRenderClasses();
+        cnnModelRenderDsStats();
+        cnnModelRenderDatasetGrid();
+        cnnModelRenderArch();
+      }
+
+      // ── Import / export JSON ──
+      function cnnModelExportJSON() {
+        const data = { size: CNN_MODEL.size, classes: CNN_MODEL.classes, samples: CNN_MODEL.dataset };
+        const el = document.getElementById("cnnDsJSON");
+        if (el) el.value = JSON.stringify(data);
+      }
+      function cnnModelImportJSON() {
+        try {
+          const data = JSON.parse(document.getElementById("cnnDsJSON").value);
+          if (!data.size || !Array.isArray(data.classes) || !Array.isArray(data.samples))
+            throw new Error("structure invalide (attendu: size, classes[], samples[])");
+          cnnModelTrainStop();
+          CNN_MODEL.size = data.size;
+          CNN_MODEL.classes = data.classes;
+          CNN_MODEL.dataset = data.samples;
+          CNN_MODEL.built = false;
+          const sizeSel = document.getElementById("cmSize");
+          if (sizeSel) sizeSel.value = String(data.size);
+          CNN_MODEL.draft = Array.from({ length: data.size }, () => Array(data.size).fill(0));
+          CNN_MODEL.testGrid = Array.from({ length: data.size }, () => Array(data.size).fill(0));
+          cnnModelRenderClasses();
+          cnnModelRenderDsStats();
+          cnnModelRenderDatasetGrid();
+          cnnModelRenderDraftGrid();
+          cnnModelRenderTestGrid();
+          cnnModelRenderArch();
+        } catch (e) {
+          alert("JSON invalide : " + e);
+        }
+      }
+
+      // ── Construction du modèle (poids initialisés selon la config) ──
+      function cnnModelBuild() {
+        const archBox = document.getElementById("cnnModelArchBox");
+        if (CNN_MODEL.classes.length < 2) {
+          if (archBox)
+            archBox.innerHTML =
+              '<span style="color:var(--red)">Il faut au moins 2 classes dans le dataset (onglet « 2. Dataset ») pour construire un classifieur.</span>';
+          return false;
+        }
+        if (CNN_MODEL.dataset.length < CNN_MODEL.classes.length) {
+          if (archBox)
+            archBox.innerHTML =
+              '<span style="color:var(--red)">Ajoutez au moins un exemple par classe (onglet « 2. Dataset ») avant de construire le modèle.</span>';
+          return false;
+        }
+        cnnModelTrainStop();
+        const blocks = parseInt(document.getElementById("cmBlocks").value);
+        const filters = parseInt(document.getElementById("cmFilters").value);
+        const hidden = parseInt(document.getElementById("cmHidden").value);
+        const pool = document.getElementById("cmPool").checked;
+        const lr = parseFloat(document.getElementById("cmLr").value);
+        const n = CNN_MODEL.size;
+
+        CNN_MODEL.arch = { blocks, filters, hidden, pool };
+        CNN_MODEL.lr = lr;
+
+        let dim = n;
+        const blockDims = [],
+          outDims = [];
+        for (let b = 0; b < blocks; b++) {
+          blockDims.push(dim);
+          const od = pool && dim >= 2 ? Math.floor(dim / 2) : dim;
+          outDims.push(od);
+          dim = od;
+        }
+        CNN_MODEL.blockDims = blockDims;
+        CNN_MODEL.outDims = outDims;
+
+        CNN_MODEL.convW = [];
+        CNN_MODEL.convB = [];
+        let inCh = 1;
+        for (let b = 0; b < blocks; b++) {
+          const fanIn = inCh * 9;
+          const scale = Math.sqrt(2 / fanIn);
+          const W = Array.from({ length: filters }, () =>
+            Array.from({ length: inCh }, () =>
+              Array.from({ length: 3 }, () =>
+                Array.from({ length: 3 }, () => (Math.random() * 2 - 1) * scale),
+              ),
+            ),
+          );
+          CNN_MODEL.convW.push(W);
+          CNN_MODEL.convB.push(Array(filters).fill(0));
+          inCh = filters;
+        }
+        const lastDim = outDims[blocks - 1];
+        const flatLen = filters * lastDim * lastDim;
+        CNN_MODEL.flatLen = flatLen;
+
+        if (hidden > 0) {
+          const scaleH = Math.sqrt(2 / flatLen);
+          CNN_MODEL.hidW = Array.from({ length: hidden }, () =>
+            Array.from({ length: flatLen }, () => (Math.random() * 2 - 1) * scaleH),
+          );
+          CNN_MODEL.hidB = Array(hidden).fill(0);
+          const scaleO = Math.sqrt(2 / hidden);
+          CNN_MODEL.outW = Array.from({ length: CNN_MODEL.classes.length }, () =>
+            Array.from({ length: hidden }, () => (Math.random() * 2 - 1) * scaleO),
+          );
+        } else {
+          CNN_MODEL.hidW = null;
+          CNN_MODEL.hidB = null;
+          const scaleO = Math.sqrt(2 / flatLen);
+          CNN_MODEL.outW = Array.from({ length: CNN_MODEL.classes.length }, () =>
+            Array.from({ length: flatLen }, () => (Math.random() * 2 - 1) * scaleO),
+          );
+        }
+        CNN_MODEL.outB = Array(CNN_MODEL.classes.length).fill(0);
+
+        CNN_MODEL.built = true;
+        CNN_MODEL.epoch = 0;
+        CNN_MODEL.lossHist = [];
+        CNN_MODEL.accHist = [];
+        cnnModelRenderArch();
+        cnnModelRenderTrain();
+        return true;
+      }
+      function cnnModelResetWeights() {
+        cnnModelTrainStop();
+        cnnModelBuild();
+      }
+      function cnnModelRenderArch() {
+        const el = document.getElementById("cnnModelArchBox");
+        if (!el) return;
+        if (!CNN_MODEL.built) {
+          el.textContent =
+            "Configurez, ajoutez un dataset dans l'onglet « 2. Dataset », puis cliquez « Construire le modèle ».";
+          return;
+        }
+        const a = CNN_MODEL.arch;
+        const parts = [`Entrée ${CNN_MODEL.size}×${CNN_MODEL.size}×1`];
+        for (let b = 0; b < a.blocks; b++) {
+          parts.push(`Conv(${a.filters} filtres 3×3, same) + ReLU`);
+          if (a.pool && CNN_MODEL.blockDims[b] >= 2)
+            parts.push(`↳ MaxPool 2×2 (→ ${CNN_MODEL.outDims[b]}×${CNN_MODEL.outDims[b]})`);
+        }
+        parts.push(`Flatten (${CNN_MODEL.flatLen})`);
+        if (a.hidden > 0) parts.push(`Dense(${a.hidden}) + ReLU`);
+        parts.push(
+          `Dense(${CNN_MODEL.classes.length}) + Softmax → [${CNN_MODEL.classes.join(", ")}]`,
+        );
+
+        let nParams = 0,
+          inCh = 1;
+        for (let b = 0; b < a.blocks; b++) {
+          nParams += a.filters * inCh * 9 + a.filters;
+          inCh = a.filters;
+        }
+        if (a.hidden > 0) {
+          nParams += a.hidden * CNN_MODEL.flatLen + a.hidden;
+          nParams += CNN_MODEL.classes.length * a.hidden + CNN_MODEL.classes.length;
+        } else {
+          nParams += CNN_MODEL.classes.length * CNN_MODEL.flatLen + CNN_MODEL.classes.length;
+        }
+
+        el.innerHTML =
+          parts.map((p) => `<div>→ ${p}</div>`).join("") +
+          `<div style="margin-top:6px;color:var(--a1)" data-no-translate>≈ ${nParams.toLocaleString("fr-FR")} paramètres entraînables</div>`;
+      }
+
+      // ── Passe avant (forward) : renvoie les probabilités + un cache pour la passe arrière ──
+      function cnnModelMaxPool2WithArgmax(m) {
+        const H = m.length,
+          W = m[0]?.length || 0,
+          oh = Math.floor(H / 2),
+          ow = Math.floor(W / 2);
+        const out = Array.from({ length: oh }, () => Array(ow).fill(0));
+        const argmax = Array.from({ length: oh }, () => Array(ow).fill(0));
+        for (let y = 0; y < oh; y++)
+          for (let x = 0; x < ow; x++) {
+            const vals = [m[2 * y][2 * x], m[2 * y][2 * x + 1], m[2 * y + 1][2 * x], m[2 * y + 1][2 * x + 1]];
+            let mi = 0;
+            for (let i = 1; i < 4; i++) if (vals[i] > vals[mi]) mi = i;
+            out[y][x] = vals[mi];
+            argmax[y][x] = mi;
+          }
+        return { out, argmax };
+      }
+      function cnnModelBlockForward(b, inputChannels) {
+        const filters = CNN_MODEL.arch.filters;
+        const Wt = CNN_MODEL.convW[b],
+          Bv = CNN_MODEL.convB[b];
+        const H = inputChannels[0].length,
+          Wd = inputChannels[0][0].length;
+        const paddedChannels = inputChannels.map((ch) => cnnPadInput(ch, 3, 3, "same").padded);
+        const zMaps = [],
+          aMaps = [];
+        for (let f = 0; f < filters; f++) {
+          const out = Array.from({ length: H }, () => Array(Wd).fill(Bv[f]));
+          for (let c = 0; c < inputChannels.length; c++) {
+            const raw = cnnConvRaw(paddedChannels[c], Wt[f][c], 1);
+            for (let y = 0; y < H; y++) for (let x = 0; x < Wd; x++) out[y][x] += raw[y][x];
+          }
+          zMaps.push(out);
+          aMaps.push(cnnRelu(out));
+        }
+        let pooled = aMaps,
+          argmax = null;
+        if (CNN_MODEL.arch.pool && aMaps[0].length >= 2 && aMaps[0][0].length >= 2) {
+          const res = aMaps.map((m) => cnnModelMaxPool2WithArgmax(m));
+          pooled = res.map((r) => r.out);
+          argmax = res.map((r) => r.argmax);
+        }
+        return { paddedChannels, zMaps, aMaps, pooled, argmax };
+      }
+      function cnnModelForward(grid) {
+        const blocks = CNN_MODEL.arch.blocks;
+        let inputChannels = [grid];
+        const cache = { blocks: [] };
+        for (let b = 0; b < blocks; b++) {
+          const res = cnnModelBlockForward(b, inputChannels);
+          cache.blocks.push(res);
+          inputChannels = res.pooled;
+        }
+        const flat = [];
+        for (const m of inputChannels) for (const row of m) for (const v of row) flat.push(v);
+        cache.flat = flat;
+        let inFeat = flat,
+          hiddenPre = null,
+          hiddenAct = null;
+        if (CNN_MODEL.arch.hidden > 0) {
+          hiddenPre = CNN_MODEL.hidW.map((wrow, i) => {
+            let s = CNN_MODEL.hidB[i];
+            for (let j = 0; j < wrow.length; j++) s += wrow[j] * flat[j];
+            return s;
+          });
+          hiddenAct = hiddenPre.map((v) => Math.max(0, v));
+          inFeat = hiddenAct;
+        }
+        cache.hiddenPre = hiddenPre;
+        cache.hiddenAct = hiddenAct;
+        cache.inFeat = inFeat;
+        const logits = CNN_MODEL.outW.map((wrow, i) => {
+          let s = CNN_MODEL.outB[i];
+          for (let j = 0; j < wrow.length; j++) s += wrow[j] * inFeat[j];
+          return s;
+        });
+        const mx = Math.max(...logits);
+        const exps = logits.map((v) => Math.exp(v - mx));
+        const sumExp = exps.reduce((a, b) => a + b, 0) || 1e-9;
+        const probs = exps.map((v) => v / sumExp);
+        cache.logits = logits;
+        cache.probs = probs;
+        return { probs, cache };
+      }
+      // ── Passe arrière (backprop complète : softmax+CE → dense(s) → déconv/dépool par bloc) ──
+      function cnnModelBackward(cache, labelIdx) {
+        const probs = cache.probs;
+        const numClasses = probs.length;
+        const dLogits = probs.map((p, i) => p - (i === labelIdx ? 1 : 0));
+        const inFeat = cache.inFeat;
+
+        const dOutW = CNN_MODEL.outW.map((row) => row.map(() => 0));
+        const dOutB = Array(numClasses).fill(0);
+        for (let i = 0; i < numClasses; i++) {
+          for (let j = 0; j < inFeat.length; j++) dOutW[i][j] += dLogits[i] * inFeat[j];
+          dOutB[i] += dLogits[i];
+        }
+        const dInFeat = Array(inFeat.length).fill(0);
+        for (let j = 0; j < inFeat.length; j++) {
+          let s = 0;
+          for (let i = 0; i < numClasses; i++) s += dLogits[i] * CNN_MODEL.outW[i][j];
+          dInFeat[j] = s;
+        }
+
+        let dFlat,
+          dHidW = null,
+          dHidB = null;
+        if (CNN_MODEL.arch.hidden > 0) {
+          const hiddenPre = cache.hiddenPre;
+          const dHiddenPre = dInFeat.map((v, i) => v * (hiddenPre[i] > 0 ? 1 : 0));
+          dHidW = CNN_MODEL.hidW.map((row) => row.map(() => 0));
+          dHidB = Array(CNN_MODEL.hidW.length).fill(0);
+          const flat = cache.flat;
+          for (let i = 0; i < dHiddenPre.length; i++) {
+            for (let j = 0; j < flat.length; j++) dHidW[i][j] += dHiddenPre[i] * flat[j];
+            dHidB[i] += dHiddenPre[i];
+          }
+          dFlat = Array(flat.length).fill(0);
+          for (let j = 0; j < flat.length; j++) {
+            let s = 0;
+            for (let i = 0; i < dHiddenPre.length; i++) s += dHiddenPre[i] * CNN_MODEL.hidW[i][j];
+            dFlat[j] = s;
+          }
+        } else {
+          dFlat = dInFeat;
+        }
+
+        const blocks = CNN_MODEL.arch.blocks;
+        const lastBlock = cache.blocks[blocks - 1];
+        const F = lastBlock.pooled.length,
+          h = lastBlock.pooled[0].length,
+          w = lastBlock.pooled[0][0].length;
+        let dPooled = [];
+        {
+          let idx = 0;
+          for (let f = 0; f < F; f++) {
+            const m = Array.from({ length: h }, () => Array(w).fill(0));
+            for (let y = 0; y < h; y++)
+              for (let x = 0; x < w; x++) {
+                m[y][x] = dFlat[idx];
+                idx++;
+              }
+            dPooled.push(m);
+          }
+        }
+
+        const dConvW = CNN_MODEL.convW.map((blockW) =>
+          blockW.map((fW) => fW.map((cW) => cW.map((row) => row.map(() => 0)))),
+        );
+        const dConvB = CNN_MODEL.convB.map((bArr) => bArr.map(() => 0));
+
+        for (let b = blocks - 1; b >= 0; b--) {
+          const blk = cache.blocks[b];
+          const Fb = blk.zMaps.length,
+            Hd = blk.zMaps[0].length,
+            Wd = blk.zMaps[0][0].length;
+          let dAct;
+          if (blk.argmax) {
+            dAct = Array.from({ length: Fb }, () => Array.from({ length: Hd }, () => Array(Wd).fill(0)));
+            const oh = blk.pooled[0].length,
+              ow = blk.pooled[0][0].length;
+            for (let f = 0; f < Fb; f++)
+              for (let y = 0; y < oh; y++)
+                for (let x = 0; x < ow; x++) {
+                  const mi = blk.argmax[f][y][x];
+                  const oy = 2 * y + (mi === 2 || mi === 3 ? 1 : 0);
+                  const ox = 2 * x + (mi === 1 || mi === 3 ? 1 : 0);
+                  dAct[f][oy][ox] += dPooled[f][y][x];
+                }
+          } else {
+            dAct = dPooled;
+          }
+          const dZ = dAct.map((m, f) =>
+            m.map((row, y) => row.map((v, x) => v * (blk.zMaps[f][y][x] > 0 ? 1 : 0))),
+          );
+          const inCh = blk.paddedChannels.length;
+          const dInputPadded = Array.from({ length: inCh }, () => {
+            const PH = blk.paddedChannels[0].length,
+              PW = blk.paddedChannels[0][0].length;
+            return Array.from({ length: PH }, () => Array(PW).fill(0));
+          });
+          for (let f = 0; f < Fb; f++) {
+            let bsum = 0;
+            for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) bsum += dZ[f][y][x];
+            dConvB[b][f] += bsum;
+            for (let c = 0; c < inCh; c++) {
+              const padded = blk.paddedChannels[c];
+              for (let ky = 0; ky < 3; ky++)
+                for (let kx = 0; kx < 3; kx++) {
+                  let s = 0;
+                  for (let y = 0; y < Hd; y++)
+                    for (let x = 0; x < Wd; x++) s += dZ[f][y][x] * padded[y + ky][x + kx];
+                  dConvW[b][f][c][ky][kx] += s;
+                }
+              const weight = CNN_MODEL.convW[b][f][c];
+              for (let y = 0; y < Hd; y++)
+                for (let x = 0; x < Wd; x++) {
+                  const g = dZ[f][y][x];
+                  if (!g) continue;
+                  for (let ky = 0; ky < 3; ky++)
+                    for (let kx = 0; kx < 3; kx++) dInputPadded[c][y + ky][x + kx] += g * weight[ky][kx];
+                }
+            }
+          }
+          if (b > 0) {
+            dPooled = dInputPadded.map((chp) => chp.slice(1, -1).map((row) => row.slice(1, -1)));
+          }
+        }
+
+        return { dOutW, dOutB, dHidW, dHidB, dConvW, dConvB };
+      }
+      function cnnModelApplyGrad(grads, lr) {
+        for (let i = 0; i < CNN_MODEL.outW.length; i++)
+          for (let j = 0; j < CNN_MODEL.outW[i].length; j++)
+            CNN_MODEL.outW[i][j] -= lr * grads.dOutW[i][j];
+        for (let i = 0; i < CNN_MODEL.outB.length; i++) CNN_MODEL.outB[i] -= lr * grads.dOutB[i];
+        if (CNN_MODEL.arch.hidden > 0) {
+          for (let i = 0; i < CNN_MODEL.hidW.length; i++)
+            for (let j = 0; j < CNN_MODEL.hidW[i].length; j++)
+              CNN_MODEL.hidW[i][j] -= lr * grads.dHidW[i][j];
+          for (let i = 0; i < CNN_MODEL.hidB.length; i++) CNN_MODEL.hidB[i] -= lr * grads.dHidB[i];
+        }
+        for (let b = 0; b < CNN_MODEL.arch.blocks; b++) {
+          for (let f = 0; f < CNN_MODEL.arch.filters; f++) {
+            CNN_MODEL.convB[b][f] -= lr * grads.dConvB[b][f];
+            for (let c = 0; c < CNN_MODEL.convW[b][f].length; c++)
+              for (let ky = 0; ky < 3; ky++)
+                for (let kx = 0; kx < 3; kx++)
+                  CNN_MODEL.convW[b][f][c][ky][kx] -= lr * grads.dConvW[b][f][c][ky][kx];
+          }
+        }
+      }
+
+      // ── Boucle d'entraînement ──
+      function cnnModelEpoch() {
+        if (!CNN_MODEL.built && !cnnModelBuild()) return 0;
+        const ds = CNN_MODEL.dataset;
+        if (!ds.length) return 0;
+        const idxs = ds.map((_, i) => i);
+        for (let i = idxs.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [idxs[i], idxs[j]] = [idxs[j], idxs[i]];
+        }
+        let totalLoss = 0,
+          correct = 0;
+        for (const idx of idxs) {
+          const sample = ds[idx];
+          const labelIdx = CNN_MODEL.classes.indexOf(sample.label);
+          if (labelIdx < 0) continue;
+          const { probs, cache } = cnnModelForward(sample.grid);
+          totalLoss += -Math.log(Math.max(probs[labelIdx], 1e-9));
+          let pred = 0;
+          for (let i = 1; i < probs.length; i++) if (probs[i] > probs[pred]) pred = i;
+          if (pred === labelIdx) correct++;
+          const grads = cnnModelBackward(cache, labelIdx);
+          cnnModelApplyGrad(grads, CNN_MODEL.lr);
+        }
+        CNN_MODEL.epoch++;
+        CNN_MODEL.lossHist.push(totalLoss / idxs.length);
+        CNN_MODEL.accHist.push(correct / idxs.length);
+        if (CNN_MODEL.lossHist.length > 250) {
+          CNN_MODEL.lossHist.shift();
+          CNN_MODEL.accHist.shift();
+        }
+        return CNN_MODEL.lossHist[CNN_MODEL.lossHist.length - 1];
+      }
+      function cnnModelEpochs(n) {
+        if (!CNN_MODEL.built && !cnnModelBuild()) return;
+        for (let i = 0; i < n; i++) cnnModelEpoch();
+      }
+      function cnnModelTrainToggle() {
+        if (CNN_MODEL.timer) {
+          cnnModelTrainStop();
+          return;
+        }
+        if (!CNN_MODEL.built && !cnnModelBuild()) return;
+        const btn = document.getElementById("cnnModelTrainBtn");
+        if (btn) btn.textContent = "⏹ Arrêter";
+        CNN_MODEL.timer = setInterval(() => {
+          cnnModelEpoch();
+          cnnModelRenderTrain();
+          if (CNN_MODEL.epoch >= 800) cnnModelTrainStop();
+        }, 80);
+      }
+      function cnnModelTrainStop() {
+        if (CNN_MODEL.timer) {
+          clearInterval(CNN_MODEL.timer);
+          CNN_MODEL.timer = null;
+        }
+        const btn = document.getElementById("cnnModelTrainBtn");
+        if (btn) btn.textContent = "▶ Entraîner";
+      }
+      function cnnModelRenderTrain() {
+        const el = document.getElementById("cnnModelTrainBody");
+        if (!el) return;
+        if (!CNN_MODEL.built) {
+          el.innerHTML = "";
+          return;
+        }
+        const loss = CNN_MODEL.lossHist.length
+          ? CNN_MODEL.lossHist[CNN_MODEL.lossHist.length - 1]
+          : 0;
+        const acc = CNN_MODEL.accHist.length
+          ? CNN_MODEL.accHist[CNN_MODEL.accHist.length - 1]
+          : 0;
+        el.innerHTML = `<div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div class="cnn-train-col">
+            <h3>Perte (cross-entropy) — époque ${CNN_MODEL.epoch}</h3>
+            <div class="cnn-loss-box">
+              ${cnnLossSparkline(CNN_MODEL.lossHist, 200, 54)}
+              <div style="font-size:10px;color:var(--a1);margin-top:4px" data-no-translate>${loss.toFixed(4)}</div>
+            </div>
+          </div>
+          <div class="cnn-train-col">
+            <h3>Précision (entraînement)</h3>
+            <div class="cnn-loss-box">
+              ${cnnLossSparkline(CNN_MODEL.accHist, 200, 54, "var(--grn)")}
+              <div style="font-size:10px;color:var(--grn);margin-top:4px" data-no-translate>${(acc * 100).toFixed(1)}%</div>
+            </div>
+          </div>
+        </div>`;
+      }
+
+      // ── Test / prédiction ──
+      function cnnModelPredict() {
+        const resEl = document.getElementById("cnnModelPredictResult");
+        if (!resEl) return;
+        if (!CNN_MODEL.built) {
+          resEl.innerHTML =
+            '<span style="color:var(--red)">Construisez et entraînez d\'abord le modèle (onglet « 1. Configuration »).</span>';
+          return;
+        }
+        const { probs } = cnnModelForward(CNN_MODEL.testGrid);
+        let pred = 0;
+        for (let i = 1; i < probs.length; i++) if (probs[i] > probs[pred]) pred = i;
+        let html = `<div style="font-size:11px;margin-bottom:8px">Prédiction : <b style="color:${cnnModelClassColor(pred)}">${CNN_MODEL.classes[pred]}</b> <span data-no-translate>(${(probs[pred] * 100).toFixed(1)}%)</span></div>`;
+        CNN_MODEL.classes.forEach((c, i) => {
+          html += `<div class="cnn-prob-row"><span class="nm" style="color:${cnnModelClassColor(i)}">${c}</span><div class="bar-bg"><div class="bar-fg" style="width:${(probs[i] * 100).toFixed(1)}%;background:${cnnModelClassColor(i)}"></div></div><span class="pct" data-no-translate>${(probs[i] * 100).toFixed(1)}%</span></div>`;
+        });
+        resEl.innerHTML = html;
+      }
+      function cnnModelTestAll() {
+        const el = document.getElementById("cnnModelTestAllResult");
+        if (!el) return;
+        if (!CNN_MODEL.built) {
+          el.innerHTML =
+            '<span style="color:var(--red)">Construisez et entraînez d\'abord le modèle.</span>';
+          return;
+        }
+        if (!CNN_MODEL.dataset.length) {
+          el.innerHTML = '<span style="color:var(--dim)">Dataset vide.</span>';
+          return;
+        }
+        let correct = 0,
+          rows = "";
+        CNN_MODEL.dataset.forEach((s, idx) => {
+          const { probs } = cnnModelForward(s.grid);
+          let pred = 0;
+          for (let i = 1; i < probs.length; i++) if (probs[i] > probs[pred]) pred = i;
+          const predLabel = CNN_MODEL.classes[pred];
+          const ok = predLabel === s.label;
+          if (ok) correct++;
+          rows += `<tr><td data-no-translate>#${idx + 1}</td><td>${s.label}</td><td style="color:${ok ? "var(--grn)" : "var(--red)"}">${predLabel} ${ok ? "✓" : "✗"}</td><td data-no-translate>${(probs[pred] * 100).toFixed(0)}%</td></tr>`;
+        });
+        const acc = ((correct / CNN_MODEL.dataset.length) * 100).toFixed(1);
+        el.innerHTML = `<div style="font-size:10px;margin:8px 0"><b style="color:var(--a1)">Précision globale : <span data-no-translate>${acc}%</span></b> <span data-no-translate>(${correct}/${CNN_MODEL.dataset.length})</span></div>
+          <div style="max-height:220px;overflow-y:auto"><table class="cnn-test-table"><tr><th>#</th><th>Vraie classe</th><th>Prédiction</th><th>Confiance</th></tr>${rows}</table></div>`;
       }
 
       // ═══════════════════════════════════════════════
@@ -14621,8 +16230,7 @@
         } else if (name === "grad") {
           rnnGradRender();
         } else if (name === "train") {
-          if (!RNN_TRAIN.Wxh) rnnTrainSetup();
-          else rnnTrainRender();
+          rnnTrainShowSub(rnnTrainActiveSub || "dataset");
         }
       }
 
@@ -15006,11 +16614,18 @@
 
       // ── TAB 4 : ENTRAÎNEMENT RÉEL (char-RNN, BPTT + Adagrad) ──
       const RNN_TRAIN = {
-        text: "bonjour",
+        // ── dataset ──
+        corpus: "bonjour le monde, comment allez vous aujourd'hui",
         vocab: [],
         stoi: {},
         itos: {},
+        // ── hyperparamètres du modèle ──
         H: 16,
+        seqLen: 16,
+        lr: 0.1,
+        clip: 5,
+        built: false,
+        // ── poids ──
         Wxh: null,
         Whh: null,
         Why: null,
@@ -15021,59 +16636,188 @@
         mWhy: null,
         mbh: null,
         mby: null,
+        // ── entraînement ──
         iter: 0,
         lossHist: [],
         smoothLoss: null,
         timer: null,
-        lr: 0.1,
+        // ── test ──
         generated: "",
+        generatedConfs: null,
       };
-      function rnnTrainSetup() {
-        rnnTrainStop();
-        const inp = document.getElementById("rnnTrainText");
-        let text = ((inp ? inp.value : RNN_TRAIN.text) || "")
+      let rnnTrainActiveSub = "dataset";
+
+      function rnnTrainShowSub(name) {
+        rnnTrainActiveSub = name;
+        ["dataset", "model", "run", "test"].forEach((t) => {
+          document
+            .getElementById("rnntrain-sub-" + t)
+            ?.classList.toggle("show", t === name);
+          document
+            .getElementById("rnntrain-btn-" + t)
+            ?.classList.toggle("active", t === name);
+        });
+        if (name === "dataset") rnnDatasetRenderStats();
+        else if (name === "run") rnnTrainRender();
+        else if (name === "test") rnnTestPredictNext();
+      }
+
+      // ── 1. DATASET ──
+      function rnnDatasetPreset(kind) {
+        const presets = {
+          mot: "bonjour",
+          phrase: "le chat noir dort sur le tapis rouge",
+          poeme:
+            "le vent souffle sur la mer\nles vagues dansent sous le ciel clair\nla lune brille sur le sable",
+          alphabet: "abcdefghijklmnopqrstuvwxyz",
+          nombres: "0123456789 0123456789 0123456789",
+        };
+        const inp = document.getElementById("rnnDsCorpus");
+        if (inp) inp.value = presets[kind] || presets.mot;
+      }
+      function rnnDatasetApply() {
+        const inp = document.getElementById("rnnDsCorpus");
+        let text = ((inp ? inp.value : "") || "")
           .toLowerCase()
+          .replace(/[\r\n]+/g, " ")
+          .replace(/\s+/g, " ")
           .trim();
         if (text.length < 2) text = "bonjour";
-        RNN_TRAIN.text = text;
-        const chars = [...new Set(text.split(""))];
-        RNN_TRAIN.vocab = chars;
-        RNN_TRAIN.stoi = {};
-        RNN_TRAIN.itos = {};
-        chars.forEach((c, i) => {
-          RNN_TRAIN.stoi[c] = i;
-          RNN_TRAIN.itos[i] = c;
-        });
-        const V = chars.length,
-          H = RNN_TRAIN.H;
-        RNN_TRAIN.Wxh = rnnRandMat(H, V, 0.1);
-        RNN_TRAIN.Whh = rnnRandMat(H, H, 0.1);
-        RNN_TRAIN.Why = rnnRandMat(V, H, 0.1);
-        RNN_TRAIN.bh = Array(H).fill(0);
-        RNN_TRAIN.by = Array(V).fill(0);
-        RNN_TRAIN.mWxh = rnnZerosMat(H, V);
-        RNN_TRAIN.mWhh = rnnZerosMat(H, H);
-        RNN_TRAIN.mWhy = rnnZerosMat(V, H);
-        RNN_TRAIN.mbh = Array(H).fill(0);
-        RNN_TRAIN.mby = Array(V).fill(0);
-        RNN_TRAIN.iter = 0;
-        RNN_TRAIN.lossHist = [];
-        RNN_TRAIN.smoothLoss = null;
-        RNN_TRAIN.generated = "";
-        rnnTrainRender();
+        RNN_TRAIN.corpus = text;
+        RNN_TRAIN.built = false;
+        rnnDatasetRenderStats();
+        const arch = document.getElementById("rnnModelArchBox");
+        if (arch)
+          arch.innerHTML =
+            "Dataset prêt — passez à l'onglet « 2. Modèle » puis cliquez « Construire le modèle ».";
+        const body = document.getElementById("rnnTrainBody");
+        if (body)
+          body.innerHTML =
+            '<span style="color:var(--dim);font-size:9px">Construisez d\'abord le modèle dans l\'onglet « 2. Modèle ».</span>';
       }
+      function rnnDatasetRenderStats() {
+        const el = document.getElementById("rnnDsStats");
+        if (!el) return;
+        const text = RNN_TRAIN.corpus;
+        if (!text) {
+          el.innerHTML =
+            '<span style="color:var(--dim)">Aucun dataset validé pour l\'instant — écrivez un texte puis cliquez « Valider ce dataset ».</span>';
+          return;
+        }
+        const chars = [...new Set(text.split(""))];
+        el.innerHTML = `<div>Longueur du corpus : <b data-no-translate style="color:var(--a1)">${text.length}</b> caractères</div>
+          <div style="margin-top:4px">Vocabulaire : <b data-no-translate style="color:var(--a1)">${chars.length}</b> caractères distincts</div>
+          <div style="margin-top:4px;color:var(--a2);word-break:break-all" data-no-translate>${chars.map((c) => (c === " " ? "␣" : c)).join(" · ")}</div>`;
+      }
+
+      // ── 2. MODÈLE ──
+      function rnnModelBuild() {
+        rnnTrainStop();
+        const T = RNN_TRAIN;
+        const arch = document.getElementById("rnnModelArchBox");
+        if (!T.corpus || T.corpus.length < 2) {
+          if (arch)
+            arch.innerHTML =
+              '<span style="color:var(--red)">Validez d\'abord un dataset dans l\'onglet « 1. Dataset ».</span>';
+          return false;
+        }
+        const chars = [...new Set(T.corpus.split(""))];
+        if (chars.length < 2) {
+          if (arch)
+            arch.innerHTML =
+              '<span style="color:var(--red)">Le corpus doit contenir au moins 2 caractères différents.</span>';
+          return false;
+        }
+        const H = parseInt(document.getElementById("rnnMdlH")?.value || "16", 10);
+        const seqLen = parseInt(document.getElementById("rnnMdlSeq")?.value || "16", 10);
+        const lr = parseFloat(document.getElementById("rnnMdlLr")?.value || "0.1");
+        const clip = parseFloat(document.getElementById("rnnMdlClip")?.value || "5");
+        T.vocab = chars;
+        T.stoi = {};
+        T.itos = {};
+        chars.forEach((c, i) => {
+          T.stoi[c] = i;
+          T.itos[i] = c;
+        });
+        const V = chars.length;
+        T.H = H;
+        T.seqLen = Math.min(seqLen, Math.max(1, T.corpus.length - 1));
+        T.lr = lr;
+        T.clip = clip;
+        T.Wxh = rnnRandMat(H, V, 0.1);
+        T.Whh = rnnRandMat(H, H, 0.1);
+        T.Why = rnnRandMat(V, H, 0.1);
+        T.bh = Array(H).fill(0);
+        T.by = Array(V).fill(0);
+        T.mWxh = rnnZerosMat(H, V);
+        T.mWhh = rnnZerosMat(H, H);
+        T.mWhy = rnnZerosMat(V, H);
+        T.mbh = Array(H).fill(0);
+        T.mby = Array(V).fill(0);
+        T.iter = 0;
+        T.lossHist = [];
+        T.smoothLoss = null;
+        T.generated = "";
+        T.generatedConfs = null;
+        T.built = true;
+        const nParams = V * H + H * H + V * H + H + V;
+        if (arch)
+          arch.innerHTML = `✔ Modèle construit — vocabulaire de <b data-no-translate>${V}</b> caractères, état caché de taille <b data-no-translate>${H}</b>, fenêtre BPTT de <b data-no-translate>${T.seqLen}</b> pas (<span data-no-translate>${nParams}</span> paramètres environ).`;
+        rnnTrainRender();
+        const outEl = document.getElementById("rnnTestOutput");
+        if (outEl) outEl.innerHTML = "";
+        rnnTestPredictNext();
+        return true;
+      }
+      function rnnModelConfigChanged() {
+        const arch = document.getElementById("rnnModelArchBox");
+        if (arch && RNN_TRAIN.built)
+          arch.innerHTML =
+            "⚠ Paramètres modifiés — cliquez « Construire le modèle » pour les appliquer (le modèle actuel entraîné reste utilisable en attendant).";
+      }
+      function rnnModelResetWeights() {
+        if (!RNN_TRAIN.built) {
+          rnnModelBuild();
+          return;
+        }
+        const T = RNN_TRAIN;
+        const H = T.H,
+          V = T.vocab.length;
+        T.Wxh = rnnRandMat(H, V, 0.1);
+        T.Whh = rnnRandMat(H, H, 0.1);
+        T.Why = rnnRandMat(V, H, 0.1);
+        T.bh = Array(H).fill(0);
+        T.by = Array(V).fill(0);
+        T.mWxh = rnnZerosMat(H, V);
+        T.mWhh = rnnZerosMat(H, H);
+        T.mWhy = rnnZerosMat(V, H);
+        T.mbh = Array(H).fill(0);
+        T.mby = Array(V).fill(0);
+        T.iter = 0;
+        T.lossHist = [];
+        T.smoothLoss = null;
+        T.generated = "";
+        T.generatedConfs = null;
+        rnnTrainRender();
+        rnnTestPredictNext();
+      }
+
+      // ── 3. ENTRAÎNEMENT (BPTT sur fenêtres aléatoires du corpus) ──
       function rnnTrainStep() {
         const T = RNN_TRAIN;
-        if (!T.Wxh || T.text.length < 2) return 0;
-        const { stoi, vocab, H } = T;
+        if (!T.built) return 0;
+        const { stoi, vocab, H, corpus, seqLen } = T;
         const V = vocab.length;
+        const maxStart = Math.max(0, corpus.length - seqLen - 1);
+        const start = maxStart > 0 ? Math.floor(Math.random() * (maxStart + 1)) : 0;
+        const n = Math.min(seqLen, corpus.length - start - 1);
+        if (n < 1) return 0;
         const inputs = [],
           targets = [];
-        for (let i = 0; i < T.text.length - 1; i++) {
-          inputs.push(stoi[T.text[i]]);
-          targets.push(stoi[T.text[i + 1]]);
+        for (let i = 0; i < n; i++) {
+          inputs.push(stoi[corpus[start + i]]);
+          targets.push(stoi[corpus[start + i + 1]]);
         }
-        const n = inputs.length;
         let h = Array(H).fill(0);
         const xs = [],
           hs = [h.slice()],
@@ -15141,15 +16885,16 @@
           }
         }
         // clip anti-explosion
+        const clip = T.clip || 5;
         [dWxh, dWhh, dWhy].forEach((m) =>
           m.forEach((row) => {
             for (let i = 0; i < row.length; i++)
-              row[i] = Math.max(-5, Math.min(5, row[i]));
+              row[i] = Math.max(-clip, Math.min(clip, row[i]));
           }),
         );
         [dbh, dby].forEach((vec) => {
           for (let i = 0; i < vec.length; i++)
-            vec[i] = Math.max(-5, Math.min(5, vec[i]));
+            vec[i] = Math.max(-clip, Math.min(clip, vec[i]));
         });
         // Adagrad
         function adaUpd(param, dparam, mem) {
@@ -15176,40 +16921,105 @@
         if (T.lossHist.length > 200) T.lossHist.shift();
         return loss;
       }
-      function rnnTrainSample(seedChar, length, temp) {
+      function rnnTrainSteps(n) {
+        for (let i = 0; i < n; i++) rnnTrainStep();
+      }
+      // ── 4. TEST : amorçage, prédiction du prochain caractère, génération ──
+      function rnnForwardH(T, h, x) {
+        const H = T.H,
+          V = T.vocab.length;
+        const hNew = Array(H).fill(0);
+        for (let i = 0; i < H; i++) {
+          let zi = T.bh[i];
+          for (let j = 0; j < V; j++) zi += T.Wxh[i][j] * x[j];
+          for (let k = 0; k < H; k++) zi += T.Whh[i][k] * h[k];
+          hNew[i] = Math.tanh(zi);
+        }
+        return hNew;
+      }
+      function rnnOutputDist(T, h, temp) {
+        const V = T.vocab.length;
+        const y = Array(V).fill(0);
+        for (let i = 0; i < V; i++) {
+          let yi = T.by[i];
+          for (let k = 0; k < T.H; k++) yi += T.Why[i][k] * h[k];
+          y[i] = yi / (temp || 1);
+        }
+        const mx = Math.max(...y);
+        const exps = y.map((v) => Math.exp(v - mx));
+        const sum = exps.reduce((a, b) => a + b, 0);
+        return exps.map((v) => v / sum);
+      }
+      // Fait avancer l'état caché sur tout un texte d'amorce (les caractères
+      // absents du vocabulaire appris sont simplement ignorés).
+      function rnnPrimeHidden(text) {
         const T = RNN_TRAIN;
-        if (!T.Wxh) return { text: "", confs: [] };
-        const { vocab, stoi, itos, H } = T;
-        const V = vocab.length;
-        let h = Array(H).fill(0);
-        let idx = stoi[seedChar] != null ? stoi[seedChar] : 0;
-        let out = itos[idx];
-        const confs = [1];
-        for (let t = 0; t < length; t++) {
-          const x = Array(V).fill(0);
+        let h = Array(T.H).fill(0);
+        let lastIdx = null;
+        for (const ch of text) {
+          const idx = T.stoi[ch];
+          if (idx == null) continue;
+          const x = Array(T.vocab.length).fill(0);
           x[idx] = 1;
-          const hNew = Array(H).fill(0);
-          for (let i = 0; i < H; i++) {
-            let zi = T.bh[i];
-            for (let j = 0; j < V; j++) zi += T.Wxh[i][j] * x[j];
-            for (let k = 0; k < H; k++) zi += T.Whh[i][k] * h[k];
-            hNew[i] = Math.tanh(zi);
-          }
-          h = hNew;
-          const y = Array(V).fill(0);
-          for (let i = 0; i < V; i++) {
-            let yi = T.by[i];
-            for (let k = 0; k < H; k++) yi += T.Why[i][k] * h[k];
-            y[i] = yi / temp;
-          }
-          const mxv = Math.max(...y);
-          const exps = y.map((v) => Math.exp(v - mxv));
-          const sum = exps.reduce((a, b) => a + b, 0);
-          const p = exps.map((v) => v / sum);
+          h = rnnForwardH(T, h, x);
+          lastIdx = idx;
+        }
+        return { h, lastIdx };
+      }
+      function rnnCharColor(i) {
+        return `hsl(${Math.round((i * 47) % 360)},70%,60%)`;
+      }
+      function rnnTestPredictNext() {
+        const el = document.getElementById("rnnTestNextProbs");
+        if (!el) return;
+        const T = RNN_TRAIN;
+        if (!T.built) {
+          el.innerHTML =
+            '<span style="color:var(--red)">Construisez et entraînez d\'abord le modèle (onglets « 2. Modèle » puis « 3. Entraînement »).</span>';
+          return;
+        }
+        const seedInput = document.getElementById("rnnTestSeed");
+        const seed = (seedInput ? seedInput.value : "") || T.corpus.slice(0, 1);
+        const { h } = rnnPrimeHidden(seed);
+        const p = rnnOutputDist(T, h, 1);
+        const idxs = p
+          .map((v, i) => i)
+          .sort((a, b) => p[b] - p[a])
+          .slice(0, 6);
+        let html = "";
+        idxs.forEach((i) => {
+          const c = T.itos[i] === " " ? "␣" : T.itos[i];
+          const col = rnnCharColor(i);
+          html += `<div class="cnn-prob-row"><span class="nm" data-no-translate style="color:${col}">'${c}'</span><div class="bar-bg"><div class="bar-fg" style="width:${(p[i] * 100).toFixed(1)}%;background:${col}"></div></div><span class="pct" data-no-translate>${(p[i] * 100).toFixed(1)}%</span></div>`;
+        });
+        el.innerHTML =
+          html || '<span style="color:var(--dim)">—</span>';
+      }
+      function rnnTestGenerate() {
+        const outEl = document.getElementById("rnnTestOutput");
+        if (!outEl) return;
+        const T = RNN_TRAIN;
+        if (!T.built) {
+          outEl.innerHTML =
+            '<span style="color:var(--red)">Construisez et entraînez d\'abord le modèle.</span>';
+          return;
+        }
+        const seedInput = document.getElementById("rnnTestSeed");
+        let seed = (seedInput ? seedInput.value : "").toLowerCase().trim();
+        if (!seed) seed = T.vocab[0] || "";
+        const temp = parseFloat(document.getElementById("rnnTestTemp")?.value || "0.6");
+        const len = parseInt(document.getElementById("rnnTestLen")?.value || "40", 10);
+        const { h, lastIdx } = rnnPrimeHidden(seed);
+        let curH = h;
+        let idx = lastIdx != null ? lastIdx : T.stoi[T.vocab[0]] || 0;
+        let out = "";
+        const confs = [];
+        for (let t = 0; t < len; t++) {
+          const p = rnnOutputDist(T, curH, temp);
           let r = Math.random(),
             acc = 0,
             chosen = 0;
-          for (let i = 0; i < V; i++) {
+          for (let i = 0; i < p.length; i++) {
             acc += p[i];
             if (r <= acc) {
               chosen = i;
@@ -15217,18 +17027,28 @@
             }
           }
           idx = chosen;
-          out += itos[idx];
+          out += T.itos[idx];
           confs.push(p[chosen]);
+          const x = Array(T.vocab.length).fill(0);
+          x[idx] = 1;
+          curH = rnnForwardH(T, curH, x);
         }
-        return { text: out, confs };
-      }
-      function rnnTrainGenerate() {
-        const T = RNN_TRAIN;
-        if (!T.Wxh) return;
-        const res = rnnTrainSample(T.text[0], 40, 0.6);
-        T.generated = res.text;
-        T.generatedConfs = res.confs;
-        rnnTrainRender();
+        T.generated = out;
+        T.generatedConfs = confs;
+        const primedHTML = seed
+          .split("")
+          .map((c) => `<span data-no-translate style="color:var(--dim)">${c === " " ? "␣" : c}</span>`)
+          .join("");
+        const genHTML = out
+          .split("")
+          .map((c, i) => {
+            const conf = confs[i] ?? 1;
+            const col = `hsl(${Math.round(conf * 120)},75%,55%)`;
+            return `<span data-no-translate title="confiance ${(conf * 100).toFixed(0)}%" style="color:${col}">${c === " " ? "␣" : c}</span>`;
+          })
+          .join("");
+        outEl.innerHTML = primedHTML + genHTML;
+        rnnTestPredictNext();
       }
       // Heatmap compacte pour visualiser une matrice de poids (mise à jour en direct pendant l'entraînement)
       function rnnWeightHeatmapHTML(mat, cellPx) {
@@ -15252,26 +17072,23 @@
       }
       function rnnTrainRender() {
         const el = document.getElementById("rnnTrainBody");
-        if (!el || !RNN_TRAIN.Wxh) return;
+        if (!el) return;
         const T = RNN_TRAIN;
-        const loss = T.smoothLoss == null ? 0 : T.smoothLoss;
-        let genHTML = "—";
-        if (T.generated) {
-          genHTML = T.generated
-            .split("")
-            .map((c, i) => {
-              const conf = (T.generatedConfs && T.generatedConfs[i]) ?? 1;
-              const col = `hsl(${Math.round(conf * 120)},75%,55%)`;
-              return `<span data-no-translate title="confiance ${(conf * 100).toFixed(0)}%" style="color:${col}">${c === " " ? "␣" : c}</span>`;
-            })
-            .join("");
+        if (!T.built) {
+          el.innerHTML =
+            '<span style="color:var(--dim);font-size:9px">Construisez d\'abord le modèle dans l\'onglet « 2. Modèle ».</span>';
+          return;
         }
+        const loss = T.smoothLoss == null ? 0 : T.smoothLoss;
+        const epochEst = T.corpus.length
+          ? ((T.iter * T.seqLen) / T.corpus.length).toFixed(1)
+          : "0";
         let html = `<div style="display:flex;gap:16px;flex-wrap:wrap">
           <div class="cnn-train-col">
             <h3>Vocabulaire (${T.vocab.length} caractères)</h3>
-            <div style="font-size:11px;color:var(--a2);margin-bottom:8px" data-no-translate>${T.vocab.map((c) => (c === " " ? "␣" : c)).join(" · ")}</div>
+            <div style="font-size:11px;color:var(--a2);margin-bottom:8px;word-break:break-all" data-no-translate>${T.vocab.map((c) => (c === " " ? "␣" : c)).join(" · ")}</div>
             <h3>Itération</h3>
-            <div style="font-size:14px;color:var(--a1)" data-no-translate>${T.iter}</div>
+            <div style="font-size:14px;color:var(--a1)" data-no-translate>${T.iter} <span style="font-size:9px;color:var(--dim)">(~${epochEst} époques)</span></div>
           </div>
           <div class="cnn-train-col">
             <h3>Perte (cross-entropy, lissée)</h3>
@@ -15279,14 +17096,6 @@
               ${rnnSparkline(T.lossHist, 200, 54, "var(--a2)")}
               <div style="font-size:10px;color:var(--a2);margin-top:4px" data-no-translate>${loss.toFixed(4)}</div>
             </div>
-          </div>
-          <div class="cnn-train-col">
-            <h3>Génération (échantillonnage depuis « ${T.text[0]} »)</h3>
-            <div class="cnn-loss-box" style="min-height:54px">
-              <div style="font-size:11px;word-break:break-all;line-height:1.6">${genHTML}</div>
-            </div>
-            <div style="font-size:7px;color:var(--dim);margin-top:3px">🟢 confiance haute · 🔴 confiance basse</div>
-            <button class="btn" style="margin-top:6px;width:100%" onclick="rnnTrainGenerate()">✎ Générer un échantillon</button>
           </div>
           <div class="cnn-train-col">
             <h3>Poids Whh (récurrent, ${T.H}×${T.H})</h3>
@@ -15302,14 +17111,13 @@
           rnnTrainStop();
           return;
         }
-        if (!RNN_TRAIN.Wxh) rnnTrainSetup();
-        if (!RNN_TRAIN.Wxh) return;
+        if (!RNN_TRAIN.built && !rnnModelBuild()) return;
         const btn = document.getElementById("rnnTrainBtn");
         if (btn) btn.textContent = "⏹ Arrêter";
         RNN_TRAIN.timer = setInterval(() => {
           for (let i = 0; i < 3; i++) rnnTrainStep();
           rnnTrainRender();
-          if (RNN_TRAIN.iter >= 2000) rnnTrainStop();
+          if (RNN_TRAIN.iter >= 4000) rnnTrainStop();
         }, 60);
       }
       function rnnTrainStop() {
@@ -15319,9 +17127,6 @@
         }
         const btn = document.getElementById("rnnTrainBtn");
         if (btn) btn.textContent = "▶ Entraîner";
-      }
-      function rnnTrainReset() {
-        rnnTrainSetup();
       }
 
       // ════════════ 11. KEYBOARD SHORTCUTS ════════════

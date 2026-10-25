@@ -1533,6 +1533,23 @@
         margin: 3px 0;
       }
 
+      /* Aide-mémoire pour les dimensions en calcul matriciel */
+      .matrix-notes {
+        margin: 7px 0 9px;
+        padding: 9px 11px;
+        border: 1px solid rgba(191, 95, 255, .28);
+        border-left: 3px solid var(--a2);
+        border-radius: 5px;
+        background: linear-gradient(135deg, rgba(191,95,255,.075), rgba(0,229,255,.025));
+        color: var(--text);
+      }
+      .matrix-notes-title { font: 700 9px "Syne", sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--a2); margin-bottom: 7px; }
+      .matrix-notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); gap: 5px 12px; }
+      .matrix-note { font-size: 8px; line-height: 1.55; display: grid; grid-template-columns: minmax(58px, auto) 1fr; gap: 7px; align-items: baseline; padding: 3px 0; border-bottom: 1px solid rgba(25,32,64,.55); }
+      .matrix-note code { color: var(--a1); font: 500 9px "JetBrains Mono", monospace; white-space: nowrap; }
+      .matrix-note span { color: var(--dim); }
+      .matrix-notes-foot { margin-top: 7px; padding-top: 6px; border-top: 1px solid rgba(191,95,255,.2); color: var(--dim); font-size: 8px; line-height: 1.55; }
+
       /* ── CANVAS LEGEND ── */
       .canvas-legend {
         position: absolute;
@@ -4430,6 +4447,15 @@
       .cm-in { font-size: 9px; padding: 2px 3px; text-align: right; }
       .cm-fbox { margin-top: 6px; }
       .cm-fsub { margin-top: 4px; }
+
+      /* Formules KaTeX larges (mode portable / petits écrans) : on reste dans le cadre,
+         et si la formule est vraiment trop large, elle défile horizontalement dans son cadre. */
+      .fdpanel { max-width: 100%; min-width: 0; box-sizing: border-box; }
+      .fdderiv-box, .fdgrad-box { max-width: 100%; min-width: 0; box-sizing: border-box; }
+      .fdderiv-box .katex-display, .fdgrad-box .katex-display, .fdeq .katex-display, .cm-fbox .katex-display {
+        max-width: 100%; min-width: 0; overflow-x: auto; overflow-y: hidden; padding: 2px 0 4px;
+      }
+      .cm-note, .cm-fsub { overflow-wrap: anywhere; }
     </style>
 
     <!-- ══════════════ PACK SATISFACTION — animations additives ══════════════
@@ -5283,6 +5309,22 @@
               </div>
             </div>
 
+            <div class="matrix-notes" id="matrixFormulaNotes">
+              <div class="matrix-notes-title">▦ Repères — forme matricielle</div>
+              <div class="matrix-notes-grid">
+                <div class="matrix-note"><code>m</code><span>Nombre d’exemples dans le batch (colonnes des matrices de données).</span></div>
+                <div class="matrix-note"><code>L</code><span>Nombre de couches calculées, hors couche d’entrée.</span></div>
+                <div class="matrix-note"><code>nₗ</code><span>Nombre de neurones dans la couche l ; n₀ est la taille de l’entrée.</span></div>
+                <div class="matrix-note"><code>X = A⁽⁰⁾</code><span>Matrice d’entrée de taille n₀ × m : un exemple par colonne.</span></div>
+                <div class="matrix-note"><code>W⁽ˡ⁾</code><span>Matrice des poids de taille nₗ × nₗ₋₁.</span></div>
+                <div class="matrix-note"><code>b⁽ˡ⁾</code><span>Vecteur de biais de taille nₗ × 1, diffusé sur les m exemples.</span></div>
+                <div class="matrix-note"><code>Z⁽ˡ⁾, A⁽ˡ⁾</code><span>Pré-activations et activations, toutes deux de taille nₗ × m.</span></div>
+                <div class="matrix-note"><code>Y, Ŷ</code><span>Cibles et prédictions ; dimensions : n_sorties × m.</span></div>
+                <div class="matrix-note"><code>δ⁽ˡ⁾</code><span>Signal d’erreur de la couche l, de taille nₗ × m.</span></div>
+                <div class="matrix-note"><code>∇W⁽ˡ⁾, ∇b⁽ˡ⁾</code><span>Gradients des poids et biais, de mêmes dimensions que W⁽ˡ⁾ et b⁽ˡ⁾.</span></div>
+              </div>
+              <div class="matrix-notes-foot"><b style="color:var(--a2)">Conventions :</b> les lignes représentent les neurones, les colonnes les exemples. Propagation avant : Z⁽ˡ⁾ = W⁽ˡ⁾A⁽ˡ⁻¹⁾ + b⁽ˡ⁾, puis A⁽ˡ⁾ = f(Z⁽ˡ⁾). La loss moyenne sur le batch est notée <b>𝓛</b> pour la distinguer de <b>L</b>, le nombre de couches.</div>
+            </div>
             <div id="fdsel"></div>
             <div id="ftree"></div>
           </div>
@@ -10166,6 +10208,21 @@ fn loss_accum() {
         }
       }
 
+      // Aide-mémoire partagé dans les détails lorsque le mode matriciel est actif.
+      function matrixNotesHTML() {
+        return `<div class="matrix-notes"><div class="matrix-notes-title">▦ Repères — dimensions matricielles</div>
+          <div class="matrix-notes-grid">
+            <div class="matrix-note"><code>m</code><span>Exemples du batch ; une colonne par exemple.</span></div>
+            <div class="matrix-note"><code>L</code><span>Nombre de couches hors entrée.</span></div>
+            <div class="matrix-note"><code>nₗ</code><span>Neurones de la couche l ; n₀ = taille d’entrée.</span></div>
+            <div class="matrix-note"><code>X = A⁽⁰⁾</code><span>n₀ × m ; entrée du réseau.</span></div>
+            <div class="matrix-note"><code>W⁽ˡ⁾</code><span>nₗ × nₗ₋₁ ; poids de la couche l.</span></div>
+            <div class="matrix-note"><code>b⁽ˡ⁾</code><span>nₗ × 1 ; biais diffusé sur le batch.</span></div>
+            <div class="matrix-note"><code>Z⁽ˡ⁾, A⁽ˡ⁾</code><span>nₗ × m ; pré-activations et activations.</span></div>
+            <div class="matrix-note"><code>δ⁽ˡ⁾</code><span>nₗ × m ; signaux d’erreur.</span></div>
+          </div><div class="matrix-notes-foot">Lignes = neurones, colonnes = exemples. Z⁽ˡ⁾ = W⁽ˡ⁾A⁽ˡ⁻¹⁾ + b⁽ˡ⁾ ; A⁽ˡ⁾ = f(Z⁽ˡ⁾). 𝓛 désigne la loss, à distinguer de L (nombre de couches).</div></div>`;
+      }
+
       // Annotation row: symbol = description
       function legendRow(sym, symCls, desc) {
         return `<div class="math-legend-grid" style="margin:1px 0">
@@ -10253,6 +10310,8 @@ fn loss_accum() {
           ${legendRow("f(z)", "log-ca", "Fonction d'activation — introduit la non-linéarité (ReLU, sigmoid, tanh…)")}
           ${legendRow("f'(z)", "log-cg", "Dérivée de f en z — sera multipliée au gradient lors de la rétropropagation")}
         </div>`;
+
+        if (calcIsMat()) fwdBody += matrixNotesHTML();
 
         for (let l = 0; l < NET.W.length; l++) {
           const fnL = getActForLayer(l),
@@ -10450,6 +10509,7 @@ fn loss_accum() {
           ${legendRow("∂L/∂ŷ", "log-cg", "Gradient de la perte — indique direction et force de la correction")}
         </div>`;
 
+        if (calcIsMat()) lossBody += matrixNotesHTML();
         lossBody += `<div class="math-box loss-math">${lossMathBox[lf] || lf}</div>`;
         lossBody += `<div style="font-size:8px;color:var(--dim);margin:2px 0 4px;padding-left:2px">Gradient transmis au réseau : <span style="display:inline-block">${lossGradBox[lf] || "∂L/∂ŷ"}</span></div>`;
 
@@ -10610,6 +10670,7 @@ fn loss_accum() {
           ${legendRow("∂L/∂w = δ·a", "log-cg", "Gradient du poids : produit du delta et de l'activation entrante")}
         </div>`;
 
+        if (calcIsMat()) bpBody += matrixNotesHTML();
         // Output layer
         bpBody += `<div class="log-layer" style="color:var(--a2)">▸ Couche Sortie — règle de la chaîne : δ = ∂L/∂z = (∂L/∂a) · f'(z)</div>`;
         bpBody += `<div class="math-box bp-math">
@@ -10788,6 +10849,7 @@ fn loss_accum() {
           ${legendRow("lr = " + lr, "", "Taux d'apprentissage — fraction de gradient appliquée à chaque step")}
           ${legendRow("Δw = −lr·∂L/∂w", "log-cnew", "Variation nette appliquée au poids — signe indique la direction")}
         </div>`;
+        if (calcIsMat()) updBody += matrixNotesHTML();
         updBody += `<div class="math-box upd-math">${optFormulasBox[opt] || opt}</div>`;
 
         for (let l = 0; l < NET.W.length; l++) {
@@ -11770,6 +11832,7 @@ fn loss_accum() {
       }
 
       function showTab(name) {
+        if (window.__calcNoTab) return; // re-rendu silencieux (changement de mode de calcul)
         [
           "details",
           "test",
@@ -13714,7 +13777,17 @@ fn loss_accum() {
       }
 
       /* Re-rend les vues déjà affichées dans le nouveau mode */
+      /* Changer de mode ne doit JAMAIS changer d'onglet : on neutralise showTab()
+         pendant le re-rendu (showNodeDetail / showLineDetail l'appellent). */
       function calcRerenderAll() {
+        window.__calcNoTab = true;
+        try {
+          calcRerenderAllInner();
+        } finally {
+          window.__calcNoTab = false;
+        }
+      }
+      function calcRerenderAllInner() {
         // Onglet Test
         try {
           if (NET && window.__calcTestKind === "single") runTest();
@@ -14375,8 +14448,8 @@ fn loss_accum() {
         // Activations : appliquées terme à terme à un vecteur
         _act: {
           tex: "\\mathbf{a} = f(\\mathbf{z}) = \\begin{bmatrix} f(z_1) \\\\ f(z_2) \\\\ \\vdots \\\\ f(z_n) \\end{bmatrix}",
-          deriv: "f'(\\mathbf{z}) = \\begin{bmatrix} f'(z_1) \\\\ \\vdots \\\\ f'(z_n) \\end{bmatrix} \\quad\\text{(utilisé avec } \\odot \\text{ en rétropropagation)}",
-          note: "L'activation s'applique <b>élément par élément</b> au vecteur z de toute la couche.",
+          deriv: "f'(\\mathbf{z}) = \\begin{bmatrix} f'(z_1) \\\\ \\vdots \\\\ f'(z_n) \\end{bmatrix}",
+          note: "L'activation s'applique <b>élément par élément</b> au vecteur z de toute la couche. La dérivée f′(z) est utilisée avec <b>⊙</b> (produit terme à terme) en rétropropagation.",
         },
         softmax: {
           tex: "\\mathbf{a} = \\dfrac{e^{\\mathbf{z}}}{\\mathbf{1}^{\\top} e^{\\mathbf{z}}}",
@@ -17608,6 +17681,14 @@ fn loss_accum() {
         {"id": "tf_ce", "cat": "Transformer", "sub": "Entraînement", "name": "Perte de langage & perplexité", "eq": "L = −(1/n)·Σₜ log p_θ(xₜ | x<t) ;  PPL = e^L", "tags": ["transformer", "perte", "perplexité", "entropie-croisée"], "range": "—", "desc": "Entropie croisée sur le prochain token. La perplexité est le « nombre effectif de choix » du modèle à chaque pas.", "pros": ["Objectif simple et auto-supervisé"], "cons": ["Ne mesure pas directement l'utilité"], "deriv": "∂L/∂z = p − onehot(x)", "kw": "transformer perte perplexité entropie-croisée attention transformer gpt llm", "syms": [{"sym": "p_θ", "desc": "Loi prédite par le modèle"}, {"sym": "PPL", "desc": "Perplexité"}]},
         {"id": "tf_dec", "cat": "Transformer", "sub": "Décodage", "name": "Température, top-k, top-p", "eq": "p_i = exp(z_i/T) / Σ_j exp(z_j/T) ; top-p : plus petit ensemble de masse ≥ p", "tags": ["transformer", "décodage", "température", "topp", "topk"], "range": "—", "desc": "T<1 durcit la distribution (glouton quand T→0), T>1 l'aplatit. Top-k / top-p coupent la longue traîne avant le tirage.", "pros": ["Contrôle précis créativité / cohérence"], "cons": ["T trop haut → incohérent, T trop bas → répétitif"], "deriv": "∂p_i/∂z_j = p_i(δ_ij − p_j)/T", "kw": "transformer décodage température topp topk attention transformer gpt llm", "syms": [{"sym": "z", "desc": "Logits"}, {"sym": "T", "desc": "Température"}, {"sym": "p", "desc": "Seuil de masse du top-p"}]},
 ];
+      /* ══════════════ Catégorie « Bases » : formules fondamentales (forward, perte, backprop, apprentissage) ══════════════ */
+      (function () {
+        const BASES = [{"id": "b_z", "cat": "Bases", "sub": "Propagation avant", "name": "Pré-activation z (forward pass)", "eq": "z_j = Σₖ w_jk·aₖ + b_j   ⇔   Z = W·a + b", "tags": ["bases", "forward", "z", "neurone"], "range": "(−∞,+∞)", "desc": "Première étape du forward pass : chaque neurone j fait la somme pondérée des activations de la couche précédente, puis ajoute son biais. C’est la valeur z qui entre ensuite dans la fonction d’activation. En matriciel, toute la couche se calcule en un seul produit W·a.", "pros": ["Calcul de base de tout réseau dense", "Se vectorise en un produit matriciel"], "cons": ["Linéaire : sans activation, empiler les couches ne sert à rien"], "deriv": "—", "kw": "forward pass pré-activation somme pondérée biais z = wa + b weighted sum", "syms": [{"sym": "z", "desc": "Pré-activation : somme pondérée + biais"}, {"sym": "w_jk", "desc": "Poids du neurone k (couche l−1) vers le neurone j (couche l)"}, {"sym": "aₖ", "desc": "Activation du neurone k de la couche précédente"}, {"sym": "b_j", "desc": "Biais du neurone j"}, {"sym": "W", "desc": "Matrice de poids (n_l × n_{l−1})"}]}, {"id": "b_act", "cat": "Bases", "sub": "Propagation avant", "name": "Activation d’une couche", "eq": "aⱼ = f(zⱼ)   ;   a⁽⁰⁾ = x", "tags": ["bases", "forward", "activation"], "range": "—", "desc": "Deuxième étape du forward pass : la fonction d’activation f est appliquée à chaque z. La sortie a devient l’entrée de la couche suivante. Par convention, la « couche 0 » est l’entrée elle-même : a⁽⁰⁾ = x.", "pros": ["Introduit la non-linéarité", "Appliquée terme à terme"], "cons": ["Le choix de f influence fortement l’entraînement"], "deriv": "—", "kw": "activation f(z) couche entrée a0 x", "syms": [{"sym": "a", "desc": "Activation (sortie) d’un neurone ; a⁽⁰⁾ = x"}, {"sym": "z", "desc": "Pré-activation : somme pondérée + biais"}, {"sym": "f", "desc": "Fonction d’activation"}, {"sym": "x", "desc": "Vecteur d’entrée du réseau"}]}, {"id": "b_fwd", "cat": "Bases", "sub": "Propagation avant", "name": "Forward pass complet", "eq": "ŷ = a⁽ᴸ⁾ = f_L(W_L·a⁽ᴸ⁻¹⁾ + b_L)", "tags": ["bases", "forward", "prédiction"], "range": "—", "desc": "Le forward pass enchaîne, de la couche 1 à la couche L : z = W·a + b puis a = f(z). Le résultat de la dernière couche est la prédiction ŷ. C’est une simple composition de fonctions : sa dérivée s’obtient donc par la règle de la chaîne (rétropropagation).", "pros": ["Une seule passe, du début à la fin", "Calcul déterministe (hors dropout)"], "cons": ["Il faut garder les z et a de chaque couche pour la rétropropagation"], "deriv": "—", "kw": "forward pass complet prédiction composition couches inference", "syms": [{"sym": "ŷ", "desc": "Prédiction du réseau = a⁽ᴸ⁾"}, {"sym": "a⁽ˡ⁾", "desc": "Activations de la couche l"}, {"sym": "L", "desc": "Indice de la couche de sortie"}, {"sym": "f", "desc": "Fonction d’activation"}, {"sym": "W", "desc": "Matrice de poids (n_l × n_{l−1})"}]}, {"id": "b_batch", "cat": "Bases", "sub": "Propagation avant", "name": "Forward par lot (m exemples)", "eq": "Z = W·A + b·1ᵀ   (exemples en colonnes)", "tags": ["bases", "forward", "batch", "lot"], "range": "—", "desc": "Pour traiter m exemples d’un coup, on place chaque exemple dans une colonne de A. Les mêmes poids servent à tous les exemples : un seul produit matriciel remplace m forward pass séparés. Le biais est ajouté à chaque colonne (broadcast).", "pros": ["Beaucoup plus efficace (GPU, BLAS)", "Même résultat que m passes séparées"], "cons": ["Mémoire proportionnelle à la taille du lot"], "deriv": "—", "kw": "batch lot mini-batch forward matrice broadcast", "syms": [{"sym": "A", "desc": "Matrice des activations (n × m), un exemple par colonne"}, {"sym": "W", "desc": "Matrice de poids (n_l × n_{l−1})"}, {"sym": "b_j", "desc": "Biais du neurone j"}, {"sym": "m", "desc": "Nombre d’exemples du jeu / du lot"}]}, {"id": "b_err", "cat": "Bases", "sub": "Perte & mesures", "name": "Erreur de sortie", "eq": "eⱼ = ŷⱼ − yⱼ", "tags": ["bases", "loss", "erreur"], "range": "(−∞,+∞)", "desc": "Écart entre la prédiction et la cible. C’est la brique de base des pertes (MSE, MAE, Huber…) et le point de départ du gradient de sortie : e > 0 signifie que le réseau a surestimé, e < 0 qu’il a sous-estimé.", "pros": ["Signe = direction de la correction", "Brique de nombreuses pertes"], "cons": ["Les erreurs positives et négatives se compensent si on les somme sans carré ni valeur absolue"], "deriv": "—", "kw": "erreur résidu écart prédiction cible error residual", "syms": [{"sym": "e", "desc": "Erreur (résidu)"}, {"sym": "ŷ", "desc": "Prédiction du réseau = a⁽ᴸ⁾"}, {"sym": "y", "desc": "Cible (valeur attendue)"}]}, {"id": "b_cost", "cat": "Bases", "sub": "Perte & mesures", "name": "Coût moyen sur le jeu de données", "eq": "J = (1/m)·Σᵢ L(ŷ⁽ⁱ⁾, y⁽ⁱ⁾)", "tags": ["bases", "loss", "coût", "epoch"], "range": "[0,+∞)", "desc": "La perte L est calculée pour un exemple ; le coût J est sa moyenne sur les m exemples du jeu (ou du lot). C’est cette valeur moyenne que la descente de gradient cherche à minimiser, et que la courbe de loss affiche.", "pros": ["Mesure globale de la qualité", "Moyenne : indépendante de la taille du lot"], "cons": ["Peut masquer de mauvaises prédictions isolées"], "deriv": "—", "kw": "coût moyen cost function dataset loss moyenne epoch", "syms": [{"sym": "J", "desc": "Coût moyen"}, {"sym": "L", "desc": "Perte d’un exemple (et nombre de couches de poids dans a⁽ᴸ⁾)"}, {"sym": "m", "desc": "Nombre d’exemples du jeu / du lot"}, {"sym": "i", "desc": "Indice de l’exemple"}]}, {"id": "b_acc", "cat": "Bases", "sub": "Perte & mesures", "name": "Précision (accuracy) & classe prédite", "eq": "ĉ = argmaxⱼ ŷⱼ ;  acc = (1/m)·Σᵢ 𝟙[ĉ⁽ⁱ⁾ = c⁽ⁱ⁾]", "tags": ["bases", "métrique", "accuracy", "classification"], "range": "[0,1]", "desc": "La classe prédite est l’indice de la plus grande sortie (ou la sortie arrondie en binaire). L’accuracy est la proportion d’exemples dont la classe prédite est la bonne.", "pros": ["Très lisible", "Directement interprétable"], "cons": ["Trompeuse si les classes sont déséquilibrées", "Non dérivable : sert à évaluer, pas à entraîner"], "deriv": "—", "kw": "accuracy précision classe argmax métrique classification", "syms": [{"sym": "ĉ", "desc": "Classe prédite"}, {"sym": "c", "desc": "Classe réelle"}, {"sym": "𝟙[·]", "desc": "Vaut 1 si la condition est vraie, 0 sinon"}, {"sym": "m", "desc": "Nombre d’exemples du jeu / du lot"}]}, {"id": "b_dz", "cat": "Bases", "sub": "Rétropropagation", "name": "Dérivées locales de z", "eq": "∂zⱼ/∂w_jk = aₖ ;  ∂zⱼ/∂bⱼ = 1 ;  ∂zⱼ/∂aₖ = w_jk", "tags": ["bases", "backprop", "gradient", "dérivée"], "range": "—", "desc": "Les trois dérivées élémentaires de z = Σ w·a + b : par rapport au poids (= l’activation d’entrée), au biais (= 1) et à l’activation d’entrée (= le poids). Ce sont les derniers maillons de la règle de la chaîne ; elles expliquent pourquoi ∂L/∂w = δ·a et ∂L/∂b = δ.", "pros": ["Très simples", "Expliquent toute la rétropropagation dense"], "cons": ["Valables pour une couche dense (z linéaire en w, a, b)"], "deriv": "—", "kw": "dérivées locales z jacobienne chaîne dz dw da db", "syms": [{"sym": "z", "desc": "Pré-activation : somme pondérée + biais"}, {"sym": "w_jk", "desc": "Poids du neurone k (couche l−1) vers le neurone j (couche l)"}, {"sym": "aₖ", "desc": "Activation d’entrée du poids"}, {"sym": "b_j", "desc": "Biais du neurone j"}]}, {"id": "b_dout", "cat": "Bases", "sub": "Rétropropagation", "name": "Delta de la couche de sortie", "eq": "δ⁽ᴸ⁾ = ∂L/∂ŷ ⊙ f_L′(z⁽ᴸ⁾)", "tags": ["bases", "backprop", "gradient", "delta", "sortie"], "range": "—", "desc": "Point de départ de la rétropropagation : on multiplie le gradient de la perte par rapport à la sortie (∂L/∂ŷ) par la dérivée de l’activation de sortie. Cas particuliers : sigmoïde + log-loss ou softmax + entropie croisée → les termes se simplifient en δ = ŷ − y.", "pros": ["Initialise toute la rétropropagation", "Simplification élégante avec le bon couple perte/activation"], "cons": ["Dépend de la perte ET de l’activation de sortie"], "deriv": "—", "kw": "delta sortie output layer erreur locale backprop départ", "syms": [{"sym": "δ", "desc": "Erreur locale ∂L/∂z d’un neurone"}, {"sym": "∂L/∂ŷ", "desc": "Gradient de la perte par rapport à la sortie"}, {"sym": "f′(z)", "desc": "Dérivée de l’activation de sortie"}, {"sym": "⊙", "desc": "Produit terme à terme"}]}, {"id": "b_gradbatch", "cat": "Bases", "sub": "Rétropropagation", "name": "Gradient moyen sur un lot", "eq": "∂J/∂w_jk = (1/m)·Σᵢ δⱼ⁽ⁱ⁾·aₖ⁽ⁱ⁾", "tags": ["bases", "backprop", "gradient", "batch", "lot"], "range": "—", "desc": "Avec plusieurs exemples, on additionne les gradients obtenus pour chacun puis on divise par m : c’est le gradient du coût moyen J. Le gradient du biais est la moyenne des deltas.", "pros": ["Gradient plus stable qu’avec un seul exemple", "Se vectorise en un produit Δ·Aᵀ"], "cons": ["Coût mémoire et calcul proportionnels à m"], "deriv": "—", "kw": "gradient moyen lot batch mini-batch somme moyenne", "syms": [{"sym": "δ", "desc": "Erreur locale ∂L/∂z d’un neurone"}, {"sym": "a", "desc": "Activation (sortie) d’un neurone ; a⁽⁰⁾ = x"}, {"sym": "m", "desc": "Nombre d’exemples du jeu / du lot"}, {"sym": "J", "desc": "Coût moyen"}]}, {"id": "b_update", "cat": "Bases", "sub": "Apprentissage", "name": "Mise à jour des poids et des biais", "eq": "w ← w − η·∂L/∂w ;  b ← b − η·∂L/∂b", "tags": ["bases", "optimiseur", "descente", "gradient"], "range": "—", "desc": "Règle de base de la descente de gradient : on déplace chaque paramètre dans le sens opposé à son gradient, d’un pas proportionnel au learning rate η. Les optimiseurs (Momentum, Adam…) modifient cette règle, mais appliquent la même idée aux poids ET aux biais.", "pros": ["Simple", "Converge vers un minimum local pour η assez petit"], "cons": ["η trop grand : divergence ; trop petit : lenteur"], "deriv": "—", "kw": "mise à jour poids biais descente de gradient update learning rate", "syms": [{"sym": "w_jk", "desc": "Poids du neurone k (couche l−1) vers le neurone j (couche l)"}, {"sym": "b_j", "desc": "Biais du neurone j"}, {"sym": "η", "desc": "Learning rate"}, {"sym": "∂L/∂w", "desc": "Gradient de la perte par rapport au poids"}]}, {"id": "b_lrdecay", "cat": "Bases", "sub": "Apprentissage", "name": "Décroissance du learning rate", "eq": "η_t = η₀ · γ^⌊t/100⌋", "tags": ["bases", "optimiseur", "lr", "decay"], "range": "(0,η₀]", "desc": "Le learning rate est multiplié par γ (< 1) tous les 100 epochs : grands pas au début pour avancer vite, petits pas ensuite pour se stabiliser près du minimum. Avec γ = 1, le learning rate reste constant.", "pros": ["Convergence plus fine en fin d’entraînement", "Un seul hyperparamètre (γ)"], "cons": ["Palier fixe tous les 100 epochs", "Risque de ralentir trop tôt si γ est trop petit"], "deriv": "—", "kw": "learning rate decay décroissance schedule epoch", "syms": [{"sym": "η", "desc": "Learning rate"}, {"sym": "η₀", "desc": "Learning rate initial"}, {"sym": "γ", "desc": "Facteur de décroissance (≤ 1)"}, {"sym": "t", "desc": "Numéro de l’epoch"}]}, {"id": "b_clip", "cat": "Bases", "sub": "Apprentissage", "name": "Gradient clipping (par la norme)", "eq": "g ← g · min(1, c / ‖g‖₂)", "tags": ["bases", "gradient", "stabilité", "clipping"], "range": "‖g‖ ≤ c", "desc": "Si la norme du gradient dépasse un seuil c, on le rescale pour que sa norme vaille exactement c ; sa direction est conservée. Protège contre l’explosion du gradient (surtout en RNN).", "pros": ["Évite les explosions de gradient", "Conserve la direction du gradient"], "cons": ["Seuil c à régler", "Peut ralentir l’apprentissage s’il est trop bas"], "deriv": "—", "kw": "gradient clipping norme seuil explosion exploding clip", "syms": [{"sym": "g", "desc": "Vecteur de tous les gradients"}, {"sym": "c", "desc": "Seuil de norme"}, {"sym": "‖g‖₂", "desc": "Norme euclidienne du gradient"}]}, {"id": "b_params", "cat": "Bases", "sub": "Architecture", "name": "Nombre de paramètres", "eq": "N = Σₗ (nₗ·nₗ₋₁ + nₗ)", "tags": ["bases", "architecture", "paramètres", "dimensions"], "range": "—", "desc": "Chaque couche l possède une matrice de poids de taille n_l × n_{l−1} et un vecteur de biais de taille n_l. Exemple 2→3→1 : (3·2 + 3) + (1·3 + 1) = 13 paramètres.", "pros": ["Mesure la capacité du réseau", "Calcul immédiat"], "cons": ["Ne dit rien sur la qualité des paramètres"], "deriv": "—", "kw": "nombre paramètres dimensions taille matrice poids biais params count", "syms": [{"sym": "N", "desc": "Nombre total de paramètres"}, {"sym": "nₗ", "desc": "Nombre de neurones de la couche l"}, {"sym": "W", "desc": "Matrice de poids (n_l × n_{l−1})"}, {"sym": "b_j", "desc": "Biais du neurone j"}]}];
+        Object.assign(FLIB_TEX, {"b_z": "z_j^{(l)} = \\sum_{k=1}^{n_{l-1}} w_{jk}^{(l)}\\,a_k^{(l-1)} + b_j^{(l)}", "b_act": "a_j^{(l)} = f\\!\\left(z_j^{(l)}\\right) \\qquad a^{(0)} = x", "b_fwd": "\\hat{y} = a^{(L)} = f_L\\!\\left(W^{(L)}\\,a^{(L-1)} + b^{(L)}\\right)", "b_batch": "z_{j,i}^{(l)} = \\sum_{k} w_{jk}^{(l)}\\,a_{k,i}^{(l-1)} + b_j^{(l)}", "b_err": "e_j = \\hat{y}_j - y_j", "b_cost": "J = \\dfrac{1}{m}\\sum_{i=1}^{m} L\\!\\left(\\hat{y}^{(i)}, y^{(i)}\\right)", "b_acc": "\\hat{c} = \\arg\\max_j \\hat{y}_j \\qquad \\text{acc} = \\dfrac{1}{m}\\sum_{i=1}^{m}\\mathbb{1}\\!\\left[\\hat{c}^{(i)} = c^{(i)}\\right]", "b_dz": "\\dfrac{\\partial z_j}{\\partial w_{jk}} = a_k \\qquad \\dfrac{\\partial z_j}{\\partial b_j} = 1 \\qquad \\dfrac{\\partial z_j}{\\partial a_k} = w_{jk}", "b_dout": "\\delta_j^{(L)} = \\dfrac{\\partial L}{\\partial \\hat{y}_j}\\; f_L'\\!\\left(z_j^{(L)}\\right)", "b_gradbatch": "\\dfrac{\\partial J}{\\partial w_{jk}} = \\dfrac{1}{m}\\sum_{i=1}^{m}\\delta_{j}^{(i)}\\,a_{k}^{(i)} \\qquad \\dfrac{\\partial J}{\\partial b_{j}} = \\dfrac{1}{m}\\sum_{i=1}^{m}\\delta_{j}^{(i)}", "b_update": "w_{jk} \\leftarrow w_{jk} - \\eta\\,\\dfrac{\\partial L}{\\partial w_{jk}} \\qquad b_j \\leftarrow b_j - \\eta\\,\\dfrac{\\partial L}{\\partial b_j}", "b_lrdecay": "\\eta_t = \\eta_0\\cdot\\gamma^{\\lfloor t/100\\rfloor}", "b_clip": "\\mathbf{g} \\leftarrow \\mathbf{g}\\cdot\\min\\!\\left(1,\\dfrac{c}{\\|\\mathbf{g}\\|_2}\\right)", "b_params": "N = \\sum_{l=1}^{L}\\left(n_l\\,n_{l-1} + n_l\\right)"});
+        Object.assign(FLIB_IND, {"b_z": {"tex": "z_j^{(l)} = w_{j1}^{(l)}a_1^{(l-1)} + w_{j2}^{(l)}a_2^{(l-1)} + \\dots + w_{jn}^{(l)}a_n^{(l-1)} + b_j^{(l)}", "note": "Chaque neurone j calcule <b>sa propre</b> somme pondérée : une boucle sur les n entrées, puis le biais."}, "b_act": {"tex": "a_j^{(l)} = f\\!\\left(z_j^{(l)}\\right) \\qquad j = 1,\\dots,n_l \\qquad a_k^{(0)} = x_k", "note": "Chaque neurone applique f à <b>sa</b> valeur z<sub>j</sub>."}, "b_fwd": {"tex": "\\hat{y}_j = a_j^{(L)} = f_L\\!\\Big(\\sum_{k} w_{jk}^{(L)}\\,a_k^{(L-1)} + b_j^{(L)}\\Big)", "note": "Boucle sur les couches l = 1…L, puis sur les neurones j de chaque couche : a<sup>(l−1)</sup> est calculé avant a<sup>(l)</sup>."}, "b_batch": {"tex": "z_{j,i}^{(l)} = \\sum_{k} w_{jk}^{(l)}\\,a_{k,i}^{(l-1)} + b_j^{(l)} \\qquad i = 1,\\dots,m", "note": "i = numéro de l'exemple. On répète le même calcul pour chaque exemple, avec <b>les mêmes</b> w et b."}, "b_err": {"tex": "e_j = \\hat{y}_j - y_j \\qquad j = 1,\\dots,n_L", "note": "Une erreur par neurone de sortie."}, "b_cost": {"tex": "J = \\dfrac{1}{m}\\left(L^{(1)} + L^{(2)} + \\dots + L^{(m)}\\right)", "note": "On calcule la perte de chaque exemple, puis on fait la moyenne."}, "b_acc": {"tex": "\\text{acc} = \\dfrac{\\#\\{\\,i : \\hat{c}^{(i)} = c^{(i)}\\,\\}}{m}", "note": "On compte exemple par exemple les bonnes réponses, puis on divise par m."}, "b_dz": {"tex": "\\dfrac{\\partial z_j}{\\partial w_{jk}} = a_k \\qquad \\dfrac{\\partial z_j}{\\partial b_j} = 1 \\qquad \\dfrac{\\partial z_j}{\\partial a_k} = w_{jk}", "note": "Un poids n'influence que le z de <b>son</b> neurone ; une activation, en revanche, influence tous les neurones de la couche suivante."}, "b_dout": {"tex": "\\delta_j^{(L)} = \\dfrac{\\partial L}{\\partial \\hat{y}_j}\\; f_L'\\!\\left(z_j^{(L)}\\right) \\qquad j = 1,\\dots,n_L", "note": "Un delta par neurone de sortie. Cas simplifié : <b>δ<sub>j</sub> = ŷ<sub>j</sub> − y<sub>j</sub></b>."}, "b_gradbatch": {"tex": "\\dfrac{\\partial J}{\\partial w_{jk}} = \\dfrac{1}{m}\\sum_{i=1}^{m}\\delta_{j}^{(i)}\\,a_{k}^{(i)} \\qquad \\dfrac{\\partial J}{\\partial b_{j}} = \\dfrac{1}{m}\\sum_{i=1}^{m}\\delta_{j}^{(i)}", "note": "On accumule les contributions de chaque exemple, puis on divise par m."}, "b_update": {"tex": "w_{jk} \\leftarrow w_{jk} - \\eta\\,\\delta_j\\,a_k \\qquad b_j \\leftarrow b_j - \\eta\\,\\delta_j", "note": "Chaque poids et chaque biais est corrigé <b>séparément</b>, avec δ<sub>j</sub>·a<sub>k</sub> comme gradient."}, "b_lrdecay": {"tex": "\\eta_t = \\eta_0\\cdot\\gamma^{\\lfloor t/100\\rfloor}", "note": "Valeur <b>scalaire</b> : même formule en individuel et en matriciel (le même η sert à tous les paramètres)."}, "b_clip": {"tex": "\\|\\mathbf{g}\\|_2 = \\sqrt{\\sum_i g_i^2} \\qquad g_i \\leftarrow g_i\\cdot\\min\\!\\left(1,\\dfrac{c}{\\|\\mathbf{g}\\|_2}\\right)", "note": "Chaque composante g<sub>i</sub> est multipliée par le même facteur."}, "b_params": {"tex": "N = \\sum_{l=1}^{L}\\Big(\\underbrace{n_l\\,n_{l-1}}_{\\text{poids}} + \\underbrace{n_l}_{\\text{biais}}\\Big)", "note": "Chaque neurone de la couche l a n<sub>l−1</sub> poids et 1 biais."}});
+        Object.assign(FLIB_MAT, {"b_z": {"tex": "\\mathbf{z}^{(l)} = \\mathbf{W}^{(l)}\\,\\mathbf{a}^{(l-1)} + \\mathbf{b}^{(l)}", "deriv": "\\mathbf{W}^{(l)}\\in\\mathbb{R}^{n_l\\times n_{l-1}},\\;\\; \\mathbf{a}^{(l-1)}\\in\\mathbb{R}^{n_{l-1}},\\;\\; \\mathbf{b}^{(l)},\\mathbf{z}^{(l)}\\in\\mathbb{R}^{n_l}", "note": "Toute la couche en <b>un seul produit matrice × vecteur</b>. Pour un lot d'exemples en colonnes : <b>Z = W·A + b·1ᵀ</b>."}, "b_act": {"tex": "\\mathbf{a}^{(l)} = f\\!\\left(\\mathbf{z}^{(l)}\\right) = \\begin{bmatrix} f(z_1) \\\\ \\vdots \\\\ f(z_{n_l}) \\end{bmatrix} \\qquad \\mathbf{a}^{(0)} = \\mathbf{x}", "note": "f s'applique <b>élément par élément</b> au vecteur z de toute la couche."}, "b_fwd": {"tex": "\\hat{\\mathbf{y}} = f_L\\!\\Big(\\mathbf{W}^{(L)}\\,f_{L-1}\\!\\big(\\cdots f_1(\\mathbf{W}^{(1)}\\mathbf{x}+\\mathbf{b}^{(1)})\\cdots\\big)+\\mathbf{b}^{(L)}\\Big)", "note": "Réseau = composition de L fonctions « produit matriciel + biais, puis activation »."}, "b_batch": {"tex": "\\mathbf{Z}^{(l)} = \\mathbf{W}^{(l)}\\,\\mathbf{A}^{(l-1)} + \\mathbf{b}^{(l)}\\mathbf{1}^{\\top}", "deriv": "\\mathbf{A}^{(l-1)}\\in\\mathbb{R}^{n_{l-1}\\times m},\\;\\; \\mathbf{Z}^{(l)}\\in\\mathbb{R}^{n_l\\times m},\\;\\; \\mathbf{1}\\in\\mathbb{R}^{m}", "note": "1ᵀ répète le biais sur les m colonnes."}, "b_err": {"tex": "\\mathbf{e} = \\hat{\\mathbf{y}} - \\mathbf{y}", "note": "Soustraction de deux vecteurs de même taille."}, "b_cost": {"tex": "J = \\dfrac{1}{m}\\,\\mathbf{1}^{\\top}\\boldsymbol{\\ell}", "deriv": "\\boldsymbol{\\ell} = \\begin{bmatrix} L^{(1)} \\\\ \\vdots \\\\ L^{(m)} \\end{bmatrix}\\in\\mathbb{R}^{m}", "note": "ℓ regroupe les pertes de tous les exemples ; 1ᵀℓ en fait la somme."}, "b_acc": {"tex": "\\hat{\\mathbf{c}} = \\arg\\max_{\\text{colonnes}}\\hat{\\mathbf{Y}} \\qquad \\text{acc} = \\dfrac{1}{m}\\,\\mathbf{1}^{\\top}\\,\\mathbb{1}\\!\\left[\\hat{\\mathbf{c}} = \\mathbf{c}\\right]", "deriv": "\\hat{\\mathbf{Y}}\\in\\mathbb{R}^{n_L\\times m}\\;,\\;\\; \\hat{\\mathbf{c}},\\mathbf{c}\\in\\mathbb{N}^{m}", "note": "Un argmax par colonne de Ŷ donne toutes les classes prédites d'un coup."}, "b_dz": {"tex": "\\dfrac{\\partial \\mathbf{z}}{\\partial \\mathbf{a}^{(l-1)}} = \\mathbf{W}^{(l)} \\qquad \\dfrac{\\partial \\mathbf{z}}{\\partial \\mathbf{b}^{(l)}} = \\mathbf{I}", "deriv": "\\dfrac{\\partial z_j}{\\partial \\mathbf{W}_{j,:}} = \\mathbf{a}^{(l-1)\\top}", "note": "Jacobienne de z par rapport à a : c'est la matrice W elle-même (d'où le Wᵀ·δ en rétropropagation)."}, "b_dout": {"tex": "\\boldsymbol{\\delta}^{(L)} = \\nabla_{\\hat{\\mathbf{y}}}L \\odot f_L'\\!\\left(\\mathbf{z}^{(L)}\\right)", "deriv": "\\boldsymbol{\\delta}^{(L)} = \\hat{\\mathbf{y}} - \\mathbf{y}\\quad\\text{(cas simplifié)}", "note": "⊙ = produit de Hadamard (terme à terme)."}, "b_gradbatch": {"tex": "\\nabla_{\\mathbf{W}}J = \\dfrac{1}{m}\\,\\boldsymbol{\\Delta}\\,\\mathbf{A}^{\\top} \\qquad \\nabla_{\\mathbf{b}}J = \\dfrac{1}{m}\\,\\boldsymbol{\\Delta}\\,\\mathbf{1}", "deriv": "\\boldsymbol{\\Delta}\\in\\mathbb{R}^{n_l\\times m}\\;,\\;\\; \\mathbf{A}\\in\\mathbb{R}^{n_{l-1}\\times m}", "note": "Δ·Aᵀ fait la somme des produits extérieurs δ·aᵀ de tous les exemples en un seul produit matriciel."}, "b_update": {"tex": "\\mathbf{W} \\leftarrow \\mathbf{W} - \\eta\\,\\boldsymbol{\\delta}\\,\\mathbf{a}^{\\top} \\qquad \\mathbf{b} \\leftarrow \\mathbf{b} - \\eta\\,\\boldsymbol{\\delta}", "note": "Toute la matrice W est corrigée d'un coup grâce au produit extérieur δ·aᵀ."}, "b_lrdecay": {"tex": "\\mathbf{W}\\leftarrow\\mathbf{W}-\\eta_t\\,\\nabla_{\\mathbf{W}}L \\qquad \\eta_t = \\eta_0\\cdot\\gamma^{\\lfloor t/100\\rfloor}", "note": "η<sub>t</sub> est un scalaire appliqué à toute la matrice."}, "b_clip": {"tex": "\\|\\mathbf{G}\\|_F = \\sqrt{\\sum_{l}\\|\\mathbf{G}^{(l)}\\|_F^2} \\qquad \\mathbf{G}^{(l)} \\leftarrow \\mathbf{G}^{(l)}\\cdot\\min\\!\\left(1,\\dfrac{c}{\\|\\mathbf{G}\\|_F}\\right)", "note": "Norme calculée sur <b>toutes</b> les matrices de gradients ensemble (norme de Frobenius globale)."}, "b_params": {"tex": "N = \\sum_{l=1}^{L}\\left(\\#\\mathbf{W}^{(l)} + \\#\\mathbf{b}^{(l)}\\right)", "deriv": "\\mathbf{W}^{(l)}\\in\\mathbb{R}^{n_l\\times n_{l-1}}\\;,\\;\\; \\mathbf{b}^{(l)}\\in\\mathbb{R}^{n_l}", "note": "#M = nombre d'éléments de M (lignes × colonnes)."}});
+        FLIB.unshift(...BASES);
+      })();
       // ── Math rendering for formula library ──
       function renderMathEq(eq) {
         let s = eq.replace(/\n/g, "<br>");
@@ -17664,11 +17745,14 @@ fn loss_accum() {
         FSEARCH = "";
       function buildFLib() {
         const tags = new Set(["Tout"]);
-        FLIB.forEach((f) => f.tags.forEach((t) => tags.add(t)));
+        FLIB.forEach((f) => {
+          if (f.cat !== "Bases") f.tags.forEach((t) => tags.add(t));
+        });
         const ta = document.getElementById("ftags");
         ta.innerHTML = [...tags]
           .slice(0, 15)
           .concat(tags.has("rl") ? ["rl"] : [])
+          .concat(FLIB.some((f) => f.cat === "Bases") ? ["bases"] : [])
           .map(
             (t) =>
               `<span class="ftag${t === "Tout" ? " on" : ""}" onclick="setFTag('${t}',this)">${t}</span>`,
@@ -17712,6 +17796,7 @@ fn loss_accum() {
           byCat[f.cat][f.sub].push(f);
         });
         const CI = {
+          Bases: "🧱",
           Activations: "⚡",
           "Fonctions de perte": "📉",
           Optimiseurs: "🔧",

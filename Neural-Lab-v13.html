@@ -1533,23 +1533,139 @@
         margin: 3px 0;
       }
 
-      /* Aide-mémoire dimensionnel : visible uniquement en mode matriciel */
-      .matrix-notes { display:none; margin: 14px 0 16px; padding: 18px 19px; border: 1px solid rgba(191,95,255,.32); border-left: 3px solid rgba(191,95,255,.72); border-radius: 10px; background: linear-gradient(135deg, rgba(20,22,39,.97), rgba(5,15,25,.97)); color: var(--text); box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+
+      .fleg-context { border-color:rgba(0,229,255,.32); background:linear-gradient(145deg,rgba(0,229,255,.075),rgba(0,229,255,.025)); }
+      .fleg-context .fleg-title { font-size:11px; }
+      .fleg-context .fleg-sym { min-width:48px; min-height:36px; font-size:20px; padding:5px 10px; border-radius:8px; background:rgba(75,220,160,.10); border-color:rgba(75,220,160,.32); }
+      .fleg-context .fleg-row { padding:9px 10px; gap:11px; background:rgba(255,255,255,.035); }
+      .fleg-context .fleg-desc { font-size:12px; line-height:1.5; }
+      /* Repères matriciels : panneau sobre et repliable, affiché seulement en mode matriciel */
+      .matrix-notes { display:none; margin:12px 0 15px; padding:0; overflow:hidden; border:1px solid var(--brd); border-left:2px solid var(--a1); border-radius:8px; background:var(--panel); color:var(--text); box-shadow:none; }
       body.matrix-mode .matrix-notes { display:block; }
-      .matrix-notes-title { display:flex; align-items:center; flex-wrap:wrap; gap:9px; font:800 14px "Syne",sans-serif; letter-spacing:.045em; text-transform:uppercase; color:var(--a2); margin-bottom:14px; padding-bottom:11px; border-bottom:1px solid rgba(191,95,255,.32); }
-      .matrix-notes-subtitle { color:var(--a1); font-size:10px; font-weight:600; letter-spacing:0; text-transform:none; padding:4px 8px; border:1px solid rgba(0,229,255,.25); border-radius:999px; background:rgba(0,229,255,.07); }
-      .matrix-notes-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:10px; }
-      .matrix-note { min-width:0; padding:12px 13px; border:1px solid rgba(120,130,170,.32); border-radius:8px; background:linear-gradient(145deg,rgba(15,20,36,.92),rgba(3,8,18,.84)); display:flex; flex-direction:column; gap:7px; box-shadow:inset 0 1px 0 rgba(255,255,255,.035); }
-      .matrix-note-head { display:flex; align-items:center; flex-wrap:wrap; gap:9px; }
+      .matrix-notes > summary { display:flex; align-items:center; list-style:none; cursor:pointer; gap:10px; padding:12px 14px; user-select:none; }
+      .matrix-notes > summary::-webkit-details-marker { display:none; }
+      .matrix-notes > summary::before { content:'▦'; color:var(--a1); font-size:17px; line-height:1; }
+      .matrix-notes-title { display:flex; flex:1; min-width:0; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font:700 12px "Syne",sans-serif; letter-spacing:.01em; color:var(--text); margin:0; }
+      .matrix-notes[open] > summary { border-bottom:1px solid var(--brd); background:rgba(0,229,255,.035); }
+      .matrix-chevron { flex:0 0 auto; color:var(--dim); font-size:15px; transition:transform .18s ease; }
+      .matrix-notes[open] .matrix-chevron { transform:rotate(180deg); }
+      .matrix-notes-subtitle { color:var(--a1); font:600 9px var(--mono); letter-spacing:.04em; text-transform:uppercase; padding:3px 6px; border:1px solid rgba(0,229,255,.2); border-radius:4px; background:rgba(0,229,255,.045); }
+      .matrix-notes-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(235px,1fr)); gap:8px; padding:12px; }
+      .matrix-note { min-width:0; padding:10px 11px; border:1px solid var(--brd); border-radius:6px; background:var(--bg2,rgba(0,0,0,.08)); display:flex; flex-direction:column; gap:7px; box-shadow:none; }
+      .matrix-note-head { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
       .matrix-note code { color:var(--a1); font:700 13px "JetBrains Mono",monospace; white-space:nowrap; }
-      .matrix-note code sub, .matrix-dim sub { font-size:.78em; vertical-align:sub; line-height:0; }
-      .matrix-note code sup, .matrix-dim sup { font-size:.78em; vertical-align:super; line-height:0; }
-      .matrix-dim { display:inline-block; padding:6px 10px; border-radius:6px; border:1px solid rgba(0,229,255,.48); background:rgba(0,229,255,.12); color:#fff1a8; font:700 15px "JetBrains Mono",monospace; white-space:nowrap; letter-spacing:.01em; line-height:1.5; }
-      .matrix-note span { color:var(--text); font-size:12px; line-height:1.65; }
-      .matrix-equation { margin:13px 0 8px; padding:13px 12px; border:1px solid rgba(0,229,255,.4); border-radius:8px; background:linear-gradient(90deg,rgba(0,229,255,.09),rgba(191,95,255,.09)); text-align:center; color:var(--a1); font:600 14px/1.9 "JetBrains Mono",monospace; overflow-wrap:anywhere; }
-      .matrix-notes-foot { margin-top:12px; padding:11px 3px 0; border-top:1px solid rgba(191,95,255,.32); color:var(--text); font-size:11px; line-height:1.75; }
+      .matrix-note code sub, .matrix-dim sub { font-size:.72em; vertical-align:sub; line-height:0; }
+      .matrix-note code sup, .matrix-dim sup { font-size:.72em; vertical-align:super; line-height:0; }
+      .matrix-dim { display:inline-block; padding:4px 7px; border-radius:5px; border:1px solid rgba(0,229,255,.26); background:rgba(0,229,255,.055); color:var(--text); font:600 13px "JetBrains Mono",monospace; white-space:nowrap; letter-spacing:0; line-height:1.55; }
+      .matrix-note span { color:var(--text); font-size:12px; line-height:1.6; }
+      .matrix-equation { margin:0 12px 10px; padding:10px 12px; border:1px solid var(--brd); border-radius:6px; background:rgba(0,229,255,.035); text-align:center; color:var(--a1); font:600 14px/1.9 "JetBrains Mono",monospace; overflow-wrap:anywhere; }
+      .matrix-notes-foot { margin:0 12px 12px; padding:10px 0 0; border-top:1px solid var(--brd); color:var(--text); font-size:11px; line-height:1.7; }
       .matrix-notes .matrix-note-head code { letter-spacing:-.025em; }
-      @media(max-width:600px) { .matrix-notes { padding:13px 11px; } .matrix-notes-title { font-size:12px; } .matrix-notes-grid { grid-template-columns:1fr; } .matrix-dim { font-size:11px; } .matrix-equation { font-size:12px; } }
+      @media(max-width:600px) { .matrix-notes > summary { padding:10px 11px; } .matrix-notes-title { font-size:11px; } .matrix-notes-grid { grid-template-columns:1fr; padding:9px; } .matrix-dim { font-size:12px; } .matrix-equation { margin:0 9px 9px; font-size:12px; } .matrix-notes-foot { margin:0 9px 9px; } }
+
+      /* Polished contextual formula-symbol cards (the global symbol legend remains unchanged). */
+      .fleg.fleg-context {
+        margin:12px 0 10px !important;
+        padding:13px 14px 14px;
+        border:1px solid rgba(0,229,255,.22);
+        border-radius:12px;
+        background:linear-gradient(135deg,rgba(0,229,255,.055),rgba(75,220,160,.025) 65%,transparent);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+      }
+      .fleg-context .fleg-title {
+        display:flex; align-items:center; gap:8px;
+        margin:0 0 11px; padding:0 0 9px;
+        border-bottom:1px solid var(--brd);
+        color:var(--text); font:700 11px "Syne",sans-serif;
+        letter-spacing:.025em; text-transform:none;
+      }
+      .fleg-context .fleg-title::after {
+        content:""; height:2px; width:26px; margin-left:auto;
+        border-radius:3px; background:var(--a1); opacity:.7;
+      }
+      .fleg-context .fleg-grid {
+        display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));
+        gap:7px; align-items:stretch;
+      }
+      .fleg-context .fleg-row {
+        display:grid; grid-template-columns:minmax(52px,max-content) minmax(0,1fr);
+        align-items:center; gap:11px; min-width:0;
+        padding:9px 10px; border:1px solid var(--brd); border-radius:8px;
+        background:var(--panel); transition:border-color .15s ease,background .15s ease;
+      }
+      .fleg-context .fleg-row:hover { border-color:rgba(0,229,255,.28); background:rgba(0,229,255,.035); }
+      .fleg-context .fleg-sym {
+        display:flex; align-items:center; justify-content:center;
+        box-sizing:border-box; min-width:52px; min-height:38px; max-width:100%;
+        padding:5px 9px; border:1px solid rgba(75,220,160,.22); border-radius:7px;
+        background:rgba(75,220,160,.075); color:var(--grn);
+        font:600 17px/1.35 "Cambria Math","STIX Two Math","Times New Roman",serif;
+        white-space:normal; overflow-wrap:anywhere; text-align:center;
+      }
+      .fleg-context .fleg-sym sub { font-size:.68em; vertical-align:sub; line-height:0; }
+      .fleg-context .fleg-sym sup { font-size:.68em; vertical-align:super; line-height:0; }
+      .fleg-context .fleg-desc { min-width:0; color:var(--text); font-size:11px; line-height:1.5; }
+      .fleg-context .fleg-sep { display:none; }
+
+      /* Matrix reference disclosure: quieter header, cleaner cards, dimensions treated as math. */
+      .matrix-notes {
+        margin:14px 0 16px; border:1px solid var(--brd); border-radius:11px;
+        border-left:3px solid rgba(0,229,255,.62); background:var(--panel);
+        box-shadow:0 5px 18px rgba(0,0,0,.08);
+      }
+      .matrix-notes > summary {
+        position:relative; gap:11px; padding:13px 15px;
+        transition:background .15s ease;
+      }
+      .matrix-notes > summary:hover { background:rgba(0,229,255,.035); }
+      .matrix-notes > summary::before {
+        content:"▦"; display:grid; place-items:center; flex:0 0 30px; height:30px;
+        border:1px solid rgba(0,229,255,.2); border-radius:8px;
+        background:rgba(0,229,255,.07); color:var(--a1); font-size:15px;
+      }
+      .matrix-notes-title { justify-content:flex-start; gap:8px; font-size:13px; }
+      .matrix-notes-subtitle {
+        margin-left:auto; padding:4px 8px; border-radius:999px;
+        color:var(--dim); font:600 9px var(--mono); letter-spacing:.025em;
+        text-transform:none; border:1px solid var(--brd); background:transparent;
+      }
+      .matrix-chevron { display:inline-grid; place-items:center; width:25px; height:25px; border:1px solid var(--brd); border-radius:7px; font-size:13px; }
+      .matrix-notes[open] > summary { background:rgba(0,229,255,.025); border-bottom:1px solid var(--brd); }
+      .matrix-notes-grid { grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr)); gap:9px; padding:13px; }
+      .matrix-note {
+        gap:8px; padding:12px; border-radius:9px; border-color:var(--brd);
+        background:color-mix(in srgb,var(--bg2, #111) 70%,transparent);
+        transition:border-color .15s ease,transform .15s ease;
+      }
+      .matrix-note:hover { border-color:rgba(0,229,255,.3); transform:translateY(-1px); }
+      .matrix-note-head { align-items:center; gap:8px; }
+      .matrix-note code { display:inline-block; color:var(--a1); font-size:15px; line-height:1.55; }
+      .matrix-dim {
+        display:inline-block; max-width:100%; padding:3px 7px; border-radius:6px;
+        border:1px solid rgba(0,229,255,.18); background:rgba(0,229,255,.045);
+        color:var(--text); font-size:12px; line-height:1.7; white-space:normal;
+      }
+      .matrix-note span { font-size:11px; line-height:1.65; color:var(--dim); }
+      .matrix-equation {
+        margin:0 13px 12px; padding:13px 15px; border-radius:9px;
+        border:1px solid rgba(0,229,255,.18); background:rgba(0,229,255,.035);
+        color:var(--text); font-size:14px; line-height:2;
+      }
+      .matrix-equation i { color:var(--a1); }
+      .matrix-notes-foot { margin:0 13px 13px; padding:11px 12px; border:1px solid var(--brd); border-radius:8px; background:rgba(255,255,255,.018); color:var(--dim); font-size:11px; line-height:1.75; }
+      @media(max-width:600px) {
+        .fleg.fleg-context { padding:10px; }
+        .fleg-context .fleg-grid { grid-template-columns:1fr; gap:6px; }
+        .fleg-context .fleg-row { grid-template-columns:54px minmax(0,1fr); padding:8px; gap:9px; }
+        .fleg-context .fleg-sym { min-width:50px; min-height:35px; font-size:16px; }
+        .matrix-notes > summary { gap:8px; padding:10px; }
+        .matrix-notes-title { font-size:12px; }
+        .matrix-notes-subtitle { display:none; }
+        .matrix-notes-grid { grid-template-columns:1fr; padding:9px; gap:7px; }
+        .matrix-note { padding:10px; }
+        .matrix-equation { margin:0 9px 9px; padding:10px; font-size:12px; }
+        .matrix-notes-foot { margin:0 9px 9px; padding:9px; }
+      }
 
       /* ── CANVAS LEGEND ── */
       .canvas-legend {
@@ -5310,8 +5426,8 @@
               </div>
             </div>
 
-            <div class="matrix-notes" id="matrixFormulaNotes">
-              <div class="matrix-notes-title">▦ Repères — dimensions des matrices <span class="matrix-notes-subtitle">MODE MATRICIEL</span></div>
+            <details class="matrix-notes" id="matrixFormulaNotes">
+              <summary class="matrix-notes-title"><span>Repères — dimensions des matrices</span><span class="matrix-notes-subtitle">Mode matriciel</span><span class="matrix-chevron">⌄</span></summary>
               <div class="matrix-notes-grid">
                 <div class="matrix-note"><div class="matrix-note-head"><code>m</code><span class="matrix-dim">taille du batch</span></div><span>Nombre d’exemples traités simultanément ; chaque exemple occupe une colonne.</span></div>
                 <div class="matrix-note"><div class="matrix-note-head"><code>L</code><span class="matrix-dim">nombre de couches calculées</span></div><span>Nombre de couches hors couche d’entrée. La couche de sortie est la couche <i>L</i>.</span></div>
@@ -5327,7 +5443,7 @@
               </div>
               <div class="matrix-equation"><i>Z<sup>(l)</sup></i> = <i>W<sup>(l)</sup></i><i>A<sup>(l−1)</sup></i> + <i>b<sup>(l)</sup></i> &nbsp; ⟶ &nbsp; <i>A<sup>(l)</sup></i> = <i>f</i>(<i>Z<sup>(l)</sup></i>)</div>
               <div class="matrix-notes-foot"><b style="color:var(--a2)">Convention :</b> lignes = neurones/caractéristiques, colonnes = exemples. Le produit <i>W<sup>(l)</sup>A<sup>(l−1)</sup></i> a la taille <i>n<sub>l</sub> × m</i> ; le biais <i>n<sub>l</sub> × 1</i> est ajouté à chaque colonne. <b>𝓛</b> désigne la fonction de perte (loss), à ne pas confondre avec <b><i>L</i></b>, le nombre de couches calculées.</div>
-            </div>
+            </details>
             <div id="fdsel"></div>
             <div id="ftree"></div>
           </div>
@@ -10230,7 +10346,7 @@ fn loss_accum() {
 
       // Aide-mémoire partagé dans les détails lorsque le mode matriciel est actif.
       function matrixNotesHTML() {
-        return `<div class="matrix-notes"><div class="matrix-notes-title">▦ Dimensions des matrices <span class="matrix-notes-subtitle">MODE MATRICIEL</span></div>
+        return `<details class="matrix-notes"><summary class="matrix-notes-title"><span>Dimensions des matrices</span><span class="matrix-notes-subtitle">Mode matriciel</span><span class="matrix-chevron">⌄</span></summary>
           <div class="matrix-notes-grid">
             <div class="matrix-note"><div class="matrix-note-head"><code>X = A<sup>(0)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>0</sub> × m</sup></span></div><span>Entrées : <i>n<sub>0</sub></i> caractéristiques pour chacun des <i>m</i> exemples.</span></div>
             <div class="matrix-note"><div class="matrix-note-head"><code>W<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × n<sub>l−1</sub></sup></span></div><span>Matrice des poids de la couche <i>l</i>.</span></div>
@@ -10239,7 +10355,7 @@ fn loss_accum() {
             <div class="matrix-note"><div class="matrix-note-head"><code>Y, Ŷ</code><span class="matrix-dim">ℝ<sup>n<sub>L</sub> × m</sup></span></div><span>Cibles attendues et sorties prédites.</span></div>
             <div class="matrix-note"><div class="matrix-note-head"><code>∇W<sup>(l)</sup>, ∇b<sup>(l)</sup></code><span class="matrix-dim">tailles de W et b</span></div><span>Gradients utilisés pour mettre à jour les paramètres.</span></div>
           </div><div class="matrix-equation"><i>Z<sup>(l)</sup></i> = <i>W<sup>(l)</sup></i><i>A<sup>(l−1)</sup></i> + <i>b<sup>(l)</sup></i> &nbsp; ⟶ &nbsp; <i>A<sup>(l)</sup></i> = <i>f</i>(<i>Z<sup>(l)</sup></i>)</div>
-          <div class="matrix-notes-foot">Lignes = neurones/caractéristiques, colonnes = exemples ; <i>m</i> = taille du batch. <i>L</i> désigne le nombre de couches hors entrée, tandis que <b>𝓛</b> désigne la loss.</div></div>`;
+          <div class="matrix-notes-foot">Lignes = neurones/caractéristiques, colonnes = exemples ; <i>m</i> = taille du batch. <i>L</i> désigne le nombre de couches hors entrée, tandis que <b>𝓛</b> désigne la loss.</div></details>`;
       }
 
       // Annotation row: symbol = description
@@ -17864,6 +17980,24 @@ fn loss_accum() {
         const o = b.classList.toggle("o");
         a.classList.toggle("o", o);
       }
+      // Rend les notations de la légende comme de vrais symboles mathématiques
+      // (indices/exposants visuels au lieu d'un texte brut du type b_j ou w_jk).
+      function prettyFormulaSymbol(value) {
+        const raw = String(value ?? "");
+        // Les dérivées sont déjà gérées par le moteur de fractions de la page.
+        if (raw.includes("∂") && raw.includes("/")) return renderMathEq(raw);
+        let out = raw.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        // Indices saisis sous forme LaTeX légère : w_{jk}, n_{l-1}, puis w_jk.
+        out = out.replace(/_\{([^{}]+)\}/g, "<sub>$1</sub>");
+        out = out.replace(/_([A-Za-z0-9]+)/g, "<sub>$1</sub>");
+        // Exposants : W^(l), eta^2, x^{i+1}.
+        out = out.replace(/\^\{([^{}]+)\}/g, "<sup>$1</sup>");
+        out = out.replace(/\^([A-Za-z0-9]+)/g, "<sup>$1</sup>");
+        // Uniformise quelques écritures fréquentes sans toucher aux mots normaux.
+        out = out.replace(/β₁/g, "β<sub>1</sub>").replace(/β₂/g, "β<sub>2</sub>");
+        return out;
+      }
+
       let selF = null;
       function showFDetail(id) {
         const f = FLIB.find((x) => x.id === id);
@@ -17913,13 +18047,13 @@ fn loss_accum() {
           <div class="fdex">${f.desc}</div>
 
           <!-- Legend contextuelle pour cette formule -->
-          <div class="fleg" style="margin-bottom:7px">
+          <div class="fleg fleg-context" style="margin-bottom:7px">
             <div class="fleg-title">🔑 Symboles de cette formule</div>
             <div class="fleg-grid">
               ${getFormulaSymbols(f)
                 .map(
                   (s) =>
-                    `<div class="fleg-row"><span class="fleg-sym">${s.sym}</span><span class="fleg-desc">${s.desc}</span></div>`,
+                    `<div class="fleg-row"><span class="fleg-sym">${prettyFormulaSymbol(s.sym)}</span><span class="fleg-desc">${s.desc}</span></div>`,
                 )
                 .join("")}
             </div>

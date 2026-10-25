@@ -1667,6 +1667,59 @@
         .matrix-notes-foot { margin:0 9px 9px; padding:9px; }
       }
 
+
+      /* ── LÉGENDES DE FORMULES v2 (générale + propre à chaque formule) ── */
+      .fl { margin:10px 0; border:1px solid rgba(0,229,255,.22); border-radius:10px; overflow:hidden;
+        background:linear-gradient(135deg,rgba(0,229,255,.05),rgba(191,95,255,.025) 70%,transparent); }
+      .fl > summary { display:flex; align-items:center; flex-wrap:wrap; gap:7px 8px; padding:9px 12px;
+        cursor:pointer; list-style:none; user-select:none; transition:background .15s ease; }
+      .fl > summary::-webkit-details-marker { display:none; }
+      .fl > summary:hover { background:rgba(0,229,255,.035); }
+      .fl[open] > summary { border-bottom:1px solid var(--brd); }
+      .fl-t { font:700 11px "Syne",sans-serif; color:var(--text); letter-spacing:.02em; }
+      .fl-n, .fl-mode { font-size:9px; padding:2px 7px; border-radius:999px; white-space:nowrap; }
+      .fl-n { color:var(--dim); border:1px solid var(--brd); }
+      .fl-mode { color:var(--a1); border:1px solid rgba(0,229,255,.3); background:rgba(0,229,255,.06); }
+      .fl-chev { margin-left:auto; color:var(--dim); font-size:13px; transition:transform .18s ease; }
+      .fl[open] .fl-chev { transform:rotate(180deg); }
+      .fl-keys { display:flex; flex-wrap:wrap; gap:4px 14px; padding:9px 12px 0; font-size:9px; color:var(--dim); }
+      .fl-key i { display:inline-block; width:8px; height:8px; margin-right:5px; border-radius:50%; background:var(--kc); vertical-align:-1px; }
+      .fl-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr)); gap:7px; padding:10px 12px 12px; }
+      .fl-grp { grid-column:1/-1; margin:5px 0 -1px; font:700 8px "JetBrains Mono",monospace; letter-spacing:.12em;
+        text-transform:uppercase; color:var(--dim); }
+      .fl-grp:first-child { margin-top:0; }
+      .fl-row { display:grid; grid-template-columns:minmax(46px,max-content) minmax(0,1fr); gap:10px; align-items:start;
+        min-width:0; padding:8px 9px; border:1px solid var(--brd); border-left:3px solid var(--kc);
+        border-radius:8px; background:rgba(255,255,255,.02); transition:background .15s ease; }
+      .fl-row:hover { background:rgba(255,255,255,.045); }
+      .fl-sym { display:flex; align-items:center; justify-content:center; box-sizing:border-box; min-width:46px; min-height:34px;
+        max-width:100%; padding:4px 8px; border-radius:7px; text-align:center; white-space:normal; overflow-wrap:anywhere;
+        color:var(--kc); border:1px solid color-mix(in srgb,var(--kc) 40%,transparent);
+        background:color-mix(in srgb,var(--kc) 11%,transparent);
+        font:600 16px/1.3 "Cambria Math","STIX Two Math","Times New Roman",serif; }
+      .fl-sym sub, .fl-sym sup { font-size:.66em; line-height:0; }
+      .fl-sym .math-frac { color:inherit; }
+      .fl-body { min-width:0; }
+      .fl-name { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+      .fl-name b { font-size:11px; font-weight:700; color:var(--text); }
+      .fl-name em { font-style:normal; font-size:7.5px; letter-spacing:.07em; text-transform:uppercase;
+        color:var(--kc); white-space:nowrap; opacity:.9; }
+      .fl-desc { margin-top:2px; font-size:10.5px; line-height:1.5; color:var(--text); opacity:.85; }
+      .fl-rng { display:inline-block; max-width:100%; margin-top:5px; padding:1px 7px; border:1px solid var(--brd);
+        border-radius:5px; background:rgba(0,0,0,.22); color:var(--text); font:600 10px/1.6 "JetBrains Mono",monospace;
+        overflow-wrap:anywhere; }
+      .fl-rng sub, .fl-rng sup { font-size:.7em; line-height:0; }
+      .fl-compact .fl-row { padding:6px 8px; gap:8px; }
+      .fl-compact .fl-sym { min-width:40px; min-height:28px; font-size:14px; }
+      .fl-compact .fl-name em { display:none; }
+      .fl-compact .fl-desc { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+      @media(max-width:600px) {
+        .fl > summary { padding:8px 10px; }
+        .fl-grid { grid-template-columns:1fr; gap:6px; padding:9px; }
+        .fl-keys { padding:8px 10px 0; }
+        .fl-sym { min-width:42px; min-height:32px; font-size:15px; }
+      }
+
       /* ── CANVAS LEGEND ── */
       .canvas-legend {
         position: absolute;
@@ -5338,93 +5391,8 @@
             <div class="calc-sw-slot" style="margin-top: 6px"></div>
             <div class="ftags" id="ftags"></div>
 
-            <!-- FORMULA LEGEND (always visible) -->
-            <div class="fleg" id="flegend">
-              <div class="fleg-title">📖 Légende des symboles</div>
-              <div class="fleg-grid">
-                <div class="fleg-row">
-                  <span class="fleg-sym">z</span
-                  ><span class="fleg-desc"
-                    >Pré-activation (Σ poids×entrées + biais)</span
-                  >
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">a</span
-                  ><span class="fleg-desc"
-                    >Activation post-f (sortie neurone)</span
-                  >
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">w</span
-                  ><span class="fleg-desc">Poids synaptique (connexion)</span>
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">b</span
-                  ><span class="fleg-desc">Biais (décalage appris)</span>
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">δ</span
-                  ><span class="fleg-desc"
-                    >Delta — erreur locale (backprop)</span
-                  >
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">∂L/∂w</span
-                  ><span class="fleg-desc"
-                    >Gradient de la loss par rapport à w</span
-                  >
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">lr</span
-                  ><span class="fleg-desc"
-                    >Learning rate (taux d'apprentissage)</span
-                  >
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">ŷ</span
-                  ><span class="fleg-desc">Prédiction du réseau (sortie)</span>
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">y</span
-                  ><span class="fleg-desc"
-                    >Cible réelle (label du dataset)</span
-                  >
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">σ</span
-                  ><span class="fleg-desc">Fonction sigmoid 1/(1+e⁻ᶻ)</span>
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">β₁,β₂</span
-                  ><span class="fleg-desc">Hyperparamètres Adam (moments)</span>
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">λ</span
-                  ><span class="fleg-desc"
-                    >Coefficient de régularisation L1/L2</span
-                  >
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">Σ</span
-                  ><span class="fleg-desc">Somme sur tous les termes</span>
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym">f'(z)</span
-                  ><span class="fleg-desc"
-                    >Dérivée de l'activation (pour backprop)</span
-                  >
-                </div>
-                <div class="fleg-sep"></div>
-                <div class="fleg-row">
-                  <span class="fleg-sym" style="color: var(--ylw)">L</span
-                  ><span class="fleg-desc">Loss totale (à minimiser)</span>
-                </div>
-                <div class="fleg-row">
-                  <span class="fleg-sym" style="color: var(--org)">n</span
-                  ><span class="fleg-desc">Nombre de sorties / exemples</span>
-                </div>
-              </div>
-            </div>
+            <!-- FORMULA LEGEND (rendue par renderGlobalLegend) -->
+            <div id="flegend"></div>
 
             <details class="matrix-notes" id="matrixFormulaNotes">
               <summary class="matrix-notes-title"><span>Repères — dimensions des matrices</span><span class="matrix-notes-subtitle">Mode matriciel</span><span class="matrix-chevron">⌄</span></summary>
@@ -13940,6 +13908,7 @@ fn loss_accum() {
         // Onglet Formules
         try {
           if (typeof selF !== "undefined" && selF) showFDetail(selF);
+          if (typeof renderGlobalLegend === "function") renderGlobalLegend();
         } catch (e) {}
         // Onglet Manuel (on conserve les valeurs déjà saisies)
         try {
@@ -18046,18 +18015,8 @@ fn loss_accum() {
           <div class="fdeq">${renderEqAuto(f, true)}</div>
           <div class="fdex">${f.desc}</div>
 
-          <!-- Legend contextuelle pour cette formule -->
-          <div class="fleg fleg-context" style="margin-bottom:7px">
-            <div class="fleg-title">🔑 Symboles de cette formule</div>
-            <div class="fleg-grid">
-              ${getFormulaSymbols(f)
-                .map(
-                  (s) =>
-                    `<div class="fleg-row"><span class="fleg-sym">${prettyFormulaSymbol(s.sym)}</span><span class="fleg-desc">${s.desc}</span></div>`,
-                )
-                .join("")}
-            </div>
-          </div>
+          <!-- Légende propre à cette formule -->
+          ${renderFormulaLegend(f)}
 
           <div class="fdpc">
             <div>
@@ -18079,6 +18038,570 @@ fn loss_accum() {
         if (f.cat === "Activations")
           requestAnimationFrame(() => drawFGraph(id, f.id));
       }
+
+      /* ══════════════════════════════════════════════════════════════════
+         LÉGENDES DE FORMULES v2 — glossaire de symboles + rendu
+         Chaque symbole : [notation, nom, explication, type, plage/dimension, variante matricielle]
+         Types : v variable · p paramètre appris · h hyperparamètre · f fonction/opérateur · d dimension/indice · c constante
+         ══════════════════════════════════════════════════════════════════ */
+      const FKIND = {
+        v: { n: "Variable", c: "var(--grn)" },
+        p: { n: "Paramètre appris", c: "var(--a1)" },
+        h: { n: "Hyperparamètre", c: "var(--ylw)" },
+        f: { n: "Fonction / opérateur", c: "var(--a2)" },
+        d: { n: "Dimension / indice", c: "var(--org)" },
+        c: { n: "Constante", c: "#9fb3d9" },
+      };
+      const FSYM = {
+        /* ── Réseau de base ── */
+        z: ["z_j", "Pré-activation", "Somme pondérée des entrées du neurone j, plus son biais, avant la fonction d’activation.", "v", "ℝ", { s: "Z^{(l)}", n: "Pré-activations de la couche l", d: "Une ligne par neurone, une colonne par exemple du lot.", r: "ℝ^{n_l×m}" }],
+        zf: ["z", "Entrée de la fonction", "Pré-activation du neurone : somme pondérée des entrées + biais.", "v", "(−∞ ; +∞)", { s: "z", n: "Vecteur des pré-activations", d: "La fonction s’applique à chaque composante du vecteur z de la couche, indépendamment des autres.", r: "ℝⁿ" }],
+        a: ["a_j", "Activation", "Sortie du neurone j après la fonction d’activation ; c’est l’entrée de la couche suivante.", "v", "", { s: "A^{(l)}", n: "Activations de la couche l", d: "Même forme que Z : f s’applique terme à terme.", r: "ℝ^{n_l×m}" }],
+        ak: ["a_k", "Entrée du neurone", "Activation du neurone k de la couche précédente (ou entrée x_k pour la première couche).", "v", "", { s: "A^{(l-1)}", n: "Activations précédentes", d: "Sorties de la couche l−1 ; pour l = 1, c’est la matrice d’entrée X.", r: "ℝ^{n_{l-1}×m}" }],
+        w: ["w", "Poids", "Force d’une connexion entre deux neurones ; appris par descente de gradient.", "p", "", { s: "W", n: "Matrice des poids", d: "Tous les poids de la couche, rangés en une matrice.", r: "ℝ^{n_l×n_{l-1}}" }],
+        wjk: ["w_{jk}", "Poids de connexion", "Relie le neurone k de la couche précédente au neurone j de la couche courante.", "p", "", { s: "W^{(l)}", n: "Matrice des poids", d: "La ligne j contient les poids entrants du neurone j.", r: "ℝ^{n_l×n_{l-1}}" }],
+        b: ["b", "Biais", "Décalage appris, indépendant des entrées (équivaut à un poids sur une entrée fixée à 1).", "p"],
+        bj: ["b_j", "Biais du neurone", "Décale le seuil d’activation du neurone j, indépendamment de ses entrées.", "p", "", { s: "b^{(l)}", n: "Vecteur de biais", d: "Un biais par neurone, diffusé (broadcast) sur les m colonnes.", r: "ℝ^{n_l×1}" }],
+        f: ["f", "Fonction d’activation", "Non-linéarité appliquée terme à terme (ReLU, sigmoïde, tanh…) ; sans elle le réseau resterait linéaire.", "f"],
+        fp: ["f′(z)", "Dérivée de l’activation", "Pente de f en z ; proche de 0, elle étouffe le gradient (vanishing gradient).", "f", "", { s: "f′(Z)", n: "Dérivée terme à terme", d: "Dérivée de f appliquée à chaque coefficient de Z.", r: "ℝ^{n_l×m}" }],
+        x: ["x", "Entrée", "Vecteur des caractéristiques d’un exemple.", "v", "", { s: "X = A^{(0)}", n: "Matrice des entrées", d: "Une colonne par exemple, une ligne par caractéristique.", r: "ℝ^{n_0×m}" }],
+        yh: ["ŷ", "Prédiction", "Sortie du réseau pour un exemple.", "v", "", { s: "Ŷ = A^{(L)}", n: "Prédictions du lot", d: "Sorties de la dernière couche, une colonne par exemple.", r: "ℝ^{n_L×m}" }],
+        y: ["y", "Cible (label)", "Valeur attendue, fournie par le jeu de données.", "v", "", { s: "Y", n: "Cibles du lot", d: "Même forme que Ŷ.", r: "ℝ^{n_L×m}" }],
+        dl: ["δ_j", "Delta (erreur locale)", "Sensibilité de la perte à la pré-activation du neurone j : δ_j = ∂L/∂z_j.", "v", "", { s: "δ^{(l)}", n: "Deltas de la couche l", d: "Signal d’erreur de chaque neurone, pour chaque exemple.", r: "ℝ^{n_l×m}" }],
+        gw: ["∂L/∂w", "Gradient du poids", "Variation de la perte quand w augmente légèrement ; on avance dans le sens opposé.", "v", "", { s: "∇W^{(l)}", n: "Gradient des poids", d: "Même forme que la matrice W.", r: "ℝ^{n_l×n_{l-1}}" }],
+        gb: ["∂L/∂b", "Gradient du biais", "Variation de la perte quand b augmente : égal à δ, car le biais agit avec un facteur 1.", "v", "", { s: "∇b^{(l)}", n: "Gradient des biais", d: "Somme (ou moyenne) des deltas sur les colonnes du lot.", r: "ℝ^{n_l×1}" }],
+        ai: ["a_i", "Activation source", "Activation du neurone i qui alimente le poids : plus elle est grande, plus le poids est « responsable ».", "v"],
+        L: ["L", "Perte (loss)", "Erreur à minimiser, mesurée entre la prédiction ŷ et la cible y. À ne pas confondre avec L, le nombre de couches.", "v", "≥ 0"],
+        Ln: ["L", "Nombre de couches", "Couches calculées (hors entrée) ; la couche de sortie est la couche L.", "d"],
+        n: ["n", "Nombre d’éléments", "Nombre de sorties (ou d’exemples) sur lesquels la perte est moyennée.", "d"],
+        nin: ["n_in", "Entrées de la couche", "Nombre de neurones qui alimentent la couche (fan-in).", "d"],
+        nout: ["n_out", "Sorties de la couche", "Nombre de neurones de la couche (fan-out).", "d"],
+        m: ["m", "Taille du lot", "Nombre d’exemples traités ensemble (batch).", "d"],
+        nl: ["n_l", "Neurones de la couche l", "Largeur de la couche l ; n_0 est le nombre d’entrées.", "d"],
+        l: ["l", "Indice de couche", "l = 1…L ; l = 0 désigne la couche d’entrée.", "d"],
+        ie: ["i", "Indice d’exemple", "Numéro de l’exemple dans le lot (de 1 à m).", "d"],
+        sig: ["σ(z)", "Sigmoïde", "1/(1+e⁻ᶻ) : écrase ℝ dans (0 ; 1), lisible comme une probabilité.", "f", "(0 ; 1)"],
+        sigp: ["σ′(z)", "Dérivée de la sigmoïde", "σ(z)·(1−σ(z)) ≤ 0,25 : à l’origine du vanishing gradient.", "f", "(0 ; 0,25]"],
+        Sig: ["Σ", "Somme", "Additionne les termes pour toutes les valeurs de l’indice indiqué.", "f"],
+        e: ["e", "Nombre d’Euler", "Base du logarithme népérien.", "c", "≈ 2,718"],
+        eps: ["ε", "Epsilon", "Minuscule constante qui évite une division par zéro.", "h", "typ. 10⁻⁸"],
+        lam: ["λ", "Coefficient de régularisation", "Poids de la pénalité ajoutée à la perte : plus λ est grand, plus le modèle est contraint.", "h", "typ. 10⁻⁵ à 10⁻²"],
+        lr: ["lr", "Taux d’apprentissage", "Taille du pas de descente : trop grand → divergence ; trop petit → apprentissage très lent.", "h", "typ. 10⁻⁴ à 10⁻¹"],
+        eta: ["η", "Taux d’apprentissage", "Taille du pas de la mise à jour (noté lr ailleurs dans l’application).", "h", "typ. 10⁻⁴ à 10⁻¹"],
+        beta: ["β", "Coefficient de momentum", "Part de l’ancienne vitesse conservée à chaque pas.", "h", "typ. 0,9"],
+        b1: ["β₁", "Moment d’ordre 1", "Inertie de la moyenne mobile des gradients.", "h", "typ. 0,9"],
+        b2: ["β₂", "Moment d’ordre 2", "Inertie de la moyenne mobile des gradients au carré.", "h", "typ. 0,999"],
+        g: ["g", "Gradient", "Gradient de la perte par rapport au paramètre courant (g = ∂L/∂w).", "v", "", { s: "G", n: "Matrice des gradients", d: "Même forme que W.", r: "ℝ^{n_l×n_{l-1}}" }],
+        mom: ["m", "Premier moment", "Moyenne mobile des gradients : donne la direction moyenne.", "v", "", { s: "M", n: "Premier moment (matrice)", d: "Même forme que W.", r: "ℝ^{n_l×n_{l-1}}" }],
+        vel: ["v", "Vitesse", "Accumulation exponentielle des gradients passés (inertie).", "v", "", { s: "V", n: "Vitesse (matrice)", d: "Même forme que W.", r: "ℝ^{n_l×n_{l-1}}" }],
+        sq: ["v", "Second moment", "Moyenne mobile des gradients au carré : mesure leur échelle.", "v", "", { s: "V", n: "Second moment (matrice)", d: "Même forme que W.", r: "ℝ^{n_l×n_{l-1}}" }],
+        hats: ["m̂, v̂", "Moments corrigés", "Moments débarrassés du biais d’initialisation : m/(1−β₁ᵗ) et v/(1−β₂ᵗ).", "v", "", { s: "M̂, V̂", n: "Moments corrigés (matrices)", d: "Moments débarrassés du biais d’initialisation, même forme que W.", r: "ℝ^{n_l×n_{l-1}}" }],
+        t: ["t", "Itération", "Numéro du pas d’optimisation en cours.", "d"],
+        arrow: ["←", "Affectation", "« Remplace par » : la valeur de gauche est mise à jour avec celle de droite.", "f"],
+        had: ["⊙", "Produit terme à terme", "Multiplie deux vecteurs (ou matrices) coefficient par coefficient (produit de Hadamard).", "f"],
+        ind: ["𝟙[·]", "Fonction indicatrice", "Vaut 1 si la condition entre crochets est vraie, 0 sinon.", "f", "{0, 1}"],
+        argmax: ["argmax", "Argument du maximum", "Renvoie l’indice (ou l’action) qui maximise l’expression, pas la valeur du maximum.", "f"],
+        ln: ["log", "Logarithme népérien", "Pénalise fortement les prédictions sûres d’elles mais fausses (→ +∞ quand la probabilité → 0).", "f"],
+        /* ── Pertes ── */
+        yhi: ["ŷ_i", "Prédiction i", "Sortie i du réseau.", "v", "", { s: "ŷ", n: "Vecteur des prédictions", d: "Toutes les sorties du réseau pour un exemple.", r: "ℝⁿ" }],
+        yi: ["y_i", "Cible i", "Valeur attendue pour la sortie i.", "v", "", { s: "y", n: "Vecteur des cibles", d: "Toutes les valeurs attendues pour un exemple.", r: "ℝⁿ" }],
+        ee: ["e", "Écart signé", "e = ŷ − y : erreur de prédiction, positive si le réseau surestime.", "v", "", { s: "e", n: "Vecteur d’erreur", d: "e = ŷ − y, composante par composante.", r: "ℝⁿ" }],
+        hdl: ["δ", "Seuil de Huber", "Frontière entre le régime quadratique (petites erreurs) et linéaire (grandes erreurs).", "h", "typ. 1"],
+        yp: ["ŷ", "Probabilité prédite", "Sortie de la sigmoïde : probabilité estimée que la classe soit 1.", "v", "(0 ; 1)"],
+        y01: ["y", "Classe réelle", "Étiquette binaire : 0 ou 1.", "v", "{0, 1}"],
+        y11: ["y", "Classe réelle", "Étiquette binaire : −1 ou +1.", "v", "{−1, +1}"],
+        sc: ["ŷ", "Score brut", "Sortie non bornée du modèle ; son signe donne la classe prédite.", "v", "ℝ"],
+        oh: ["y_i", "Cible one-hot", "Vaut 1 pour la vraie classe et 0 pour toutes les autres.", "v", "{0, 1}"],
+        yhp: ["ŷ_i", "Probabilité de la classe i", "Sortie softmax ; la somme sur toutes les classes fait 1.", "v", "(0 ; 1)"],
+        mx0: ["max(0, ·)", "Maximum avec 0", "Annule la perte lorsque la marge est respectée.", "f"],
+        abs: ["|·|", "Valeur absolue", "Distance à 0 : ignore le signe.", "f"],
+        /* ── Optimiseurs, régularisation, initialisation ── */
+        wd: ["λ", "Décroissance de poids", "Fraction de w retirée à chaque pas, séparément du gradient (≠ pénalité L2 classique).", "h", "typ. 10⁻² à 10⁻¹"],
+        dLda: ["∂L/∂a", "Sensibilité à l’activation", "Variation de la perte quand l’activation change ; vient de la couche suivante.", "v"],
+        dadz: ["∂a/∂z", "Dérivée de l’activation", "Égale à f′(z) : filtre la non-linéarité.", "v"],
+        dzdw: ["∂z/∂w", "Dérivée de z par w", "Vaut l’entrée a de ce poids : un poids agit proportionnellement à son entrée.", "v"],
+        Ltot: ["L_tot", "Perte totale", "Perte de données + pénalité de régularisation.", "v", "≥ 0"],
+        wi: ["w_i", "Poids du réseau", "Chaque poids individuel (les biais sont en général exclus de la pénalité).", "p"],
+        at: ["ã", "Activation après dropout", "Activation éventuellement éteinte, puis remise à l’échelle.", "v"],
+        pk: ["p", "Probabilité de garder", "Chaque neurone est conservé avec la probabilité p.", "h", "typ. 0,5 à 0,9"],
+        bern: ["Bernoulli(p)", "Masque aléatoire", "Vaut 1 avec la probabilité p, 0 sinon ; tirage indépendant par neurone.", "f", "{0, 1}"],
+        invp: ["1/p", "Remise à l’échelle", "Compense les neurones éteints pour garder la même activation moyenne (inverted dropout).", "f"],
+        U: ["U(−c, c)", "Loi uniforme", "Tirage équiprobable dans l’intervalle [−c ; c].", "f"],
+        Nrm: ["N(0, σ)", "Loi normale", "Tirage gaussien de moyenne 0 et d’écart-type σ.", "f"],
+        dense: ["NN(x)", "Réseau de neurones", "Fonction calculée par un réseau à une couche cachée.", "f"],
+        epsU: ["ε", "Précision voulue", "Erreur maximale tolérée entre la fonction cible et le réseau.", "h", "> 0"],
+        /* ── RNN ── */
+        ht: ["h(t)", "État caché", "Mémoire du réseau à l’instant t : résumé de la séquence déjà lue.", "v"],
+        hp: ["h(t−1)", "État précédent", "État caché de l’instant d’avant.", "v"],
+        xt: ["x(t)", "Entrée à l’instant t", "Élément de la séquence lu au pas t.", "v"],
+        Wxh: ["W_xh", "Poids entrée → état", "Transforme l’entrée x(t) en contribution à l’état caché.", "p"],
+        Whh: ["W_hh", "Poids récurrents", "Relie l’état précédent à l’état courant ; partagés par tous les pas de temps.", "p"],
+        bh: ["b_h", "Biais de l’état", "Décalage appris appliqué à l’état caché.", "p"],
+        Why: ["W_hy", "Poids état → sortie", "Convertit l’état caché en scores de sortie.", "p"],
+        by: ["b_y", "Biais de sortie", "Décalage appris appliqué aux scores de sortie.", "p"],
+        th: ["tanh", "Tangente hyperbolique", "Écrase les valeurs dans (−1 ; 1), centrées en 0.", "f", "(−1 ; 1)"],
+        thp: ["tanh′(z)", "Dérivée de tanh", "1 − tanh²(z) ≤ 1 : atténue le gradient à chaque pas de temps.", "f", "(0 ; 1]"],
+        sm: ["softmax", "Softmax", "Transforme des scores en probabilités positives dont la somme vaut 1.", "f"],
+        yht: ["ŷ(t)", "Sortie à l’instant t", "Distribution de probabilité prédite au pas t.", "v"],
+        yt: ["y(t)", "Cible à l’instant t", "Valeur attendue au pas t.", "v"],
+        Lt: ["L(t)", "Perte à l’instant t", "Erreur de la prédiction au pas t.", "v", "≥ 0"],
+        zt: ["z(t)", "Pré-activation à l’instant t", "W_xh·x(t) + W_hh·h(t−1) + b_h, avant le tanh.", "v"],
+        Tn: ["T", "Longueur de la séquence", "Nombre de pas de temps.", "d"],
+        dLdh: ["∂L/∂h(t)", "Gradient sur l’état", "Combine l’erreur directe au pas t et celle rétropropagée depuis le pas t+1.", "v"],
+        WhhT: ["W_hhᵀ", "Poids récurrents transposés", "Renvoie le gradient en sens inverse à travers la récurrence.", "p"],
+        dhh: ["∂h(T)/∂h(1)", "Influence du passé", "Mesure combien le premier état pèse sur le dernier : tend vers 0 (vanishing) ou ∞ (exploding).", "v"],
+        Pi: ["Π", "Produit", "Multiplie les termes pour t = 2…T.", "f"],
+        diag: ["diag(·)", "Matrice diagonale", "Place un vecteur sur la diagonale d’une matrice.", "f"],
+        gf: ["f", "Porte d’oubli", "Fraction de l’ancienne mémoire conservée.", "v", "(0 ; 1)"],
+        gi: ["i", "Porte d’entrée", "Fraction de la nouvelle information écrite en mémoire.", "v", "(0 ; 1)"],
+        go: ["o", "Porte de sortie", "Fraction de la mémoire exposée dans l’état caché.", "v", "(0 ; 1)"],
+        Cc: ["C̃", "Candidat mémoire", "Nouvelle information proposée pour la mémoire.", "v", "(−1 ; 1)"],
+        Ct: ["C(t)", "Cellule mémoire", "Mémoire à long terme, mise à jour par addition : le gradient s’y conserve mieux.", "v"],
+        Cp: ["C(t−1)", "Mémoire précédente", "Cellule mémoire de l’instant d’avant.", "v"],
+        cat: ["[h, x]", "Concaténation", "État précédent et entrée collés bout à bout en un seul vecteur.", "f"],
+        sg: ["σ", "Sigmoïde", "Écrase les valeurs dans (0 ; 1) : sert à fabriquer les portes.", "f", "(0 ; 1)"],
+        Wg: ["W_f, W_i, W_c, W_o", "Poids des portes", "Une matrice apprise par porte et pour le candidat.", "p"],
+        bg: ["b_f, b_i, b_c, b_o", "Biais des portes", "Un biais appris par porte et pour le candidat.", "p"],
+        gz: ["z", "Porte de mise à jour", "Dose le mélange entre l’ancien état et l’état candidat.", "v", "(0 ; 1)"],
+        gr: ["r", "Porte de réinitialisation", "Décide quelle part du passé sert à calculer le candidat.", "v", "(0 ; 1)"],
+        hc: ["h̃", "État candidat", "Nouvel état proposé, calculé à partir du passé filtré par r.", "v", "(−1 ; 1)"],
+        Wgru: ["W_z, W_r, W", "Poids appris", "Une matrice par porte et pour le candidat.", "p"],
+        /* ── CNN ── */
+        S: ["S(i,j)", "Carte de features", "Valeur de sortie du filtre à la position (i, j).", "v"],
+        Iij: ["I(i,j)", "Image d’entrée", "Valeur du pixel à la ligne i, colonne j.", "v"],
+        Iijc: ["I(i,j,c)", "Entrée multi-canaux", "Valeur du pixel (i, j) dans le canal c.", "v"],
+        K: ["K(m,n)", "Noyau (kernel)", "Petite matrice de poids partagés, apprise ; elle détecte un motif.", "p"],
+        Kc: ["K(c)", "Poids du canal c", "Un poids par canal d’entrée : le noyau 1×1 mélange les canaux.", "p"],
+        mn: ["m, n", "Décalages dans le noyau", "Parcourent les lignes et les colonnes du noyau.", "d"],
+        bc: ["b", "Biais du filtre", "Constante ajoutée à chaque valeur de sortie du filtre.", "p"],
+        Nout: ["N_sortie", "Taille de sortie", "Côté de la carte de features obtenue.", "d"],
+        N: ["N", "Taille d’entrée", "Côté de l’image (supposée carrée).", "d"],
+        pad: ["p", "Padding", "Bordure de zéros ajoutée de chaque côté de l’entrée.", "h", "0, 1, 2…"],
+        ks: ["k", "Taille du noyau", "Côté du noyau (ex. 3 pour un noyau 3×3).", "h", "typ. 3"],
+        st: ["s", "Stride", "Pas de déplacement du noyau ou de la fenêtre.", "h", "typ. 1 ou 2"],
+        dil: ["d", "Taux de dilatation", "Espacement entre les poids du noyau ; d = 1 donne une convolution normale.", "h", "typ. 1, 2, 4"],
+        flo: ["⌊·⌋", "Partie entière", "Arrondi vers le bas.", "f"],
+        mxo: ["max", "Maximum", "Garde la plus grande valeur de la fenêtre.", "f"],
+        yij: ["y(i,j)", "Sortie du pooling", "Valeur résumant la fenêtre qui correspond à la position (i, j).", "v"],
+        xs: ["x(i·s+m, j·s+n)", "Valeur dans la fenêtre", "Pixel de la carte d’entrée situé dans la fenêtre courante.", "v"],
+        win: ["|fenêtre|", "Taille de la fenêtre", "Nombre de valeurs dans la fenêtre (ex. 4 pour 2×2).", "d"],
+        RF: ["RF_l", "Champ réceptif", "Taille de la zone de l’image d’origine qui influence un neurone de la couche l.", "v"],
+        kl: ["k_l", "Noyau de la couche l", "Taille du noyau de la couche l.", "d"],
+        Ps: ["Π s_i", "Produit des strides", "Produit des strides des couches précédentes : l’écart entre deux neurones voisins en pixels d’entrée.", "d"],
+        Np: ["N_param", "Nombre de paramètres", "Poids du noyau + biais, pour tous les filtres de la couche.", "v"],
+        khw: ["k_h × k_w", "Taille du noyau", "Hauteur × largeur du noyau.", "d"],
+        Cin: ["C_in", "Canaux d’entrée", "Profondeur de l’entrée (ex. 3 pour du RGB).", "d"],
+        Cout: ["C_out", "Canaux de sortie", "Nombre de filtres de la couche = profondeur de la sortie.", "d"],
+        plus1: ["+ 1", "Biais", "Un biais par filtre.", "c"],
+        cc: ["c", "Canal", "Indice de canal (profondeur).", "d"],
+        Hh: ["H, W", "Hauteur, largeur", "Dimensions spatiales de la carte de features.", "d"],
+        yc: ["y_c", "Sortie du canal c", "Moyenne de toute la carte du canal c : une seule valeur par canal.", "v"],
+        xijc: ["x(i,j,c)", "Valeur de la carte", "Valeur à la position (i, j) dans le canal c.", "v"],
+        /* ── RL ── */
+        rs: ["s", "État", "Situation de l’agent dans l’environnement.", "v"],
+        rsp: ["s′", "État suivant", "État atteint après l’action.", "v"],
+        ra: ["a", "Action", "Choix de l’agent dans l’état s.", "v"],
+        rap: ["a′", "Action suivante", "Action considérée dans l’état s′.", "v"],
+        rr: ["r", "Récompense", "Signal scalaire reçu après l’action.", "v"],
+        gam: ["γ", "Facteur d’actualisation", "Poids des récompenses futures : proche de 0 → agent myope, proche de 1 → vision long terme.", "h", "[0 ; 1], typ. 0,99"],
+        al: ["α", "Pas d’apprentissage", "Fraction de l’erreur corrigée à chaque mise à jour.", "h", "typ. 0,01 à 0,5"],
+        pol: ["π(a|s)", "Politique", "Probabilité de choisir l’action a dans l’état s.", "f", "[0 ; 1]"],
+        Pf: ["P(s′|s,a)", "Probabilité de transition", "Probabilité d’atteindre s′ en faisant a dans s (modèle de l’environnement).", "f", "[0 ; 1]"],
+        Vf: ["V(s)", "Valeur d’état", "Retour moyen attendu en partant de l’état s.", "v"],
+        Qf: ["Q(s,a)", "Valeur d’action", "Retour attendu en faisant a dans s, puis en suivant la politique.", "v"],
+        Gt: ["Gₜ", "Retour", "Somme actualisée des récompenses futures à partir de l’instant t.", "v"],
+        Ex: ["E_π[·]", "Espérance", "Moyenne sur les trajectoires produites par la politique π.", "f"],
+        Vs: ["V*, Q*", "Valeurs optimales", "Valeurs obtenues avec la meilleure politique possible.", "v"],
+        td: ["δ", "Erreur TD", "Écart entre la cible r + γV(s′) et l’estimation V(s) : la « surprise ».", "v"],
+        tgt: ["r + γ·V(s′)", "Cible TD", "Estimation améliorée de V(s) construite avec la récompense observée (bootstrap).", "v"],
+        mxa: ["maxₐ′", "Maximum sur les actions", "Garde la meilleure valeur parmi toutes les actions possibles.", "f"],
+        Ak: ["A(s,a)", "Avantage", "Combien l’action a est meilleure que la moyenne dans l’état s.", "v"],
+        Hz: ["H", "Horizon effectif", "Nombre de pas réellement pris en compte ; avec γ = 0,99, environ 100.", "d"],
+        lamt: ["λ", "Paramètre de trace", "λ = 0 → TD(0) ; λ = 1 → Monte-Carlo.", "h", "[0 ; 1]"],
+        Gn: ["Gₜ⁽ⁿ⁾", "Retour à n pas", "n récompenses réelles, puis la valeur estimée V(sₜ₊ₙ).", "v"],
+        nn: ["n", "Nombre de pas", "Horizon du retour : combien de récompenses réelles on additionne.", "d"],
+        Ah: ["Âₜ", "Avantage estimé", "Estimation de l’avantage de l’action au pas t ; λ règle le compromis biais/variance.", "v"],
+        Qn: ["Qₙ", "Estimation courante", "Moyenne des récompenses observées jusqu’ici.", "v"],
+        ge: ["ε", "Taux d’exploration", "Probabilité d’agir au hasard au lieu de choisir la meilleure action.", "h", "[0 ; 1], typ. 0,1"],
+        Ac: ["|A|", "Nombre d’actions", "Taille de l’ensemble d’actions.", "d"],
+        tau: ["τ", "Température", "Grand τ → choix presque uniforme ; petit τ → presque glouton.", "h", "> 0"],
+        cu: ["c", "Coefficient d’exploration", "Poids du bonus d’incertitude.", "h", "typ. 1 à 2"],
+        Na: ["N(a)", "Nombre de tirages", "Combien de fois le bras a a été joué.", "d"],
+        tn: ["t", "Pas de temps", "Instant courant ; compte le nombre total de tirages.", "d"],
+        th_a: ["θₐ", "Taux de succès tiré", "Valeur plausible de la vraie probabilité de succès du bras a.", "v", "(0 ; 1)"],
+        Be: ["Beta(1+S, 1+F)", "Loi Beta", "Croyance sur le taux de succès après S succès et F échecs.", "f"],
+        SF: ["Sₐ, Fₐ", "Succès / échecs", "Nombre de succès et d’échecs observés pour le bras a.", "d"],
+        rho: ["ρ_T", "Regret cumulé", "Récompense perdue par rapport à un joueur qui choisit toujours le meilleur bras.", "v", "≥ 0"],
+        pst: ["p*", "Meilleur taux de succès", "Probabilité de succès du meilleur bras.", "v", "(0 ; 1)"],
+        pat: ["p_{aₜ}", "Taux du bras joué", "Probabilité de succès du bras réellement choisi à l’instant t.", "v", "(0 ; 1)"],
+        TT: ["T", "Horizon", "Nombre total de tirages.", "d"],
+        thr: ["θ", "Paramètres de la politique", "Poids du réseau qui définit π_θ.", "p"],
+        Jt: ["J(θ)", "Objectif", "Retour moyen attendu de la politique ; c’est ce qu’on maximise.", "v"],
+        glp: ["∇θ log π_θ(a|s)", "Gradient du log-probabilité", "Direction de θ qui augmente la probabilité de l’action a dans l’état s.", "v"],
+        bs: ["b(sₜ)", "Baseline", "Valeur de référence (souvent V(s)) soustraite pour réduire la variance sans biais.", "f"],
+        ea: ["e_a", "Vecteur one-hot", "Vaut 1 à la position de l’action choisie a, 0 ailleurs.", "v"],
+        pv: ["π(·|s)", "Vecteur de probabilités", "Probabilités de toutes les actions dans l’état s.", "v"],
+        ths: ["θ(s,·)", "Préférences", "Scores (logits) des actions dans l’état s.", "p"],
+        be: ["β", "Pas du critique", "Pas d’apprentissage de V (distinct de α, celui de l’acteur).", "h", "typ. 0,01 à 0,1"],
+        Hp: ["H(π)", "Entropie", "Mesure l’aléa de la politique : 0 si déterministe, log|A| si uniforme.", "v", "[0 ; log|A|]"],
+        Lc: ["L^CLIP", "Objectif PPO", "Quantité à maximiser ; elle borne le changement de politique.", "v"],
+        rt: ["rₜ(θ)", "Ratio de probabilités", "π_θ(a|s) / π_old(a|s) : de combien la nouvelle politique s’écarte de l’ancienne.", "v", "> 0"],
+        ep: ["ε", "Marge de clipping", "Autorise le ratio rₜ à varier dans [1−ε ; 1+ε].", "h", "typ. 0,1 à 0,2"],
+        clp: ["clip(x, a, b)", "Écrêtage", "Ramène x dans l’intervalle [a ; b].", "f"],
+        mn2: ["min", "Minimum", "Garde le plus pessimiste des deux termes.", "f"],
+        Lq: ["L(θ)", "Perte DQN", "Erreur quadratique moyenne entre Q_θ et la cible y.", "v", "≥ 0"],
+        Dm: ["D", "Mémoire de rejeu", "Tampon d’expériences (s, a, r, s′) tirées au hasard pour casser les corrélations.", "d"],
+        yq: ["y", "Cible", "Valeur visée pour Q_θ(s,a), traitée comme une constante pendant la descente.", "v"],
+        Qth: ["Q_θ(s,a)", "Réseau en ligne", "Valeur d’action estimée par le réseau entraîné.", "f"],
+        Qtm: ["Q_θ⁻", "Réseau cible", "Copie gelée de Q_θ, mise à jour lentement pour stabiliser la cible.", "f"],
+        ell: ["ℓ(e)", "Perte de Huber", "Quadratique près de 0, linéaire au-delà de |e| = 1 : limite l’effet des grosses erreurs.", "v"],
+        etd: ["e", "Erreur TD", "e = y − Q(s,a) : écart entre la cible et l’estimation.", "v"],
+        thm: ["θ⁻", "Paramètres cibles", "Poids du réseau cible.", "p"],
+        taup: ["τ", "Taux de mise à jour douce", "Fraction de θ recopiée dans θ⁻ à chaque pas.", "h", "typ. 0,005"],
+        Cp2: ["C", "Période de copie dure", "Nombre de pas entre deux copies complètes de θ dans θ⁻.", "h"],
+        /* ── Transformer ── */
+        tQ: ["Q", "Requêtes (queries)", "« Ce que je cherche » : une ligne par token.", "v", "ℝ^{n×d_k}"],
+        tK: ["K", "Clés (keys)", "« Ce que je propose » : sert à calculer les scores.", "v", "ℝ^{n×d_k}"],
+        tV: ["V", "Valeurs (values)", "Contenu qui est mélangé selon les poids d’attention.", "v", "ℝ^{n×d_v}"],
+        dk: ["d_k", "Dimension des clés", "Taille des vecteurs q et k.", "d"],
+        sdk: ["√d_k", "Facteur de normalisation", "Ramène la variance des scores à ≈ 1 pour éviter un softmax saturé.", "f"],
+        KT: ["Kᵀ", "Transposée de K", "Permet le produit Q·Kᵀ : un score pour chaque paire de tokens.", "f", "ℝ^{d_k×n}"],
+        qk: ["q·k", "Produit scalaire", "Somme des produits des composantes de q et de k.", "v"],
+        va: ["Var(·)", "Variance", "Dispersion du score ; vaut d_k si les composantes sont centrées-réduites.", "f"],
+        nt: ["n", "Longueur de séquence", "Nombre de tokens.", "d"],
+        Xt: ["X", "Entrée", "Représentations des n tokens.", "v", "ℝ^{n×d}"],
+        Wqkv: ["W_Q^i, W_K^i, W_V^i", "Projections de la tête i", "Matrices apprises qui produisent Q, K et V pour la tête i.", "p"],
+        hd: ["head_i", "Tête d’attention i", "Attention calculée dans un sous-espace propre.", "v"],
+        cct: ["Concat", "Concaténation", "Colle les h têtes côte à côte.", "f"],
+        Wo: ["W_O", "Projection de sortie", "Remélange les têtes concaténées vers la dimension d.", "p", "ℝ^{d×d}"],
+        hn: ["h", "Nombre de têtes", "Nombre de sous-espaces d’attention parallèles.", "d"],
+        Sij: ["S_ij", "Score (i, j)", "Score d’attention du token i vers le token j.", "v"],
+        Mij: ["M_ij", "Masque causal", "0 si j ≤ i (autorisé), −∞ sinon (interdit).", "c"],
+        W12: ["W₁, W₂", "Poids du MLP", "Expansion d → d_ff, puis projection de retour vers d.", "p"],
+        b12: ["b₁, b₂", "Biais du MLP", "Biais des deux couches linéaires.", "p"],
+        sa: ["σ", "Activation", "Non-linéarité du MLP (ReLU, GELU…).", "f"],
+        Wgu: ["W_g, W_u", "Poids de la porte et de la montée", "SwiGLU : une branche passe par SiLU et module l’autre.", "p"],
+        silu: ["SiLU", "Activation Swish", "z·σ(z) : porte douce, utilisée dans SwiGLU.", "f"],
+        mu: ["μ", "Moyenne", "Moyenne des composantes du vecteur x.", "v"],
+        sg2: ["σ²", "Variance", "Variance des composantes du vecteur x.", "v"],
+        gl: ["γ", "Gain appris", "Redonne une échelle propre à chaque dimension.", "p"],
+        bl: ["β", "Biais appris", "Redonne un décalage propre à chaque dimension.", "p"],
+        rms: ["mean(x²)", "Moyenne des carrés", "Énergie moyenne de x ; RMSNorm l’utilise à la place de la variance.", "v"],
+        hb: ["h", "État intermédiaire", "Sortie du sous-bloc d’attention, avant le MLP.", "v"],
+        mha: ["MHA", "Attention multi-têtes", "Sous-couche d’attention, décrite dans la formule « Multi-têtes ».", "f"],
+        ffn: ["FFN", "Réseau feed-forward", "MLP appliqué indépendamment à chaque position.", "f"],
+        nm: ["Norm", "Normalisation", "LayerNorm ou RMSNorm, appliquée avant chaque sous-couche (pré-norm).", "f"],
+        res: ["x + …", "Connexion résiduelle", "Ajoute l’entrée à la sortie de la sous-couche : le gradient circule sans atténuation.", "f"],
+        pp: ["p", "Position", "Indice du token dans la séquence.", "d"],
+        ip: ["i", "Indice de paire de dimensions", "Les dimensions 2i et 2i+1 portent respectivement le sinus et le cosinus.", "d"],
+        dm: ["d", "Dimension du modèle", "Taille des embeddings.", "d"],
+        base: ["10000", "Base des fréquences", "Étale les longueurs d’onde de façon géométrique, de 2π à 10000·2π.", "c"],
+        rot: ["Rot(m·θᵢ)", "Rotation 2D", "Tourne chaque paire de composantes de l’angle m·θᵢ.", "f"],
+        mp: ["m", "Position", "Position du token dans la séquence.", "d"],
+        thi: ["θᵢ", "Fréquence de rotation", "Vitesse de rotation de la paire de dimensions i.", "c"],
+        Rm: ["R_m, R_n", "Rotations de position", "Appliquées à q (position m) et à k (position n).", "f"],
+        rin: ["⟨R_m q, R_n k⟩", "Score après rotation", "Ne dépend que de la différence m−n : c’est une position relative.", "v"],
+        Nt: ["N", "Nombre de paramètres", "Taille du modèle.", "v"],
+        Lt2: ["L", "Nombre de couches", "Blocs Transformer empilés.", "d"],
+        Vv: ["V", "Taille du vocabulaire", "Nombre de tokens distincts.", "d"],
+        dff: ["d_ff", "Largeur du MLP", "Dimension intermédiaire du FFN (≈ 4d).", "d"],
+        Cf: ["C", "Calcul d’entraînement", "Nombre total d’opérations flottantes (FLOPs).", "v"],
+        Dt: ["D", "Tokens d’entraînement", "Nombre de tokens vus pendant l’entraînement.", "d"],
+        chin: ["D ≈ 20·N", "Optimum Chinchilla", "À budget de calcul fixé, environ 20 tokens par paramètre.", "c"],
+        Mem: ["Mémoire", "Taille du KV-cache", "Octets occupés par les clés et valeurs passées.", "v"],
+        two: ["2", "K et V", "Une copie pour les clés, une pour les valeurs.", "c"],
+        hkv: ["h_kv", "Têtes K/V", "Nombre de têtes de clés/valeurs (GQA : h_kv < h).", "d"],
+        oct: ["octets", "Précision", "Octets par nombre (2 en fp16/bf16).", "d"],
+        bat: ["batch", "Séquences simultanées", "Nombre de séquences servies en parallèle.", "d"],
+        Ll: ["L", "Perte de langage", "Moyenne de −log p du vrai token.", "v", "≥ 0"],
+        ptok: ["p_θ(xₜ | x<t)", "Probabilité du vrai token", "Probabilité que le modèle attribue au token xₜ sachant les précédents.", "v", "(0 ; 1]"],
+        ppl: ["PPL", "Perplexité", "e^L : nombre effectif de choix entre lesquels le modèle hésite.", "v", "≥ 1"],
+        pit: ["p_i", "Probabilité du token i", "Probabilité d’émettre le token i après application de la température.", "v", "(0 ; 1)"],
+        zi: ["z_i", "Logit du token i", "Score brut du token i avant softmax.", "v"],
+        Tm: ["T", "Température", "T < 1 : plus déterministe ; T > 1 : plus varié.", "h", "> 0, typ. 0,7 à 1"],
+        tk: ["top-k", "Troncature par rang", "Ne garde que les k tokens les plus probables.", "h", "typ. 40"],
+        tp: ["top-p", "Noyau (nucleus)", "Plus petit ensemble de tokens dont la probabilité cumulée atteint p.", "h", "typ. 0,9"],
+        /* ── Bases ── */
+        Jc: ["J", "Coût moyen", "Perte moyennée sur tout le jeu de données.", "v", "≥ 0"],
+        Lex: ["L(ŷ, y)", "Perte d’un exemple", "Erreur sur un seul exemple (MSE, entropie croisée…).", "f"],
+        cp: ["ĉ", "Classe prédite", "Indice de la plus grande sortie ŷ_j.", "v"],
+        cr: ["c", "Classe réelle", "Indice de la vraie classe.", "v"],
+        dz1: ["∂z_j/∂w_jk", "Dérivée par rapport au poids", "Vaut a_k : un poids agit proportionnellement à son entrée.", "v"],
+        dz2: ["∂z_j/∂b_j", "Dérivée par rapport au biais", "Vaut 1 : le biais s’ajoute directement.", "v"],
+        dz3: ["∂z_j/∂a_k", "Dérivée par rapport à l’entrée", "Vaut w_jk : sert à rétropropager vers la couche précédente.", "v"],
+        dLy: ["∂L/∂ŷ", "Gradient de sortie", "Variation de la perte quand la prédiction change.", "v"],
+        dout: ["δ^{(L)}", "Delta de sortie", "Erreur de la couche de sortie, point de départ de la rétropropagation.", "v"],
+        dj: ["∂J/∂w_jk", "Gradient moyen", "Moyenne, sur le lot, des gradients de chaque exemple.", "v"],
+        dji: ["δ_j^{(i)}", "Delta de l’exemple i", "Delta du neurone j pour l’exemple i du lot.", "v"],
+        aki: ["a_k^{(i)}", "Activation de l’exemple i", "Activation du neurone k pour l’exemple i du lot.", "v"],
+        one: ["1ᵀ", "Vecteur de uns", "Ligne de m uns : diffuse le biais sur les m colonnes.", "c", "ℝ^{1×m}"],
+        et: ["η_t", "Taux à l’étape t", "Taux d’apprentissage utilisé à l’itération t.", "v"],
+        e0: ["η₀", "Taux initial", "Taux d’apprentissage de départ.", "h", "typ. 10⁻³"],
+        gd: ["γ", "Facteur de décroissance", "Multiplie le taux d’apprentissage à chaque palier.", "h", "(0 ; 1), typ. 0,9"],
+        pal: ["⌊t/100⌋", "Nombre de paliers", "Nombre de paliers de 100 itérations déjà écoulés.", "d"],
+        cl: ["c", "Seuil de norme", "Norme maximale autorisée pour le gradient.", "h", "typ. 1 à 5"],
+        nrm: ["‖g‖₂", "Norme euclidienne", "Longueur du vecteur gradient.", "v", "≥ 0"],
+        Np2: ["N", "Nombre de paramètres", "Total des poids et des biais du réseau.", "v"],
+        nl1: ["n_{l−1}", "Neurones de la couche l−1", "Largeur de la couche précédente.", "d"],
+      };
+
+      /* Variantes « vecteur » pour les formules matricielles écrites à l’échelle d’un seul exemple */
+      const _FV = {
+        z: { mx: { s: "z^{(l)}", n: "Vecteur des pré-activations", d: "Une composante par neurone de la couche l.", r: "ℝ^{n_l}" } },
+        a: { mx: { s: "a^{(l)}", n: "Vecteur d’activations", d: "Sortie de toute la couche l pour un exemple.", r: "ℝ^{n_l}" } },
+        ak: { mx: { s: "a^{(l-1)}", n: "Vecteur d’entrée", d: "Activations de la couche l−1 pour un exemple.", r: "ℝ^{n_{l-1}}" } },
+        b: { mx: { s: "b^{(l)}", n: "Vecteur de biais", d: "Un biais par neurone de la couche l.", r: "ℝ^{n_l}" } },
+        dl: { mx: { s: "δ^{(l)}", n: "Vecteur des deltas", d: "Signal d’erreur de chaque neurone de la couche l, pour un exemple.", r: "ℝ^{n_l}" } },
+        x: { mx: { s: "x", n: "Vecteur d’entrée", d: "Caractéristiques d’un exemple.", r: "ℝ^{n_0}" } },
+      };
+      /* Entrées spécifiques aux notations par lot (exemples en colonnes) */
+      const _FB = {
+        Z: { s: "Z^{(l)}", n: "Pré-activations du lot", d: "Une ligne par neurone, une colonne par exemple.", k: "v", r: "ℝ^{n_l×m}" },
+        W: { s: "W^{(l)}", n: "Matrice des poids", d: "La ligne j contient les poids entrants du neurone j.", k: "p", r: "ℝ^{n_l×n_{l-1}}" },
+        A: { s: "A^{(l-1)}", n: "Activations du lot", d: "Sorties de la couche précédente, un exemple par colonne.", k: "v", r: "ℝ^{n_{l-1}×m}" },
+        b: { s: "b^{(l)}", n: "Vecteur de biais", d: "Un biais par neurone, diffusé sur les m colonnes grâce à 1ᵀ.", k: "p", r: "ℝ^{n_l×1}" },
+      };
+      const _1T = (r) => ["one", { only: "m", r: r }];
+
+      const FLIB_SYMS = {
+        /* ── Activations ── */
+        sigmoid: ["zf", "sig", "sigp", "e"],
+        relu: ["zf", ["f", { s: "f(z)", n: "Sortie du neurone", d: "Valeur transmise à la couche suivante : z si z > 0, sinon 0.", k: "v" }], "mx0"],
+        tanh: ["zf", "th", "e"],
+        lrelu: ["zf", { s: "α", n: "Pente négative", d: "Fraction de z conservée quand z ≤ 0 (0,01 ici) : évite que le neurone « meure ».", k: "h", r: "typ. 0,01" }],
+        elu: ["zf", { s: "α", n: "Saturation négative", d: "Pour z → −∞, la sortie tend vers −α : la pente reste non nulle côté négatif.", k: "h", r: "typ. 1" }, "e"],
+        selu: ["zf", { s: "λ", n: "Facteur d’échelle", d: "Constante fixée par la théorie : elle auto-normalise les activations d’une couche à l’autre.", k: "c", r: "≈ 1,0507" }, { s: "α", n: "Saturation négative", d: "Constante fixée, associée à λ pour conserver moyenne 0 et variance 1.", k: "c", r: "≈ 1,6733" }, { s: "ELU_α(z)", n: "ELU paramétrée", d: "ELU calculée avec la valeur de α ci-dessus.", k: "f" }],
+        swish: ["zf", ["sig", { d: "Porte douce entre 0 et 1 : module z, laisse passer les grandes valeurs positives et étouffe les négatives." }]],
+        gelu: ["zf", { s: "Φ(z)", n: "Fonction de répartition normale", d: "P(N(0,1) ≤ z) : probabilité de « garder » z, version lisse d’un seuil.", k: "f", r: "(0 ; 1)" }],
+        softsign: ["zf", ["abs", { s: "|z|", n: "Valeur absolue de z", d: "Le dénominateur 1+|z| écrase les grandes valeurs sans saturer brutalement." }]],
+        softmax: [["zi", { n: "Score (logit) i", d: "Sortie brute du neurone i avant normalisation." }], { s: "e^{z_i}", n: "Exponentielle", d: "Rend chaque score strictement positif et accentue les écarts.", k: "f" }, { s: "Σ_j e^{z_j}", n: "Normalisation", d: "Somme sur toutes les classes j : force la somme des sorties à 1.", k: "f" }, { s: "softmax(z_i)", n: "Probabilité de la classe i", d: "Valeur dans (0 ; 1) ; la somme sur toutes les classes vaut 1.", k: "v", r: "(0 ; 1)" }, _1T("ℝ^{1×n}")],
+        linear: ["zf", ["f", { s: "f(z)", n: "Sortie du neurone", d: "Identique à l’entrée : aucune non-linéarité (typique d’une sortie de régression).", k: "v" }]],
+        /* ── Pertes ── */
+        mse: ["L", "n", ["Sig", { only: "i" }], "yhi", "yi", { only: "m", s: "‖e‖₂²", n: "Norme au carré", d: "Somme des carrés des composantes de e = ŷ − y.", k: "f", r: "≥ 0" }],
+        mae: ["L", "n", ["Sig", { only: "i" }], "abs", "yhi", "yi", { only: "m", s: "‖e‖₁", n: "Norme 1", d: "Somme des valeurs absolues des composantes de e = ŷ − y.", k: "f", r: "≥ 0" }],
+        huber: ["ee", "hdl", "abs", _1T("ℝ^{1×n}")],
+        logloss: ["L", "n", ["Sig", { only: "i" }], "y01", "yp", "ln", _1T("ℝ^{1×n}")],
+        cce: ["L", ["Sig", { only: "i" }], "oh", "ln", "yhp"],
+        hinge: ["L", "mx0", ["y11", { mx: { s: "t", n: "Vecteur des cibles ±1", d: "Étiquettes −1 / +1 de chaque sortie.", r: "{−1 ; +1}" } }], "sc", _1T("ℝ^{1×n}")],
+        /* ── Optimiseurs ── */
+        sgd: ["w", "arrow", "lr", "gw"],
+        momentum_o: ["vel", "beta", "lr", "g", "w", "arrow"],
+        adam_o: ["mom", "sq", "b1", "b2", "g", "hats", "lr", "eps", "w", "t", "arrow"],
+        adamw_o: ["w", "wd", "lr", "mom", "sq", "eps"],
+        /* ── Rétropropagation ── */
+        chain: [["gw", { mx: null }], "dLda", "dadz", "dzdw", { only: "m", s: "δ^{(l)}", n: "Delta de la couche l", d: "Signal d’erreur de chaque neurone de la couche l.", k: "v", r: "ℝ^{n_l}" }, { only: "m", s: "W^{(l+1)ᵀ}", n: "Poids transposés (couche suivante)", d: "Renvoie l’erreur de la couche l+1 vers la couche l.", k: "p" }, ["had", { only: "m" }], { only: "m", s: "f′(z^{(l)})", n: "Dérivée de l’activation", d: "Appliquée terme à terme aux pré-activations de la couche l.", k: "f" }],
+        wgrad: [["gw", { s: "∂L/∂w_{ij}", n: "Gradient du poids w_ij", d: "Variation de la perte quand le poids reliant i à j augmente." }], ["dl", _FV.dl], ["ai", { mx: { s: "a^{(l-1)}", n: "Vecteur d’entrée", d: "Activations de la couche précédente.", r: "ℝ^{n_{l-1}}" } }]],
+        /* ── Régularisation, initialisation, architecture ── */
+        l2r: ["Ltot", "L", "lam", ["Sig", { only: "i" }], ["wi", { only: "i" }], { only: "m", s: "‖W‖_F²", n: "Norme de Frobenius au carré", d: "Somme des carrés de tous les poids de la matrice W.", k: "f", r: "≥ 0" }],
+        drop: ["at", ["a", { mx: { s: "a", n: "Vecteur d’activations", d: "Sortie d’une couche pour un exemple.", r: "ℝⁿ" } }], "pk", ["bern", { only: "i" }], "invp", { only: "m", s: "m", n: "Masque", d: "Vecteur de 0 et de 1 tiré selon Bernoulli(p), un tirage par neurone.", k: "v", r: "{0, 1}ⁿ" }],
+        xav: ["w", "U", "nin", "nout"],
+        he_i: ["w", "Nrm", "nin"],
+        dense: ["a", "f", "wjk", "ak", "bj", _1T("ℝ^{1×m}")],
+        universal: ["epsU", { s: "f(x)", n: "Fonction cible", d: "Toute fonction continue sur un domaine borné.", k: "f" }, "dense", { s: "N", n: "Largeur de la couche cachée", d: "Nombre de neurones nécessaires pour atteindre la précision ε ; peut être très grand.", k: "d" }],
+        /* ── RNN ── */
+        rnncell: ["ht", "th", "Wxh", "xt", "Whh", "hp", "bh", { only: "m", s: "[W_xh  W_hh]", n: "Matrice concaténée", d: "Les deux produits sont fusionnés en un seul, appliqué au vecteur [x(t) ; h(t−1)].", k: "p" }],
+        rnnout: ["yht", "sm", "Why", "ht", "by"],
+        rnnloss: [["L", { d: "Perte totale de la séquence : somme des pertes de tous les pas de temps." }], "Tn", "Lt", "yht", "yt"],
+        bptt: ["dLdh", { s: "∂L(t)/∂h(t)", n: "Erreur directe", d: "Contribution de la perte du pas t à l’état h(t).", k: "v" }, "WhhT", "had", "thp", "zt"],
+        rnnvanish: ["dhh", "Pi", "Whh", "diag", "thp"],
+        lstm: ["gf", "gi", "Cc", "Ct", "Cp", "go", "ht", "sg", "th", "cat", "Wg", "bg", "had", { only: "m", s: "W", n: "Quatre portes empilées", d: "Un seul produit matriciel calcule f, i, o et C̃ en même temps.", k: "p" }],
+        gru: ["gz", "gr", "hc", "ht", "hp", "sg", "th", "cat", "Wgru", "had", { only: "m", s: "W", n: "Deux portes empilées", d: "Un seul produit matriciel calcule z et r en même temps.", k: "p" }],
+        /* ── CNN ── */
+        conv2d: ["S", "Sig", ["Iij", { s: "I(i+m, j+n)", n: "Pixel sous le noyau", d: "Pixel de l’entrée décalé de (m, n) par rapport à la position (i, j)." }], "K", "bc", "mn", { only: "m", s: "X_im2col", n: "Matrice des fenêtres", d: "Chaque fenêtre de l’image devient une ligne : la convolution devient un produit matriciel.", k: "v" }],
+        convout: ["Nout", "N", "pad", "ks", "st", "flo"],
+        maxpool: ["yij", "mxo", { s: "(m,n) ∈ fenêtre", n: "Fenêtre de pooling", d: "Zone k×k (souvent 2×2) parcourue avec un pas s.", k: "d" }, "xs", "st"],
+        avgpool: ["yij", "win", "Sig", "xs", "st"],
+        recfield: ["RF", { s: "RF_{l−1}", n: "Champ réceptif précédent", d: "Champ réceptif de la couche d’avant (RF₀ = 1).", k: "v" }, "kl", "Ps"],
+        convparams: ["Np", "khw", "Cin", "plus1", "Cout"],
+        padsame: ["pad", "ks", "flo"],
+        conv1x1: ["S", "Sig", "Iijc", "Kc", "bc", "cc", { only: "m", s: "X", n: "Pixels × canaux", d: "Chaque pixel est une ligne, chaque canal une colonne.", k: "v", r: "ℝ^{HW×C_in}" }],
+        dilconv: ["Nout", "N", "pad", "dil", "ks", "st", "flo"],
+        tconv: ["Nout", "N", "st", "pad", "ks"],
+        gap: ["yc", "Hh", "Sig", "xijc"],
+        /* ── RL ── */
+        rl_return: ["Gt", ["rr", { s: "rₜ₊₁", n: "Récompense reçue", d: "Récompense obtenue au pas t+1 (puis t+2, …)." }], "gam", "Sig", { s: "k", n: "Décalage dans le futur", d: "Compte les pas à venir : la récompense du k-ième pas est pondérée par γᵏ.", k: "d" }],
+        rl_value: ["Vf", "Ex", "Gt", "rs"],
+        rl_qvalue: ["Qf", "Ex", "Gt", "rs", "ra"],
+        rl_adv: ["Ak", "Qf", "Vf"],
+        rl_horizon: ["Hz", "gam"],
+        rl_bellman_v: ["Vf", "Sig", "pol", "Pf", "rr", "gam", "rsp"],
+        rl_bellman_q: ["Qf", "Sig", "Pf", "rr", "gam", "pol", "rap"],
+        rl_bellman_opt: ["Vs", "mxa", "Pf", "rr", "gam"],
+        rl_vi: [["Vf", { s: "Vₖ(s)", n: "Valeur à l’itération k", d: "Estimation courante de V ; elle converge vers V* quand k grandit." }], "mxa", "Pf", "rr", "gam", "arrow"],
+        rl_pi: [["pol", { s: "π′(s)", n: "Nouvelle politique", d: "Politique gloutonne vis-à-vis de V^π : elle choisit l’action de plus forte valeur.", k: "f" }], "argmax", "Pf", "rr", "gam", "Vf"],
+        rl_td0: ["Vf", "al", "rr", "gam", "rsp", "arrow"],
+        rl_tderr: [["td", { s: "δₜ" }], "rr", "gam", "Vf"],
+        rl_mc: ["Vf", "al", "Gt", "arrow"],
+        rl_nstep: ["Gn", "rr", "gam", "nn", "Vf"],
+        rl_lambda: [{ s: "Gₜ^λ", n: "Retour λ", d: "Moyenne exponentielle des retours à n pas.", k: "v" }, "lamt", "Gn", "nn", "Sig"],
+        rl_gae: ["Ah", "gam", "lamt", ["td", { s: "δₜ₊ₗ" }], "Sig"],
+        rl_qlearning: ["Qf", "al", "rr", "gam", "mxa", "arrow"],
+        rl_sarsa: ["Qf", "al", "rr", "gam", "rap", "arrow"],
+        rl_expsarsa: ["Qf", "al", "rr", "gam", "pol", "Sig", "arrow"],
+        rl_doubleq: [["Qf", { s: "Q₁, Q₂", n: "Deux estimateurs", d: "Q₁ choisit l’action, Q₂ l’évalue : cela réduit le biais de surestimation." }], "al", "rr", "gam", "argmax", "arrow"],
+        rl_incavg: ["Qn", ["nn", { n: "Nombre d’observations", d: "Nombre de récompenses déjà intégrées dans la moyenne." }], "rr"],
+        rl_egreedy: ["pol", "ge", "Ac", "ind", "argmax", "Qf"],
+        rl_softmax: ["pol", "tau", "Qf", "Sig"],
+        rl_ucb: [{ s: "Aₜ", n: "Bras choisi", d: "Action jouée au pas t.", k: "v" }, "argmax", "Qf", "cu", "ln", "tn", "Na"],
+        rl_thompson: ["th_a", "Be", "SF", "argmax"],
+        rl_regret: ["rho", "TT", "pst", "pat", "Sig"],
+        rl_pgthm: ["Jt", "thr", "glp", "Qf", "Ex"],
+        rl_reinforce: ["thr", "al", "Gt", "glp", "arrow"],
+        rl_baseline: ["thr", "al", "Gt", "bs", "glp", "arrow"],
+        rl_softmaxgrad: [["glp", { s: "∇_{θ(s,·)} log π(a|s)", d: "Gradient du log-probabilité de l’action a par rapport aux préférences de l’état s." }], "ea", "pv", "ths"],
+        rl_ac: ["td", "gam", "Vf", "be", "al", "thr", "glp", "arrow"],
+        rl_entropy: ["Hp", "pol", "Sig", "ln"],
+        rl_ppo: ["Lc", "Ex", "mn2", "rt", "Ah", "clp", "ep"],
+        rl_dqnloss: ["Lq", "Dm", "yq", "Qth", "gam", "mxa", "Qtm", "Ex"],
+        rl_doubledqn: ["yq", "rr", "gam", "Qtm", "argmax", "Qth"],
+        rl_huber: ["ell", "etd", "clp"],
+        rl_polyak: ["thm", "taup", "thr", "Cp2", "arrow"],
+        rl_adam: ["mom", "sq", "b1", "b2", "g", "hats", "lr", "eps", "thr", "arrow"],
+        /* ── Transformer ── */
+        tf_attn: ["sm", "tQ", "tK", "KT", "dk", "sdk", "tV", { only: "m", s: "A", n: "Matrice d’attention", d: "A = softmax(QKᵀ/√d_k) : la ligne i donne les poids du token i sur tous les autres.", k: "v", r: "ℝ^{n×n}" }],
+        tf_scale: ["qk", "va", "dk", "sdk"],
+        tf_mha: ["Xt", "hd", "Wqkv", "cct", "Wo", "hn"],
+        tf_mask: ["Sij", "Mij", { s: "i, j", n: "Positions", d: "i : token qui regarde ; j : token regardé.", k: "d" }],
+        tf_ffn: [{ s: "x", n: "Représentation d’un token", d: "Vecteur de dimension d, traité indépendamment des autres positions.", k: "v", r: "ℝ^{d}" }, "W12", "b12", "sa", "Wgu", "silu", "had", ["Xt", { only: "m", n: "Entrée (tous les tokens)", d: "Un token par ligne." }]],
+        tf_ln: ["mu", "sg2", "gl", "bl", "eps", "rms", "had"],
+        tf_block: [{ s: "x, y", n: "Entrée / sortie du bloc", d: "Représentations des tokens avant et après le bloc ; même dimension d.", k: "v", r: "ℝ^{n×d}" }, "hb", "mha", "ffn", "nm", "res"],
+        tf_pe: [{ s: "PE(p, ·)", n: "Encodage de position", d: "Vecteur ajouté à l’embedding du token situé à la position p.", k: "v", r: "ℝ^{d}" }, "pp", "ip", "dm", "base"],
+        tf_rope: [{ s: "q, k", n: "Requête et clé", d: "Vecteurs découpés en paires de composantes (2i, 2i+1).", k: "v" }, "rot", "mp", "thi", "Rm", "rin"],
+        tf_params: ["Nt", "Lt2", "dm", "Vv", "dff"],
+        tf_flops: ["Cf", { s: "6", n: "Facteur 6", d: "2 FLOPs par paramètre en passe avant + 4 en passe arrière.", k: "c" }, "Nt", "Dt", "chin"],
+        tf_kv: ["Mem", "two", "Lt2", "nt", "hkv", "dk", "oct", "bat"],
+        tf_ce: ["Ll", "nt", "Sig", "ptok", "ppl"],
+        tf_dec: ["pit", "zi", "Tm", "tk", "tp", "Sig"],
+        /* ── Bases ── */
+        b_z: [["z", _FV.z], "wjk", ["ak", _FV.ak], ["bj", _FV.b], ["Sig", { only: "i" }]],
+        b_act: [["a", _FV.a], "f", ["z", _FV.z], ["x", Object.assign({ d: "Vecteur des caractéristiques d’un exemple ; il joue le rôle de l’activation de la couche 0 : a⁽⁰⁾ = x." }, _FV.x)]],
+        b_fwd: [["yh", { mx: { s: "ŷ", n: "Vecteur de prédiction", d: "Sortie de la dernière couche pour un exemple.", r: "ℝ^{n_L}" } }], "Ln", ["f", { s: "f_l", n: "Activation de la couche l", d: "Peut changer d’une couche à l’autre (ReLU en cachée, softmax en sortie…)." }], "wjk", ["ak", _FV.ak], ["bj", _FV.b], ["x", _FV.x]],
+        b_batch: [_FB.Z, _FB.W, _FB.A, _FB.b, "one", "m"],
+        b_err: [["ee", { s: "e_j", n: "Erreur de la sortie j", d: "Écart signé entre la prédiction ŷ_j et la cible y_j." }], ["yhi", { s: "ŷ_j" }], ["yi", { s: "y_j" }]],
+        b_cost: ["Jc", "m", "Lex", "ie", { only: "m", s: "ℓ", n: "Vecteur des pertes", d: "Perte de chacun des m exemples.", k: "v", r: "ℝ^{m}" }, _1T("ℝ^{1×m}")],
+        b_acc: ["cp", "cr", "argmax", "ind", "m", "ie"],
+        b_dz: ["dz1", "dz2", "dz3", { only: "m", s: "I", n: "Matrice identité", d: "Le biais s’ajoute terme à terme : sa jacobienne est l’identité.", k: "c", r: "ℝ^{n_l×n_l}" }],
+        b_dout: ["dout", ["dLy", { mx: { s: "∇_ŷ L", n: "Gradient de la perte", d: "Vecteur des dérivées de L par rapport à chaque sortie.", r: "ℝ^{n_L}" } }], "had", ["fp", { s: "f_L′(z)", mx: { s: "f_L′(z^{(L)})", n: "Dérivée terme à terme", d: "Dérivée de l’activation de sortie, appliquée à chaque composante de z^{(L)}.", r: "ℝ^{n_L}" } }]],
+        b_gradbatch: ["dj", "m", ["Sig", { only: "i" }], "dji", "aki", { only: "m", s: "Δ", n: "Matrice des deltas", d: "La colonne i contient les deltas de l’exemple i.", k: "v", r: "ℝ^{n_l×m}" }, { only: "m", s: "Aᵀ", n: "Activations transposées", d: "Activations de la couche précédente, un exemple par ligne.", k: "v", r: "ℝ^{m×n_{l-1}}" }, _1T("ℝ^{m}")],
+        b_update: ["w", "b", "eta", "gw", "gb", { only: "m", s: "δ aᵀ", n: "Produit extérieur", d: "Matrice dont la case (j, k) vaut δ_j·a_k : le gradient de tous les poids d’un coup.", k: "v", r: "ℝ^{n_l×n_{l-1}}" }],
+        b_lrdecay: ["et", "e0", "gd", "pal", "t"],
+        b_clip: ["g", "cl", ["nrm", { mx: { s: "‖G‖_F", n: "Norme de Frobenius", d: "Racine de la somme des carrés de tous les coefficients de tous les gradients.", r: "≥ 0" } }], "mn2", "arrow"],
+        b_params: ["Np2", "nl", "nl1", "Sig", "Ln"],
+      };
+
+      /* ── Résolution : clés du glossaire → entrées prêtes à afficher (selon le mode de calcul) ── */
+      function _flBase(g) {
+        return { s: g[0], n: g[1], d: g[2], k: g[3] || "v", r: g[4] || "", mx: g[5] || null };
+      }
+      function _flEntries(spec, mat, matForm) {
+        const out = [];
+        spec.forEach((it) => {
+          let e;
+          if (typeof it === "string") {
+            const g = FSYM[it];
+            if (!g) return;
+            e = _flBase(g);
+          } else if (Array.isArray(it)) {
+            const g = FSYM[it[0]];
+            if (!g) return;
+            e = Object.assign(_flBase(g), it[1] || {});
+          } else {
+            e = Object.assign({ k: "v", r: "", mx: null }, it);
+          }
+          if (e.only === "i" && mat) return;
+          if (e.only === "m" && !mat) return;
+          if (mat && matForm && e.mx) Object.assign(e, e.mx);
+          out.push(e);
+        });
+        return out;
+      }
+      function _flHasMatrixForm(f) {
+        try {
+          return !!(FLIB_MAT[f.id] || (f.cat === "Activations" && FLIB_MAT._act));
+        } catch (err) {
+          return false;
+        }
+      }
+      function resolveFormulaSymbols(f) {
+        const spec = FLIB_SYMS[f.id];
+        if (!spec) return null;
+        const matForm = _flHasMatrixForm(f);
+        const mat = calcIsMat() && matForm;
+        const list = _flEntries(spec, mat, matForm);
+        list.modeAware = matForm;
+        list.mat = mat;
+        return list;
+      }
+
+      /* ── Rendu d’un symbole (fractions ∂a/∂b avec indices, sinon indices/exposants) ── */
+      function _flSym(s) {
+        const m = /^(∂[^\/]+)\/(∂.+)$/.exec(String(s));
+        if (m)
+          return `<span class="math-frac" style="font-size:0.88em;vertical-align:middle"><span class="math-num">${prettyFormulaSymbol(m[1])}</span><span class="math-den">${prettyFormulaSymbol(m[2])}</span></span>`;
+        return prettyFormulaSymbol(s);
+      }
+      function _flRow(e) {
+        const K = FKIND[e.k] || FKIND.v;
+        const pre = e.r && /^[ℝ(\[{]/.test(e.r) ? "∈ " : "";
+        const noTr = e.r && /[A-Za-zÀ-ÿ]{3,}/.test(e.r) ? "" : " data-no-translate";
+        return `<div class="fl-row" style="--kc:${K.c}"><span class="fl-sym" data-no-translate>${_flSym(e.s)}</span><div class="fl-body"><div class="fl-name"><b>${e.n}</b><em>${K.n}</em></div><div class="fl-desc">${e.d}</div>${e.r ? `<div class="fl-rng"${noTr}>${pre}${prettyFormulaSymbol(e.r)}</div>` : ""}</div></div>`;
+      }
+      function _flKeys(list) {
+        const kinds = [];
+        list.forEach((e) => {
+          if (!kinds.includes(e.k)) kinds.push(e.k);
+        });
+        return `<div class="fl-keys">${Object.keys(FKIND)
+          .filter((k) => kinds.includes(k))
+          .map((k) => `<span class="fl-key" style="--kc:${FKIND[k].c}"><i></i>${FKIND[k].n}</span>`)
+          .join("")}</div>`;
+      }
+
+      /* ── Légende propre à la formule affichée ── */
+      let FLEG_OPEN = true;
+      function renderFormulaLegend(f) {
+        let list = resolveFormulaSymbols(f);
+        if (!list) {
+          // Formule sans légende dédiée : ancienne liste générique (uniquement si elle est pertinente)
+          list = getFormulaSymbols(f).map((s) => ({ s: s.sym, n: s.desc, d: "", k: "v", r: "" }));
+          list.modeAware = false;
+        }
+        if (!list.length) return "";
+        const chip = list.modeAware ? `<span class="fl-mode">${list.mat ? "▦ notation matricielle" : "● notation individuelle"}</span>` : "";
+        return `<details class="fl" ${FLEG_OPEN ? "open" : ""} ontoggle="FLEG_OPEN=this.open">
+          <summary><span class="fl-t">🔑 Légende de la formule</span><span class="fl-n">${list.length} symbole${list.length > 1 ? "s" : ""}</span>${chip}<span class="fl-chev">⌄</span></summary>
+          ${_flKeys(list)}
+          <div class="fl-grid">${list.map(_flRow).join("")}</div>
+        </details>`;
+      }
+
+      /* ── Légende générale (en haut de l’onglet Formules) ── */
+      let FLEG_G_OPEN = true;
+      const FLEG_GROUPS = [
+        ["Réseau", ["x", "z", "a", "wjk", "bj", "f", "fp"]],
+        ["Perte et cibles", ["yh", "y", "L", "n"]],
+        ["Apprentissage", ["dl", "gw", "lr", { s: "β₁, β₂", n: "Moments d’Adam", d: "Inertie des moyennes mobiles du gradient et de son carré.", k: "h", r: "typ. 0,9 et 0,999" }, "lam"]],
+        ["Notations", ["Sig", "sig", "m", "nl", "Ln"]],
+      ];
+      function renderGlobalLegend() {
+        const el = document.getElementById("flegend");
+        if (!el) return;
+        const mat = calcIsMat();
+        const all = [];
+        const body = FLEG_GROUPS.map(([title, keys]) => {
+          const list = _flEntries(keys, mat, true);
+          list.forEach((e) => all.push(e));
+          return `<div class="fl-grp">${title}</div>${list.map(_flRow).join("")}`;
+        }).join("");
+        el.innerHTML = `<details class="fl fl-compact" ${FLEG_G_OPEN ? "open" : ""} ontoggle="FLEG_G_OPEN=this.open">
+          <summary><span class="fl-t">📖 Légende des symboles</span><span class="fl-n">${all.length} symboles</span><span class="fl-mode">${mat ? "▦ notation matricielle" : "● notation individuelle"}</span><span class="fl-chev">⌄</span></summary>
+          ${_flKeys(all)}
+          <div class="fl-grid">${body}</div>
+        </details>`;
+      }
+      try {
+        renderGlobalLegend();
+      } catch (err) {}
 
       // Returns relevant symbol explanations for a formula
       function getFormulaSymbols(f) {
@@ -18185,7 +18708,7 @@ fn loss_accum() {
         const relevant = allSym.filter((s) =>
           s.keys.some((k) => f.tags.includes(k) || f.id.includes(k)),
         );
-        return relevant.length > 0 ? relevant.slice(0, 6) : allSym.slice(0, 4);
+        return relevant.length > 0 ? relevant.slice(0, 6) : [];
       }
 
       function drawFGraph(domId, fnId) {
@@ -26697,7 +27220,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         // entièrement plutôt que de les ajouter au glossaire (ce ne sont pas
         // des mots figés, mais des variables mathématiques à préserver telles quelles).
         const MATH_SYMBOL_SELECTOR =
-          ".fleg-sym,.log-cw,.log-ca,.log-cg,.log-cz,.log-cl,.log-cnew,.log-cx,.fvar,.fe,.math-sub";
+          ".fleg-sym,.fl-sym,.log-cw,.log-ca,.log-cg,.log-cz,.log-cl,.log-cnew,.log-cx,.fvar,.fe,.math-sub";
         function skip(el) {
           if (!el || !el.closest) return false;
           if (el.closest("[data-no-translate]")) return true;

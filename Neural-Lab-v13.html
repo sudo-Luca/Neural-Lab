@@ -1533,22 +1533,23 @@
         margin: 3px 0;
       }
 
-      /* Aide-mémoire pour les dimensions en calcul matriciel */
-      .matrix-notes {
-        margin: 7px 0 9px;
-        padding: 9px 11px;
-        border: 1px solid rgba(191, 95, 255, .28);
-        border-left: 3px solid var(--a2);
-        border-radius: 5px;
-        background: linear-gradient(135deg, rgba(191,95,255,.075), rgba(0,229,255,.025));
-        color: var(--text);
-      }
-      .matrix-notes-title { font: 700 9px "Syne", sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--a2); margin-bottom: 7px; }
-      .matrix-notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); gap: 5px 12px; }
-      .matrix-note { font-size: 8px; line-height: 1.55; display: grid; grid-template-columns: minmax(58px, auto) 1fr; gap: 7px; align-items: baseline; padding: 3px 0; border-bottom: 1px solid rgba(25,32,64,.55); }
-      .matrix-note code { color: var(--a1); font: 500 9px "JetBrains Mono", monospace; white-space: nowrap; }
-      .matrix-note span { color: var(--dim); }
-      .matrix-notes-foot { margin-top: 7px; padding-top: 6px; border-top: 1px solid rgba(191,95,255,.2); color: var(--dim); font-size: 8px; line-height: 1.55; }
+      /* Aide-mémoire dimensionnel : visible uniquement en mode matriciel */
+      .matrix-notes { display:none; margin: 14px 0 16px; padding: 18px 19px; border: 1px solid rgba(191,95,255,.32); border-left: 3px solid rgba(191,95,255,.72); border-radius: 10px; background: linear-gradient(135deg, rgba(20,22,39,.97), rgba(5,15,25,.97)); color: var(--text); box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+      body.matrix-mode .matrix-notes { display:block; }
+      .matrix-notes-title { display:flex; align-items:center; flex-wrap:wrap; gap:9px; font:800 14px "Syne",sans-serif; letter-spacing:.045em; text-transform:uppercase; color:var(--a2); margin-bottom:14px; padding-bottom:11px; border-bottom:1px solid rgba(191,95,255,.32); }
+      .matrix-notes-subtitle { color:var(--a1); font-size:10px; font-weight:600; letter-spacing:0; text-transform:none; padding:4px 8px; border:1px solid rgba(0,229,255,.25); border-radius:999px; background:rgba(0,229,255,.07); }
+      .matrix-notes-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:10px; }
+      .matrix-note { min-width:0; padding:12px 13px; border:1px solid rgba(120,130,170,.32); border-radius:8px; background:linear-gradient(145deg,rgba(15,20,36,.92),rgba(3,8,18,.84)); display:flex; flex-direction:column; gap:7px; box-shadow:inset 0 1px 0 rgba(255,255,255,.035); }
+      .matrix-note-head { display:flex; align-items:center; flex-wrap:wrap; gap:9px; }
+      .matrix-note code { color:var(--a1); font:700 13px "JetBrains Mono",monospace; white-space:nowrap; }
+      .matrix-note code sub, .matrix-dim sub { font-size:.78em; vertical-align:sub; line-height:0; }
+      .matrix-note code sup, .matrix-dim sup { font-size:.78em; vertical-align:super; line-height:0; }
+      .matrix-dim { display:inline-block; padding:6px 10px; border-radius:6px; border:1px solid rgba(0,229,255,.48); background:rgba(0,229,255,.12); color:#fff1a8; font:700 15px "JetBrains Mono",monospace; white-space:nowrap; letter-spacing:.01em; line-height:1.5; }
+      .matrix-note span { color:var(--text); font-size:12px; line-height:1.65; }
+      .matrix-equation { margin:13px 0 8px; padding:13px 12px; border:1px solid rgba(0,229,255,.4); border-radius:8px; background:linear-gradient(90deg,rgba(0,229,255,.09),rgba(191,95,255,.09)); text-align:center; color:var(--a1); font:600 14px/1.9 "JetBrains Mono",monospace; overflow-wrap:anywhere; }
+      .matrix-notes-foot { margin-top:12px; padding:11px 3px 0; border-top:1px solid rgba(191,95,255,.32); color:var(--text); font-size:11px; line-height:1.75; }
+      .matrix-notes .matrix-note-head code { letter-spacing:-.025em; }
+      @media(max-width:600px) { .matrix-notes { padding:13px 11px; } .matrix-notes-title { font-size:12px; } .matrix-notes-grid { grid-template-columns:1fr; } .matrix-dim { font-size:11px; } .matrix-equation { font-size:12px; } }
 
       /* ── CANVAS LEGEND ── */
       .canvas-legend {
@@ -5310,20 +5311,22 @@
             </div>
 
             <div class="matrix-notes" id="matrixFormulaNotes">
-              <div class="matrix-notes-title">▦ Repères — forme matricielle</div>
+              <div class="matrix-notes-title">▦ Repères — dimensions des matrices <span class="matrix-notes-subtitle">MODE MATRICIEL</span></div>
               <div class="matrix-notes-grid">
-                <div class="matrix-note"><code>m</code><span>Nombre d’exemples dans le batch (colonnes des matrices de données).</span></div>
-                <div class="matrix-note"><code>L</code><span>Nombre de couches calculées, hors couche d’entrée.</span></div>
-                <div class="matrix-note"><code>nₗ</code><span>Nombre de neurones dans la couche l ; n₀ est la taille de l’entrée.</span></div>
-                <div class="matrix-note"><code>X = A⁽⁰⁾</code><span>Matrice d’entrée de taille n₀ × m : un exemple par colonne.</span></div>
-                <div class="matrix-note"><code>W⁽ˡ⁾</code><span>Matrice des poids de taille nₗ × nₗ₋₁.</span></div>
-                <div class="matrix-note"><code>b⁽ˡ⁾</code><span>Vecteur de biais de taille nₗ × 1, diffusé sur les m exemples.</span></div>
-                <div class="matrix-note"><code>Z⁽ˡ⁾, A⁽ˡ⁾</code><span>Pré-activations et activations, toutes deux de taille nₗ × m.</span></div>
-                <div class="matrix-note"><code>Y, Ŷ</code><span>Cibles et prédictions ; dimensions : n_sorties × m.</span></div>
-                <div class="matrix-note"><code>δ⁽ˡ⁾</code><span>Signal d’erreur de la couche l, de taille nₗ × m.</span></div>
-                <div class="matrix-note"><code>∇W⁽ˡ⁾, ∇b⁽ˡ⁾</code><span>Gradients des poids et biais, de mêmes dimensions que W⁽ˡ⁾ et b⁽ˡ⁾.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>m</code><span class="matrix-dim">taille du batch</span></div><span>Nombre d’exemples traités simultanément ; chaque exemple occupe une colonne.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>L</code><span class="matrix-dim">nombre de couches calculées</span></div><span>Nombre de couches hors couche d’entrée. La couche de sortie est la couche <i>L</i>.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>n<sub>l</sub></code><span class="matrix-dim">neurones de la couche l</span></div><span><i>n<sub>0</sub></i> est le nombre de caractéristiques d’entrée ; <i>n<sub>l</sub></i> est le nombre de neurones de la couche <i>l</i>.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>X = A<sup>(0)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>0</sub> × m</sup></span></div><span>Matrice des entrées : <i>n<sub>0</sub></i> caractéristiques par exemple et <i>m</i> exemples dans le batch.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>W<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × n<sub>l−1</sub></sup></span></div><span>Matrice des poids reliant les neurones de la couche <i>l−1</i> à ceux de la couche <i>l</i>.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>b<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × 1</sup></span></div><span>Vecteur de biais : un biais par neurone, diffusé sur les <i>m</i> colonnes.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>Z<sup>(l)</sup>, A<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × m</sup></span></div><span><i>Z<sup>(l)</sup></i> contient les valeurs avant activation ; <i>A<sup>(l)</sup></i> les activations après application de <i>f</i>.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>Y, Ŷ</code><span class="matrix-dim">ℝ<sup>n<sub>L</sub> × m</sup></span></div><span><i>Y</i> représente les cibles attendues ; <i>Ŷ</i> les prédictions du réseau en sortie.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>δ<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × m</sup></span></div><span>Signal d’erreur de la couche <i>l</i>, utilisé pendant la rétropropagation.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>∇W<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × n<sub>l−1</sub></sup></span></div><span>Gradient des poids : même dimension que <i>W<sup>(l)</sup></i>.</span></div>
+                <div class="matrix-note"><div class="matrix-note-head"><code>∇b<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × 1</sup></span></div><span>Gradient des biais : même dimension que <i>b<sup>(l)</sup></i>.</span></div>
               </div>
-              <div class="matrix-notes-foot"><b style="color:var(--a2)">Conventions :</b> les lignes représentent les neurones, les colonnes les exemples. Propagation avant : Z⁽ˡ⁾ = W⁽ˡ⁾A⁽ˡ⁻¹⁾ + b⁽ˡ⁾, puis A⁽ˡ⁾ = f(Z⁽ˡ⁾). La loss moyenne sur le batch est notée <b>𝓛</b> pour la distinguer de <b>L</b>, le nombre de couches.</div>
+              <div class="matrix-equation"><i>Z<sup>(l)</sup></i> = <i>W<sup>(l)</sup></i><i>A<sup>(l−1)</sup></i> + <i>b<sup>(l)</sup></i> &nbsp; ⟶ &nbsp; <i>A<sup>(l)</sup></i> = <i>f</i>(<i>Z<sup>(l)</sup></i>)</div>
+              <div class="matrix-notes-foot"><b style="color:var(--a2)">Convention :</b> lignes = neurones/caractéristiques, colonnes = exemples. Le produit <i>W<sup>(l)</sup>A<sup>(l−1)</sup></i> a la taille <i>n<sub>l</sub> × m</i> ; le biais <i>n<sub>l</sub> × 1</i> est ajouté à chaque colonne. <b>𝓛</b> désigne la fonction de perte (loss), à ne pas confondre avec <b><i>L</i></b>, le nombre de couches calculées.</div>
             </div>
             <div id="fdsel"></div>
             <div id="ftree"></div>
@@ -5708,7 +5711,7 @@
                 </div>
                 <div class="crow">
                   <label
-                    title="Exécute le forward/backward/optimiseur sur GPU via WebGPU au lieu du CPU, pour Step/+Epoch/×N/Auto. Repasse automatiquement sur CPU si Batch Norm, Dropout, motifs de neurones ou poids gelés sont actifs. Chaque activation est vérifiée numériquement contre le calcul CPU avant d'être utilisée."
+                    title="Exécute le forward/backward/optimiseur sur GPU via WebGPU au lieu du CPU, pour Step/+Epoch/×N/Auto. Le GPU peut être plus lent que le CPU sur les petits réseaux, mais reste activable. Repasse automatiquement sur CPU si Batch Norm, Dropout, motifs de neurones ou poids gelés sont actifs. Chaque activation est vérifiée numériquement contre le calcul CPU avant d'être utilisée."
                     >Calcul d'entraînement sur GPU (WebGPU)</label
                   ><input
                     type="checkbox"
@@ -5731,6 +5734,19 @@
                   id="gpuTrainStatus"
                   style="font-size: 8px; line-height: 1.7; margin-top: 4px"
                 ></div>
+                <div
+                  style="
+                    font-size: 9px;
+                    color: var(--ylw);
+                    background: color-mix(in srgb, var(--ylw) 7%, transparent);
+                    border-left: 2px solid var(--ylw);
+                    padding: 5px 7px;
+                    margin-top: 6px;
+                    line-height: 1.5;
+                  "
+                >
+                  ⚠ Le GPU n’est pas toujours plus rapide : sur les petits réseaux, le CPU peut rester plus performant. Vous pouvez tout de même activer le GPU ; comparez les temps selon votre modèle.
+                </div>
                 <div
                   style="
                     font-size: 8px;
@@ -9901,15 +9917,18 @@ fn loss_accum() {
             '<span style="color:var(--grn)">✓ Calcul d\'entraînement GPU activé et vérifié</span> (WebGPU).',
           );
         } else {
-          GPU.verified = false;
-          if (cb) cb.checked = false;
-          localStorage.setItem("nl_gpu_train", "0");
+          // Activation volontaire malgré un écart numérique : l'utilisateur a
+          // explicitement demandé à pouvoir tester le GPU. L'avertissement
+          // reste visible, car les résultats peuvent diverger du CPU.
+          GPU.verified = true; // autorise le chemin GPU ; ne signifie pas « validé »
+          if (cb) cb.checked = true;
+          localStorage.setItem("nl_gpu_train", "1");
           const devTxt =
             v.maxDev != null ? v.maxDev.toExponential(2) : "indisponible";
           if (statusEl)
-            statusEl.innerHTML = `<span style="color:var(--red)">✗ Échec de vérification (écart ${devTxt}) — resté sur CPU.</span>`;
+            statusEl.innerHTML = `<span style="color:var(--ylw)">⚠ GPU activé malgré un écart CPU/GPU de ${devTxt}. Les résultats peuvent différer : utilisez-le à titre expérimental et vérifiez votre entraînement.</span>`;
           log(
-            '<span style="color:var(--red)">✗ Vérification GPU échouée — calcul d\'entraînement resté sur CPU.</span>',
+            `<span style="color:var(--ylw)">⚠ Calcul GPU activé malgré un écart de vérification (${devTxt}) ; résultats potentiellement différents du CPU.</span>`,
           );
         }
       }
@@ -9926,11 +9945,13 @@ fn loss_accum() {
           statusEl.innerHTML =
             '<span style="color:var(--ylw)">🔍 Vérification…</span>';
         const v = await verifyGPUvsCPU();
-        GPU.verified = v.ok;
+        // La vérification informe l'utilisateur sans couper un GPU qu'il a
+        // explicitement choisi d'essayer.
+        GPU.verified = localStorage.getItem("nl_gpu_train") === "1" || v.ok;
         if (statusEl)
           statusEl.innerHTML = v.ok
             ? `<span style="color:var(--grn)">✓ Vérifié — écart max ${v.maxDev.toExponential(2)}</span>`
-            : `<span style="color:var(--red)">✗ Écart détecté (${v.maxDev != null ? v.maxDev.toExponential(2) : "?"})</span>`;
+            : `<span style="color:var(--ylw)">⚠ Écart détecté (${v.maxDev != null ? v.maxDev.toExponential(2) : "?"}) ; le GPU reste disponible, mais les résultats peuvent diverger du CPU.</span>`;
       }
 
       // Appelé depuis buildNet()/resetW() : réalloue les buffers GPU et
@@ -9941,17 +9962,16 @@ fn loss_accum() {
         if (localStorage.getItem("nl_gpu_train") === "1") {
           GPU.verified = false;
           verifyGPUvsCPU().then((v) => {
-            GPU.verified = v.ok;
+            // Ne pas désactiver automatiquement : l'option GPU reste un choix
+            // utilisateur. En cas d'écart, afficher une mise en garde claire.
+            GPU.verified = true;
             const statusEl = document.getElementById("gpuTrainStatus");
             if (!v.ok) {
-              const cb = document.getElementById("cGPUTrain");
-              if (cb) cb.checked = false;
-              localStorage.setItem("nl_gpu_train", "0");
+              const devTxt = v.maxDev != null ? v.maxDev.toExponential(2) : "?";
               if (statusEl)
-                statusEl.innerHTML =
-                  '<span style="color:var(--red)">✗ Nouvelle vérification échouée après changement de réseau — retour au CPU.</span>';
+                statusEl.innerHTML = `<span style="color:var(--ylw)">⚠ Après reconstruction du réseau, écart CPU/GPU de ${devTxt}. GPU conservé ; résultats potentiellement différents.</span>`;
               log(
-                '<span style="color:var(--red)">✗ GPU désactivé automatiquement (vérification échouée après reconstruction du réseau).</span>',
+                `<span style="color:var(--ylw)">⚠ Écart CPU/GPU (${devTxt}) après reconstruction ; GPU conservé à la demande de l'utilisateur.</span>`,
               );
             } else if (statusEl) {
               statusEl.innerHTML = `<span style="color:var(--grn)">✓ Vérifié — écart max ${v.maxDev.toExponential(2)}</span>`;
@@ -10210,17 +10230,16 @@ fn loss_accum() {
 
       // Aide-mémoire partagé dans les détails lorsque le mode matriciel est actif.
       function matrixNotesHTML() {
-        return `<div class="matrix-notes"><div class="matrix-notes-title">▦ Repères — dimensions matricielles</div>
+        return `<div class="matrix-notes"><div class="matrix-notes-title">▦ Dimensions des matrices <span class="matrix-notes-subtitle">MODE MATRICIEL</span></div>
           <div class="matrix-notes-grid">
-            <div class="matrix-note"><code>m</code><span>Exemples du batch ; une colonne par exemple.</span></div>
-            <div class="matrix-note"><code>L</code><span>Nombre de couches hors entrée.</span></div>
-            <div class="matrix-note"><code>nₗ</code><span>Neurones de la couche l ; n₀ = taille d’entrée.</span></div>
-            <div class="matrix-note"><code>X = A⁽⁰⁾</code><span>n₀ × m ; entrée du réseau.</span></div>
-            <div class="matrix-note"><code>W⁽ˡ⁾</code><span>nₗ × nₗ₋₁ ; poids de la couche l.</span></div>
-            <div class="matrix-note"><code>b⁽ˡ⁾</code><span>nₗ × 1 ; biais diffusé sur le batch.</span></div>
-            <div class="matrix-note"><code>Z⁽ˡ⁾, A⁽ˡ⁾</code><span>nₗ × m ; pré-activations et activations.</span></div>
-            <div class="matrix-note"><code>δ⁽ˡ⁾</code><span>nₗ × m ; signaux d’erreur.</span></div>
-          </div><div class="matrix-notes-foot">Lignes = neurones, colonnes = exemples. Z⁽ˡ⁾ = W⁽ˡ⁾A⁽ˡ⁻¹⁾ + b⁽ˡ⁾ ; A⁽ˡ⁾ = f(Z⁽ˡ⁾). 𝓛 désigne la loss, à distinguer de L (nombre de couches).</div></div>`;
+            <div class="matrix-note"><div class="matrix-note-head"><code>X = A<sup>(0)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>0</sub> × m</sup></span></div><span>Entrées : <i>n<sub>0</sub></i> caractéristiques pour chacun des <i>m</i> exemples.</span></div>
+            <div class="matrix-note"><div class="matrix-note-head"><code>W<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × n<sub>l−1</sub></sup></span></div><span>Matrice des poids de la couche <i>l</i>.</span></div>
+            <div class="matrix-note"><div class="matrix-note-head"><code>b<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × 1</sup></span></div><span>Un biais par neurone, diffusé sur les exemples.</span></div>
+            <div class="matrix-note"><div class="matrix-note-head"><code>Z<sup>(l)</sup>, A<sup>(l)</sup>, δ<sup>(l)</sup></code><span class="matrix-dim">ℝ<sup>n<sub>l</sub> × m</sup></span></div><span>Pré-activations, activations et erreurs de la couche.</span></div>
+            <div class="matrix-note"><div class="matrix-note-head"><code>Y, Ŷ</code><span class="matrix-dim">ℝ<sup>n<sub>L</sub> × m</sup></span></div><span>Cibles attendues et sorties prédites.</span></div>
+            <div class="matrix-note"><div class="matrix-note-head"><code>∇W<sup>(l)</sup>, ∇b<sup>(l)</sup></code><span class="matrix-dim">tailles de W et b</span></div><span>Gradients utilisés pour mettre à jour les paramètres.</span></div>
+          </div><div class="matrix-equation"><i>Z<sup>(l)</sup></i> = <i>W<sup>(l)</sup></i><i>A<sup>(l−1)</sup></i> + <i>b<sup>(l)</sup></i> &nbsp; ⟶ &nbsp; <i>A<sup>(l)</sup></i> = <i>f</i>(<i>Z<sup>(l)</sup></i>)</div>
+          <div class="matrix-notes-foot">Lignes = neurones/caractéristiques, colonnes = exemples ; <i>m</i> = taille du batch. <i>L</i> désigne le nombre de couches hors entrée, tandis que <b>𝓛</b> désigne la loss.</div></div>`;
       }
 
       // Annotation row: symbol = description
@@ -13761,6 +13780,7 @@ fn loss_accum() {
         </div>`;
       }
       function calcSwitchRefresh() {
+        document.body.classList.toggle("matrix-mode", calcIsMat());
         document.querySelectorAll(".calc-sw-slot").forEach((el) => {
           el.innerHTML = calcSwitchHTML();
         });

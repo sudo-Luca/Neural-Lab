@@ -10571,7 +10571,7 @@ fn loss_accum() {
           "log-fwd",
           "➡",
           `FORWARD PASS — ${NET.W.length} couche(s) · ${NET.W.reduce((s, l) => s + l.length, 0)} neurones · ŷ = [${predStr}] · y* = [${yStr}]`,
-          calcIsMat() ? cmFwdAll(activations, zs) : fwdBody,
+          { ind: fwdBody, mat: calcSafe(() => cmFwdAll(activations, zs)) },
           ll === "full",
         );
 
@@ -10727,7 +10727,7 @@ fn loss_accum() {
           "log-loss",
           "◈",
           `LOSS [${lf.toUpperCase()}] = ${lossVal.toFixed(6)} — erreur moy. sur ${nOut} sortie(s)`,
-          calcIsMat() ? cmLossHTML(pred, y) : lossBody,
+          { ind: lossBody, mat: calcSafe(() => cmLossHTML(pred, y)) },
           ll === "full",
         );
 
@@ -10922,7 +10922,7 @@ fn loss_accum() {
           "log-bp",
           "◀",
           `BACKPROPAGATION — Calcul des δ sur ${NET.W.length} couche(s) — règle de la chaîne`,
-          calcIsMat() ? cmBackAll(activations, zs, y, deltas_log).html : bpBody,
+          { ind: bpBody, mat: calcSafe(() => cmBackAll(activations, zs, y, deltas_log).html) },
           false,
         );
 
@@ -11080,7 +11080,7 @@ fn loss_accum() {
           "log-upd",
           "⟳",
           `UPDATE — ${opt.toUpperCase()} lr=${lr} · Loss: ${lossVal.toFixed(5)} · ${totalWParams + totalBParams} params`,
-          calcIsMat() ? cmUpdAll(activations, deltas_log) : updBody,
+          { ind: updBody, mat: calcSafe(() => cmUpdAll(activations, deltas_log)) },
           false,
         );
       }
@@ -11092,6 +11092,10 @@ fn loss_accum() {
         const wrap = document.createElement("div");
         wrap.className = `log-block ${cls}`;
         const open = startOpen !== false;
+        if (body && typeof body === "object") {
+          wrap._bodies = body;
+          body = calcIsMat() ? body.mat || body.ind : body.ind;
+        }
         wrap.innerHTML = `
           <div class="log-block-hdr" onclick="toggleLogBlock('${id}')">
             <span>${icon}</span>
@@ -11162,6 +11166,29 @@ fn loss_accum() {
         resizeCvs();
         redraw();
       });
+      // Re-synchronise le canvas dès que son conteneur change de taille
+      // (fin de chargement, polices, panneaux, etc.) → corrige le décalage
+      // au rafraîchissement de la page.
+      {
+        let _cvsW = 0, _cvsH = 0, _raf = 0;
+        const _sync = () => {
+          _raf = 0;
+          const w = document.getElementById("canvasWrap");
+          if (!w) return;
+          if (w.clientWidth === _cvsW && w.clientHeight === _cvsH) return;
+          _cvsW = w.clientWidth;
+          _cvsH = w.clientHeight;
+          resizeCvs();
+          if (typeof NET !== "undefined" && NET) redraw();
+        };
+        const _req = () => { if (!_raf) _raf = requestAnimationFrame(_sync); };
+        if (window.ResizeObserver) {
+          const _w = document.getElementById("canvasWrap");
+          if (_w) new ResizeObserver(_req).observe(_w);
+        }
+        window.addEventListener("load", () => { _req(); setTimeout(_req, 150); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(_req);
+      }
       function getR() {
         return parseInt(document.getElementById("cR").value) || 18;
       }
@@ -13869,6 +13896,26 @@ fn loss_accum() {
           el.innerHTML = calcSwitchHTML();
         });
       }
+      function calcSafe(fn) {
+        try {
+          return fn();
+        } catch (e) {
+          return null;
+        }
+      }
+      /* Met à jour les blocs déjà présents dans le journal */
+      function calcRefreshLogBlocks() {
+        const el = document.getElementById("log");
+        if (!el) return;
+        el.querySelectorAll(".log-block").forEach((blk) => {
+          const b = blk._bodies;
+          if (!b) return;
+          const html = calcIsMat() ? b.mat : b.ind;
+          if (html == null) return;
+          const body = blk.querySelector(".log-block-body");
+          if (body) body.innerHTML = html;
+        });
+      }
       function setCalcMode(m) {
         if (m !== "indiv" && m !== "matrix") return;
         if (m === CALC_MODE) return;
@@ -13877,6 +13924,7 @@ fn loss_accum() {
           localStorage.setItem("nl_calc_mode", m);
         } catch (e) {}
         calcSwitchRefresh();
+        calcRefreshLogBlocks();
         calcRerenderAll();
       }
 
@@ -13940,7 +13988,7 @@ fn loss_accum() {
         // Journal
         try {
           log(
-            `<div style="padding:3px 8px;background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.2);border-radius:3px;font-size:9px;color:var(--a1)">${calcIsMat() ? "▦ Calculs MATRICIELS" : "● Calculs INDIVIDUELS"} — appliqué aux prochaines entrées du journal, au Test, aux Détails, aux Formules et au Manuel.</div>`,
+            `<div style="padding:3px 8px;background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.2);border-radius:3px;font-size:9px;color:var(--a1)">${calcIsMat() ? "▦ Calculs MATRICIELS" : "● Calculs INDIVIDUELS"} — appliqué au journal (y compris les entrées existantes), au Test, aux Détails, aux Formules et au Manuel.</div>`,
           );
         } catch (e) {}
       }
@@ -14087,8 +14135,9 @@ fn loss_accum() {
             : `${cmSupL("<b>a</b>", l + 1)} = ${fn}(${cmSupL("<b>z</b>", l + 1)}) <span class="cm-dimtxt">appliquée élément par élément</span>`,
         );
         h += cmEq(
+          cmOp(`${fn}(`),
           cmHTML(Zs, { lbl: "z", col: "var(--ylw)", d: 4 }),
-          cmOp(`→ ${fn}`),
+          cmOp(`) →`),
           cmHTML(cmCol(aSt), { lbl: "a", col: "var(--grn)", d: 4 }),
           cmOp("&nbsp;&nbsp;f′(z) ="),
           cmHTML(fp, { lbl: "f′(z)", col: "var(--org)", d: 4 }),
@@ -14378,7 +14427,11 @@ fn loss_accum() {
               cmHTML(A, { lbl: "A", col: "var(--grn)", d: 3 }),
               cmOp("+ b·1ᵀ ="),
               cmHTML(Zm, { lbl: "Z", col: "var(--ylw)", d: 3 }),
-              cmOp(`→ ${fn}`),
+            ) +
+            cmEq(
+              cmOp(`${fn}(`),
+              cmHTML(Zm, { lbl: "Z", col: "var(--ylw)", d: 3 }),
+              cmOp(`) →`),
               cmHTML(Am, { lbl: "A", col: "var(--grn)", d: 3 }),
             ) +
             `</div>`;
@@ -14419,8 +14472,9 @@ fn loss_accum() {
           )}
           ${cmNote(`Ce neurone N[${p.l},${j}] = <b style="color:var(--ylw)">ligne ${j}</b> de W (surlignée) : sa sortie z${j} = ligne ${j} · a + b${j}.`)}
           ${cmEq(
+            cmOp(`${fn}(`),
             cmHTML(Zc, { lbl: "z", col: "var(--ylw)", cellColor: rowStyle, d: 3 }),
-            cmOp(`→ ${fn}`),
+            cmOp(`) →`),
             cmHTML(cmCol(aOut), { lbl: "a", col: "var(--grn)", cellColor: rowStyle, d: 3 }),
           )}</div>`;
       }
@@ -14483,7 +14537,7 @@ fn loss_accum() {
               cmHTML(cmCol(NET.B[l]), { lbl: "b", col: "var(--a2)", d: 4 }),
               cmOp("="),
               cmInputGrid(W.length, 1, (i) => `mfz_${l}_${i}`, "z", "z (votre calcul)"),
-              cmOp(`→ ${fnL}`),
+              cmOp(`; ${fnL}(z) →`),
               cmInputGrid(W.length, 1, (i) => `mfa_${l}_${i}`, "a", "a (votre calcul)"),
             ) +
             `</div>`;
@@ -19313,7 +19367,7 @@ fn loss_accum() {
           "log-fwd",
           "➡",
           "FORWARD PASS (Manuel) — Substitution complète",
-          calcIsMat() ? cmFwdAll(activations, zs) : fwdBody,
+          { ind: fwdBody, mat: calcSafe(() => cmFwdAll(activations, zs)) },
           true,
         );
 
@@ -19377,7 +19431,7 @@ fn loss_accum() {
           "log-loss",
           "◈",
           `LOSS MANUELLE — ${lf.toUpperCase()} = ${lossVal.toFixed(6)}`,
-          calcIsMat() ? cmLossHTML(pred, y) : lossBody,
+          { ind: lossBody, mat: calcSafe(() => cmLossHTML(pred, y)) },
           true,
         );
 
@@ -19475,7 +19529,7 @@ fn loss_accum() {
           "log-bp",
           "◀",
           "BACKPROPAGATION MANUELLE — Substitution complète",
-          calcIsMat() ? cmBackAll(activations, zs, y, deltas).html : bpBody,
+          { ind: bpBody, mat: calcSafe(() => cmBackAll(activations, zs, y, deltas).html) },
           true,
         );
 
@@ -19543,7 +19597,7 @@ fn loss_accum() {
           "log-upd",
           "⟳",
           `UPDATE MANUELLE — ${opt.toUpperCase()} lr=${lr} → Loss: ${lossVal.toFixed(6)}`,
-          calcIsMat() ? cmUpdAll(activations, deltas) : updBody,
+          { ind: updBody, mat: calcSafe(() => cmUpdAll(activations, deltas)) },
           true,
         );
       }

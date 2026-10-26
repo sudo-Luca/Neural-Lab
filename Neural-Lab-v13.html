@@ -52,7 +52,7 @@
       }
       ::-webkit-scrollbar {
         width: 4px;
-        height: 4px;
+        height: 2px;
       }
       ::-webkit-scrollbar-track {
         background: transparent;
@@ -906,7 +906,9 @@
         border-bottom: 1px solid var(--brd);
         background: var(--p2);
         overflow-x: auto;
+        overflow-y: hidden;
         position: relative;
+        flex-shrink: 0;
       }
       /* Barre indicatrice glissante partagée par tous les groupes d'onglets
          (panneau Détails, Labo CNN, Labo RNN, sous-onglets...). Un seul
@@ -969,6 +971,12 @@
       #rpbody {
         flex: 1;
         overflow-y: auto;
+        /* Le contenu des onglets reste défilable, sans afficher de barre verticale */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      #rpbody::-webkit-scrollbar {
+        display: none;
       }
       .card {
         background: #030408;

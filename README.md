@@ -1,4 +1,4 @@
-# 🧠 Neural Lab v12
+# 🧠 Neural Lab v13
 
 > **A visual playground to understand neural networks — built from scratch in a single HTML file.**
 
@@ -8,7 +8,7 @@
 
 **Train. Visualise. Experiment. Understand.**
 
-[Features](#-features) • [Screenshots](#-screenshots) • [Quick Start](#-quick-start) • [How it works](#-how-it-works) • [Try it online](https://sudo-luca.github.io/Neural-Lab/Neural-Lab-v12.html)
+[Features](#-features) • [Screenshots](#-screenshots) • [Quick Start](#-quick-start) • [How it works](#-how-it-works) • [Try it online](https://sudo-luca.github.io/Neural-Lab/Neural-Lab-v13.html)
 
 </div>
 
@@ -34,7 +34,7 @@ Every computation happens directly in your browser:
 - Decision boundaries
 - Network visualisation
 
-Built with **pure HTML + CSS + Vanilla JavaScript**.
+Built with **pure HTML + CSS + Vanilla JavaScript** (with optional **WebGPU** acceleration for training).
 
 > 🌐 **Language note:** the interface is in French by default, with a built-in FR ⇄ EN translation switch (in the Options tab) if you prefer English.
 
@@ -69,8 +69,14 @@ Features:
 ✅ Interactive neuron and connection editing  
 ✅ Guided creation wizard  
 ✅ Advanced layer-by-layer builder (with ready-made presets: XOR, deep net, autoencoder, 3-class classifier, regression, wide net)  
+✅ Visual dataset editor: click to draw classification points (multi-class) or regression curves, with a live decision-boundary background  
+✅ **Step-by-step explanation mode** (🎓 Pas à pas): input → z → a → error → gradient → update, highlighted on the canvas  
+✅ Individual **or matrix** calculation display (one switch, applied everywhere)  
 ✅ CNN lab  
-✅ RNN lab
+✅ RNN lab  
+✅ **Transformer lab**  
+✅ **Reinforcement-learning lab**  
+✅ **Quiz** (126 questions)
 
 
 ---
@@ -88,6 +94,7 @@ Training modes:
 - Multiple epochs
 - Automatic training
 - Train until target loss
+- Optional **WebGPU training** (forward, backward and optimiser run on the GPU, checked numerically against the CPU before use)
 
 Every step can be inspected:
 
@@ -150,7 +157,13 @@ Compare different learning strategies:
 - AdamW
 - Nesterov (NAG)
 
-Fine-grained control is also available: momentum β, Adam β₁/β₂, epsilon, and L2 regularisation.
+Fine-grained control is also available: momentum β, Adam β₁/β₂, epsilon, L2 regularisation, gradient clipping, dropout and LR decay.
+
+## Training Techniques (new in v13)
+
+- **Batch Normalization** (learned γ/β, running statistics, configurable momentum)
+- **Data augmentation** (Gaussian noise on training inputs only; the stored dataset is never modified)
+- **Early stopping** (patience and minimum loss improvement)
 
 ## Weight Initialisation
 
@@ -210,6 +223,7 @@ Run several optimisers against each other and watch who learns faster.
 - Interactive loss curve (click to zoom / clear)
 - Learning-rate scheduler
 - Layer-by-layer inspection
+- **Comparison mode**: train two networks with different architectures, activations, optimisers and learning rates side by side
 - Speed benchmark
 - Data perturbation testing
 - Network diagram export (PNG)
@@ -227,7 +241,8 @@ Neural Lab includes educational features:
 - Detailed training logs
 - Interactive inspection
 - **Manual calculation mode**: compute the forward pass, the delta (error gradient) and the weight updates yourself, then check your answers against the simulator
-- Keyboard shortcuts for common actions (step, epoch, auto-train, mutate...)
+- **Quiz**: 126 questions (multiple choice, true/false and free-text answers) across Bases, Forward, Loss & Backprop, Optimisation, CNN and RNN, with chapter / type filters and a random mode
+- Keyboard shortcuts for common actions (step, epoch, auto-train, mutate, compare...)
 - Training log export to LaTeX or Markdown
 
 
@@ -250,7 +265,7 @@ Which weights were updated?
 
 ---
 
-# 🧬 Go Further: CNN, RNN & Evolution
+# 🧬 Go Further: CNN, RNN, Transformer, RL & Evolution
 
 ## CNN Lab
 
@@ -258,7 +273,15 @@ Step-by-step convolution, a gallery comparing every filter, a multi-layer pipeli
 
 ## RNN Lab
 
-A dedicated space to explore recurrent networks.
+Single recurrent cell step-through, unrolling in time with a memory trace, a vanishing/exploding-gradient demo, and a trainable character-level mini-RNN (real BPTT) with its own dataset, model, training and test tabs.
+
+## Transformer Lab
+
+The architecture behind GPT, Llama and Claude, with every calculation shown: pipeline overview, multi-head attention computed live (heat map and step-by-step detail), positional encodings (sinusoidal, RoPE), decoding (temperature, top-k, top-p) and a parameter / FLOPs / KV-cache calculator with model presets.
+
+## RL Lab
+
+Six tabs plus a deep-RL demo: concepts, bandits (greedy, ε-greedy, UCB1, softmax, Thompson), a step-by-step calculator (return, TD error, Q-learning vs SARSA, GAE), Q-learning / SARSA on an editable grid world, Bellman equations (value iteration), policy gradient (REINFORCE, Actor-Critic) and a hand-written **DQN** that learns to balance a CartPole.
 
 ## Weight Mutation
 
@@ -278,6 +301,7 @@ Randomly mutate a trained network's weights and evaluate the result — a lightw
 # 🎨 Customisation
 
 - 6 color themes: Dark, Neon, Ocean, Fire, Matrix, Pastel
+- "Aurora" visual styling, collapsible side-panel sections and log, sliding tab indicators, ripple / particle micro-interactions (disabled automatically with `prefers-reduced-motion`)
 - Visual effects & sound (Matrix rain, sound toggle, particle flow, celebration effects)
 - Adjustable diagram geometry (node spacing, glow intensity, connection opacity...)
 
@@ -296,7 +320,7 @@ git clone https://github.com/sudo-Luca/Neural-Lab.git
 Open:
 
 ```
-Neural-Lab/Neural-Lab-v12.html
+Neural-Lab/Neural-Lab-v13.html
 ```
 
 That's it.
@@ -317,7 +341,7 @@ Any modern browser works:
 - Opera
 - Opera GX
 
-Click [here](https://sudo-luca.github.io/Neural-Lab/Neural-Lab-v12.html) and enjoy your experience
+Click [here](https://sudo-luca.github.io/Neural-Lab/Neural-Lab-v13.html) and enjoy your experience
 
 ---
 
@@ -348,7 +372,7 @@ Optimizer: Adam
 
 ## Spiral Classification
 
-A harder nonlinear problem.
+A harder nonlinear problem. Open the visual dataset editor (Dataset tab) and generate the **spiral**, circles, checkerboard or blobs demo, then watch the decision boundary evolve while training.
 
 
 ---
@@ -372,6 +396,8 @@ Learn about CNN with the CNN lab in tools tab
 ---
 
 # 📱 Works Everywhere
+
+The mobile layout has been reworked in v13 for readability and touch use (larger type scale, 44 px-class touch targets, bottom-sheet labs, sticky lab headers).
 
 Desktop:
 
@@ -431,7 +457,7 @@ For a complete technical description of:
 - optimiser formulas
 - rendering engine
 - dataset system
-- v12 extensions
+- v13 extensions, GPU engine, labs
 
 See:
 
@@ -473,14 +499,16 @@ Built with:
 
 Possible future improvements:
 
-- [x] More architectures (CNN, RNN)
-- [x] More datasets
-- [ ] More architectures (Transformers, GANs...)
-- [ ] More built-in datasets
-- [ ] WebGPU acceleration
+- [x] More architectures (CNN, RNN, Transformer lab)
+- [x] Reinforcement learning lab
+- [x] More datasets (visual editor with demo sets)
+- [x] WebGPU acceleration (training)
+- [ ] More architectures (GANs, diffusion...)
+- [ ] Trainable Transformer
+- [ ] GPU-accelerated CNN / RNN labs
 - [ ] Collaborative experiments
 
-> ✅ CNN/RNN labs and network export/import are already available — see [Go Further](#-go-further-cnn-rnn--evolution) and [Save, Export & Code Generation](#-save-export--code-generation) above.
+> ✅ CNN/RNN/Transformer/RL labs and network export/import are already available — see [Go Further](#-go-further-cnn-rnn-transformer-rl--evolution) and [Save, Export & Code Generation](#-save-export--code-generation) above.
 
 
 ---

@@ -5165,6 +5165,15 @@
         <div class="lh">
           <div class="dot"></div>
           <h3>Calculs détaillés</h3>
+          <button
+            class="btn log-fs-btn"
+            id="logFsBtn"
+            type="button"
+            aria-label="Journal en plein écran"
+            title="Journal en plein écran"
+          >
+            ⛶
+          </button>
           <span class="calc-sw-slot"></span>
           <select
             id="logLevel"
@@ -29661,6 +29670,39 @@ input[type=range]::-moz-range-thumb{
   body.ex-on #exPanel{flex:0 0 46%;width:46%;max-width:420px;max-height:none;border-top:0;border-left:1px solid var(--a2)}
   body.ex-on #exBody{max-height:none}
 }
+
+/* ═══ JOURNAL « Calculs détaillés » — mobile : redimensionnable + plein écran ═══ */
+.log-fs-btn{display:none}
+@media (max-width:900px){
+  .log-fs-btn{display:inline-flex}
+  .lh .log-fs-btn{order:1;flex:0 0 auto;min-width:44px}
+
+  /* Poignée de redimensionnement tactile (au-dessus du journal) */
+  #rszLog{display:flex!important;align-items:center;justify-content:center;height:22px;
+    background:var(--p2);border-top:1px solid var(--brd);cursor:row-resize;
+    touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  #rszLog::after{width:44px;height:4px;border-radius:3px;opacity:.65;background:var(--dim)}
+  #rszLog.dragging{background:rgba(0,229,255,.14)}
+  #rszLog.dragging::after{background:var(--a1);opacity:1;width:56px}
+  #rszLog:has(+ #logPanel.log-collapsed),
+  #rszLog:has(+ #logPanel.log-fs){display:none!important}
+
+  /* Hauteur pilotée par --mob-log-h (posée par le glisser) */
+  #logPanel{height:var(--mob-log-h,clamp(190px,34dvh,300px))!important;
+    min-height:90px!important;max-height:calc(100% - 150px)!important}
+  #logPanel.log-collapsed{height:auto!important;min-height:0!important}
+  body.log-resizing{overflow:hidden;-webkit-user-select:none;user-select:none}
+
+  /* Plein écran */
+  #logPanel.log-fs{position:fixed!important;inset:0;z-index:10000;width:100%;
+    height:100vh!important;height:100dvh!important;max-height:none!important;min-height:0!important;
+    border:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+    box-sizing:border-box;background:var(--p1);animation:none}
+  #logPanel.log-fs #log{display:block!important;font-size:11.5px;line-height:1.75;padding:8px 12px 18px;
+    -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  #logPanel.log-fs .lh{position:sticky;top:0;z-index:2}
+  #logPanel.log-fs .lh .log-fs-btn{min-width:96px;border-color:var(--a1);color:var(--a1)}
+}
 </style>
 <script>
 (function () {
@@ -30012,6 +30054,127 @@ input[type=range]::-moz-range-thumb{
   const ref = document.querySelector('#left .btn-row button[onclick="doStep()"]');
   if (ref) ref.parentNode.insertBefore(btn, ref.nextSibling);
   else { btn.style.cssText = "position:absolute;top:8px;right:8px;z-index:5"; $("canvasWrap").appendChild(btn); }
+})();
+</script>
+<script>
+/* Journal mobile : redimensionnement tactile + plein écran */
+(function () {
+  "use strict";
+  const panel = document.getElementById("logPanel");
+  const handle = document.getElementById("rszLog");
+  const btn = document.getElementById("logFsBtn");
+  if (!panel || !handle || !btn) return;
+  const mq = window.matchMedia("(max-width: 900px)");
+  const KEY = "nl_log_h";
+  const MIN_H = 90, MIN_CANVAS = 150;
+  let fs = false, holder = null, pushed = false, raf = 0;
+
+  const refresh = () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      try { if (typeof resizeCvs === "function") resizeCvs(); } catch (e) {}
+      try { if (typeof redraw === "function") redraw(); } catch (e) {}
+    });
+  };
+  const maxH = () => {
+    const c = document.getElementById("center");
+    const h = c ? c.clientHeight : window.innerHeight;
+    return Math.max(MIN_H, h - MIN_CANVAS);
+  };
+  const clamp = (h) => Math.max(MIN_H, Math.min(maxH(), h));
+  const setH = (h) => panel.style.setProperty("--mob-log-h", Math.round(clamp(h)) + "px");
+
+  /* ── Redimensionnement (pointer events : doigt, stylet, souris) ── */
+  let startY = 0, startH = 0, dragId = null;
+  handle.addEventListener("pointerdown", (e) => {
+    if (!mq.matches || fs) return;
+    dragId = e.pointerId;
+    startY = e.clientY;
+    startH = panel.getBoundingClientRect().height;
+    try { handle.setPointerCapture(dragId); } catch (_) {}
+    handle.classList.add("dragging");
+    document.body.classList.add("log-resizing");
+    e.preventDefault();
+  });
+  handle.addEventListener("pointermove", (e) => {
+    if (e.pointerId !== dragId) return;
+    setH(startH + (startY - e.clientY)); /* glisser vers le haut = journal plus grand */
+    refresh();
+  });
+  const endDrag = (e) => {
+    if (e.pointerId !== dragId) return;
+    dragId = null;
+    handle.classList.remove("dragging");
+    document.body.classList.remove("log-resizing");
+    const v = panel.style.getPropertyValue("--mob-log-h");
+    try { if (v) localStorage.setItem(KEY, parseInt(v, 10)); } catch (_) {}
+    refresh();
+  };
+  handle.addEventListener("pointerup", endDrag);
+  handle.addEventListener("pointercancel", endDrag);
+  /* Double tap = hauteur par défaut */
+  handle.addEventListener("dblclick", () => {
+    if (!mq.matches) return;
+    panel.style.removeProperty("--mob-log-h");
+    try { localStorage.removeItem(KEY); } catch (_) {}
+    refresh();
+  });
+  try {
+    const saved = parseInt(localStorage.getItem(KEY), 10);
+    if (saved && mq.matches) setH(saved);
+  } catch (_) {}
+  const reclamp = () => {
+    const v = parseInt(panel.style.getPropertyValue("--mob-log-h"), 10);
+    if (v) setH(v);
+  };
+  window.addEventListener("resize", () => { if (!fs) reclamp(); });
+  window.addEventListener("orientationchange", () => setTimeout(reclamp, 250));
+
+  /* ── Plein écran ──
+     Le panneau est déplacé sous <body> pendant le plein écran : aucun ancêtre
+     (transform, overflow…) ne peut alors le rogner ; il revient à sa place ensuite. */
+  function enter() {
+    if (fs || !mq.matches) return;
+    const log = document.getElementById("log");
+    const top = log ? log.scrollTop : 0;
+    holder = document.createComment("log-panel-slot");
+    panel.parentNode.insertBefore(holder, panel);
+    document.body.appendChild(panel);
+    panel.classList.remove("log-collapsed");
+    panel.classList.add("log-fs");
+    document.body.classList.add("log-fs-on");
+    btn.textContent = "✕ Fermer";
+    btn.setAttribute("aria-label", "Quitter le plein écran");
+    btn.title = "Quitter le plein écran";
+    fs = true;
+    if (log) log.scrollTop = top;
+    try { history.pushState({ nlLogFs: 1 }, ""); pushed = true; } catch (_) { pushed = false; }
+    refresh();
+  }
+  function exit(fromPop) {
+    if (!fs) return;
+    const log = document.getElementById("log");
+    const top = log ? log.scrollTop : 0;
+    panel.classList.remove("log-fs");
+    document.body.classList.remove("log-fs-on");
+    if (holder && holder.parentNode) { holder.parentNode.insertBefore(panel, holder); holder.remove(); }
+    holder = null;
+    btn.textContent = "⛶";
+    btn.setAttribute("aria-label", "Journal en plein écran");
+    btn.title = "Journal en plein écran";
+    fs = false;
+    if (log) log.scrollTop = top;
+    if (pushed && !fromPop) { try { history.back(); } catch (_) {} }
+    pushed = false;
+    refresh();
+  }
+  window.toggleLogFullscreen = () => (fs ? exit() : enter());
+  btn.addEventListener("click", window.toggleLogFullscreen);
+  window.addEventListener("popstate", () => { if (fs) exit(true); });  /* bouton Retour */
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && fs) exit(); });
+  const onMq = () => { if (!mq.matches && fs) exit(); };
+  if (mq.addEventListener) mq.addEventListener("change", onMq); else mq.addListener(onMq);
 })();
 </script>
 </body>

@@ -1,8 +1,8 @@
-# Neural Lab v12
+# Neural Lab v13
 
 > **A self-contained, pedagogical deep learning simulator built entirely in a single HTML file.**
 
-Neural Lab v12 is an interactive browser-based tool for visualising, training, and understanding multilayer perceptrons (MLPs). It requires no server, no framework, and no installation — just open the HTML file in any modern browser. Every forward pass, backpropagation step, gradient computation, and weight update is performed in vanilla JavaScript and rendered in real time on an HTML5 Canvas, making it ideal for learning, teaching, or experimenting with neural network fundamentals.
+Neural Lab v13 is an interactive browser-based tool for visualising, training, and understanding multilayer perceptrons (MLPs). It requires no server, no framework, and no installation — just open the HTML file in any modern browser. Every forward pass, backpropagation step, gradient computation, and weight update is performed in vanilla JavaScript and rendered in real time on an HTML5 Canvas, making it ideal for learning, teaching, or experimenting with neural network fundamentals.
 
 ---
 
@@ -30,20 +30,26 @@ Neural Lab v12 is an interactive browser-based tool for visualising, training, a
 20. [Keyboard Shortcuts](#keyboard-shortcuts)
 21. [Mobile Support](#mobile-support)
 22. [Local Dev](#local-dev)
+23. [v13 Additions](#v13-additions) — [WebGPU engine](#webgpu-training-engine), [Training techniques](#training-techniques), [Visual dataset editor](#visual-dataset-editor), [Comparison mode](#comparison-mode), [Matrix calculation mode](#matrix-calculation-mode), [Step-by-step mode](#step-by-step-explanation-mode), [Quiz](#quiz), [Transformer Lab](#transformer-lab), [RL Lab](#rl-lab), [Visual layer](#visual-layer--performance)
 
 ---
 
 ## Overview
 
-Neural Lab v12 is structured as a **single HTML document** (~18,060 lines) combining:
+Neural Lab v13 is structured as a **single HTML document** (~30,000 lines) combining:
 
 - **HTML** — three resizable panels (left config, centre canvas, right details) plus several modal dialogs (CNN Lab, RNN Lab, Save/Load slots, node/line detail popovers).
 - **CSS** — a custom dark-mode design system using CSS variables for a consistent colour palette, with several selectable colour themes.
-- **Vanilla JavaScript** — all neural network logic, rendering, and interactivity, split across **four inline `<script>` blocks**:
-  1. **Main core** (≈ lines 6338–12055) — architecture, activations, losses, optimisers, training loop, canvas rendering, dataset tools, formula library, manual-calculation mode, code export.
-  2. **Mobile helpers** (≈ lines 12056–13503) — mobile navigation and stat-bar sync.
-  3. **v12 extension block** (≈ lines 13504–17628) — decision boundary, optimiser race, mutation, save/load, LR scheduler, gradient/layer/benchmark tools, effects (Matrix rain, sound, confetti, data flow, heatmap), **CNN Lab**, and **RNN Lab**.
-  4. **Translation layer** (≈ lines 17630–18060) — automatic FR ↔ EN interface translation.
+- **Vanilla JavaScript** — all neural network logic, rendering, and interactivity, split across **eleven inline `<script>` blocks** (plus the KaTeX `<script src>`):
+  1. **Main core** (≈ lines 8291–19739) — architecture, activations, losses, optimisers, Batch Norm / augmentation / early stopping, **WebGPU training engine**, training loop, canvas rendering, dataset + visual dataset editor, quiz, individual/matrix calculation mode, formula library, manual-calculation mode, code export.
+  2. **Mobile helpers** (≈ lines 19762–19839) — mobile navigation and stat-bar sync.
+  3. **Extension block** (≈ lines 21964–27060; modals HTML at 19841–21963) — decision boundary, optimiser race, **comparison mode**, mutation, save/load, LR scheduler, gradient/layer/benchmark tools, effects, **CNN Lab**, **RNN Lab**, keyboard shortcuts.
+  4. **Translation layer** (≈ lines 27062–27490) — automatic FR ↔ EN interface translation.
+  5. **RL Lab** (≈ lines 27493–28282) — bandits, calculators, grid-world Q-learning/SARSA, Bellman DP, policy gradient, DQN on CartPole.
+  6. **Sliding tab indicator** (≈ 28289–28414), 7. **Satisfaction pack** (ripples, spotlight, sparks, counters; ≈ 28421–28640), 8. **Satisfaction pack 2** (form-control polish, slider value bubble; ≈ 28762–28832) — purely cosmetic, skipped under `prefers-reduced-motion`.
+  9. **Transformer Lab** (≈ lines 28833–29032).
+  10. **Aurora / compaction / mobile-readability styles + collapsible sections script** (≈ lines 29034–29255).
+  11. **Step-by-step explanation mode** (≈ lines 29665–30016).
 
 There are no bundled external JavaScript dependencies except the **KaTeX** library (loaded via CDN) for rendering mathematical notation in the formula library. The automatic translation layer additionally calls a public translation API (Google Translate's unofficial endpoint, with a MyMemory fallback) over the network at runtime — it is not a bundled dependency and only activates when the user enables translation.
 
@@ -57,8 +63,8 @@ There are no bundled external JavaScript dependencies except the **KaTeX** libra
 | Optimisers | SGD, Momentum, RMSProp, Adam, AdamW, Nesterov AG |
 | Weight init | Xavier/Glorot, He/Kaiming, Uniform, Normal, Small |
 | LR schedulers | Cosine annealing, Step decay, Exponential decay, Warmup-Cosine |
-| Training modes | Single step, single epoch, N epochs, auto-run, train-to-target |
-| Regularisation | L2 weight decay, global gradient-norm clipping, dropout (config), per-100-epoch LR decay |
+| Training modes | Single step, single epoch, N epochs, auto-run, train-to-target, optional WebGPU batch training |
+| Regularisation / techniques | L2 weight decay, global gradient-norm clipping, dropout, per-100-epoch LR decay, **Batch Normalization**, **input-noise data augmentation**, **early stopping** |
 | Interactivity | Ctrl+click a neuron to pin its activation, Shift+click a neuron/weight to freeze it, Alt+click to force a pattern (0 / 1 / sine / random) |
 | Inspection | Step-by-step log, gradient analysis, layer inspector, weight heatmap, zoomed loss chart, node/connection detail popovers |
 | Export | PNG canvas, clipboard copy, LaTeX log, Markdown log, JSON model, save/load slots, **Python / JavaScript code generation**, dataset JSON import/export |
@@ -66,6 +72,12 @@ There are no bundled external JavaScript dependencies except the **KaTeX** libra
 | Manual mode | Step-by-step "do the math yourself" quiz (forward pass, loss, deltas, weight updates) checked against the real engine |
 | CNN Lab | Standalone convolution playground, kernel gallery, multi-layer pipeline visualiser, kernel training, and an image-classifier modal |
 | RNN Lab | Standalone recurrent-cell step-through, sequence unrolling, vanishing/exploding-gradient (BPTT) demo, and a trainable character-level RNN |
+| Transformer Lab | Pipeline, live multi-head attention, positional encodings (sinusoidal / RoPE), decoding (temperature / top-k / top-p), params / FLOPs / KV-cache calculator |
+| RL Lab | Bandits, return/TD/GAE calculator, Q-learning/SARSA, Bellman DP, REINFORCE/Actor-Critic, DQN CartPole |
+| Quiz | 126 questions (QCM / true-false / open) in 6 chapters |
+| Step-by-step mode | Animated input → z → a → error → gradient → update walkthrough with canvas highlighting |
+| Calculation display | Individual (per-neuron) or matrix notation, everywhere |
+| Compare mode | Two independently configured networks trained in parallel |
 | Localisation | One-click automatic FR → EN interface translation (external API, DOM-based) |
 
 ---
@@ -79,19 +91,20 @@ The UI is divided into three resizable panels separated by drag handles (`.rsz-c
 │  LEFT PANEL  │     CENTER — Canvas        │   RIGHT PANEL     │
 │  (260 px)    │   Neural network diagram   │   (370 px)        │
 │              │                            │                   │
-│  Architecture│                            │  Tabs (8):        │
+│  Architecture│                            │  Tabs (9):        │
 │  Training    │                            │  - Détails        │
 │  Display     │                            │  - Test           │
 │              ├────────────────────────────┤  - Dataset        │
 │              │   LOG PANEL (190 px)       │  - Formules       │
 │              │   Structured backprop log  │  - Options        │
 │              │                            │  - Guide           │
+│              │                            │  - Quiz            │
 │              │                            │  - Manuel          │
 │              │                            │  - Outils          │
 └──────────────┴────────────────────────────┴───────────────────┘
 ```
 
-Two modal overlays sit above this layout and can be opened from the **Outils** tab: the **CNN Lab** and the **RNN Lab**, each a self-contained multi-tab workspace (see their respective sections below).
+Modal overlays sit above this layout: the **CNN Lab**, **RNN Lab**, **Transformer Lab** and **RL Lab** (opened from **Outils**), the **visual dataset editor** (from **Dataset**), plus boundary / race / compare / save-load modals. Each lab is a self-contained multi-tab workspace (see their respective sections below).
 
 On viewports ≤ 900 px the layout switches to a **mobile mode**: a fixed top bar, a bottom navigation bar, and each panel occupies the full screen as a switchable tab.
 
@@ -121,6 +134,12 @@ On viewports ≤ 900 px the layout switches to a **mobile mode**: a fixed top ba
 | `LAYER_ACTS` | `string[]` | Per-layer activation function overrides (used by Advanced Builder) |
 | `RAF_ID` | `number` | `requestAnimationFrame` handle for the auto-training loop |
 | `SELECTED` | `object` | Currently selected neuron (for tooltip) |
+| `BN` | `{gamma,beta,runMean,runVar}` | Batch-Norm parameters/statistics per hidden layer (kept consistent by `ensureBN()`) |
+| `BN_ZHAT`, `BN_GRAD` | arrays | Normalised pre-activations of the last forward / γ,β gradients of the last backward |
+| `EARLY` | `{bestLoss, badEpochs}` | Early-stopping tracker |
+| `PERF` | `{fastTrainLite,_savedGlow}` | Performance prefs (glow is lightened during auto-train) |
+| `GPU` | object | WebGPU state: `supported, ready, device, pipelines, verified, busy, main` |
+| `CALC_MODE` | `"indiv" \| "matrix"` | Calculation display mode (persisted in `localStorage` `nl_calc_mode`) |
 | `ε` | `1e-15` | Numerical stability constant |
 
 ### Helper constants / micro-functions
@@ -255,7 +274,7 @@ Re-randomises all weights and biases of the existing network using the current i
 
 Manually sets the bias of neuron `j` in layer `l` to a parsed float value. Redraws and logs the change. Used from click-to-edit interactions in the detail panel.
 
-### `forward(inputs) → {activations, zs}`
+### `forward(inputs, isTrain?) → {activations, zs}`
 
 Performs a **forward pass** through the entire network.
 
@@ -267,6 +286,8 @@ Performs a **forward pass** through the entire network.
 1. Seeds the activation array with the input vector.
 2. For each layer `l`, computes the dot product `z[j] = Σ(W[l][j][k] · a[l][k]) + B[l][j]`.
 3. Applies the layer's activation function (via `getActForLayer`).
+3b. On hidden layers with **Batch Normalization** on, `z` is normalised with running mean/variance then scaled/shifted: `z_eff = γ·ẑ + β` (stats updated with the BN momentum when `isTrain`).
+3c. Node patterns (`0`, `1`, `sin`, `random`) override the activation; **dropout** zeroes hidden activations at the configured rate when > 0.
 4. For the last layer, applies **softmax** if the output activation is `"softmax"`.
 5. Stores results in `LAST_ACT` and `LAST_Z` for inspection and logging.
 
@@ -285,7 +306,7 @@ Performs **backpropagation** and returns the delta matrix without updating weigh
 
 ### `trainSample(inputs, y, verbose?) → number`
 
-Runs a complete **forward + backward + weight update** cycle for a single training example.
+Runs a complete **forward + backward + weight update** cycle for a single training example. If **data augmentation** is on, Gaussian noise `σ·N(0,1)` is added to the input for training only (`DS.inputs` is never modified).
 
 **Returns:** the loss for this sample.
 
@@ -333,6 +354,8 @@ Hyperparameters default to conventional values but are all user-editable in the 
 ---
 
 ## Training Control Functions
+
+> **v13:** `doStep`, `doEpoch`, `doN` and `runAuto` are `async`. When `gpuEligible()` is true they run on the GPU (see [WebGPU engine](#webgpu-training-engine)); `doEpoch`/`doN` call `earlyStopUpdate(avgLoss)` and halt auto-training via `stopAutoWithMessage()` when patience is exhausted. `toggleAuto` temporarily disables glow when `PERF.fastTrainLite` is set.
 
 ### `doStep() → void`
 
@@ -417,13 +440,13 @@ The dataset object `DS` holds `{inputs, outputs, inN, outN}`.
 
 ### `loadPreset(name?) → void`
 
-Loads a built-in dataset preset. Available presets include:
-- `xor` — XOR gate (4 samples, 2 inputs, 1 output)
-- `and` / `or` — basic logic gates
-- `circle` — points inside vs outside a circle
-- `spiral` — two-class spiral (harder non-linear problem)
-- `sin` — sine function regression
-- `custom` — clears the dataset for manual entry
+Loads a built-in dataset preset from the `PRESETS` table (selector `dsPreset`):
+- `xor`, `and`, `or`, `nand`, `xnor` — logic gates (2→1)
+- `half_adder` — half adder (2→2)
+- `4bit` — 4-bit identity (4→4)
+- `custom` — keeps/clears the dataset for manual entry
+
+Richer 2-D problems (circles, spiral, checkerboard, blobs; linear / quadratic / sine regression) are produced by the [visual dataset editor](#visual-dataset-editor).
 
 Resets epoch and loss history. Rebuilds the dataset editor UI.
 
@@ -447,7 +470,7 @@ Removes the dataset row at index `i` from both the editor and `DS`.
 
 ## Right-Panel Tabs & Inspection Tools
 
-The right panel uses a tab system (`#tabs`) with **eight tabs**: **Détails**, **Test**, **Dataset**, **Formules**, **Options**, **Guide**, **Manuel**, **Outils**. The **Détails** tab is the default view and hosts the node/connection detail popovers described under [Canvas interaction](#ui-utility-functions); the **Manuel** tab is a full pedagogical quiz mode covered in its own section below.
+The right panel uses a tab system (`#tabs`) with **nine tabs**: **Détails**, **Test**, **Dataset**, **Formules**, **Options**, **Guide**, **🧠 Quiz**, **✎ Manuel**, **🛠 Outils**. The **Détails** tab is the default view and hosts the node/connection detail popovers described under [Canvas interaction](#ui-utility-functions); the **Manuel** tab is a full pedagogical quiz mode covered in its own section below.
 
 ### Test tab
 
@@ -557,6 +580,8 @@ Beyond the visual customisation controls (neuron radius, font size, line width, 
 - **Thème & Couleurs** — colour theme presets, applied via `applyTheme(name)` (see [v12 Extension Features](#v12-extension-features)).
 - **Géométrie** — canvas geometry controls (neuron radius, spacing, line width, curve style).
 - **Effets visuels** — toggles for animation/visual effects on the canvas.
+- **Performance & Accélération matérielle** — GPU detection, canvas rendering mode (`cCanvasRender`: Auto / Force GPU / Force CPU, stored in `nl_canvas_render`), reduced effects during fast training, WebGPU training toggle (`cGPUTrain`) and a "Vérifier GPU vs CPU" button.
+- **Techniques d'entraînement** — Batch Normalization (`cBN`, `cBNMom`), data augmentation (`cAug`, `cAugNoise`), early stopping (`cES`, `cESPat`, `cESDelta`).
 - **Algorithme avancé** — the regularisation/optimiser hyper-parameters described in [Optimiser Engine](#optimiser-engine): weight-init method, momentum, Adam β₁/β₂/ε, L2 coefficient, dropout rate, Huber delta, gradient-clip threshold, and per-100-epoch LR decay factor.
 - **Sauvegarde/Export** — shortcuts into the JSON dataset import/export, network save/load, and code-export features.
 
@@ -826,10 +851,12 @@ The `#pb` element is updated during `doN()` to show training progress as a horiz
 | `M` | `mutateNet(false)` — mutate weights |
 | `B` | `showBoundary()` — decision boundary |
 | `R` | `showRace()` — optimiser race |
+| `C` | `openCompare()` — comparison mode |
 | `T` | `showTab('tools')` — switch to Tools tab |
 | `G` | `analyzeGradients()` — gradient analysis |
 | `H` | `renderHeatmap()` — weight heatmap |
-| `Escape` | Close all modals, stop live animations |
+| `Escape` | Close all modals (boundary, save/load, race, compare, CNN, RNN, RL, Transformer, visual dataset editor) and stop live animations |
+| `←` / `→` / `Space` | While step-by-step mode is open: previous / next step, play/pause |
 
 Shortcuts are disabled when focus is inside `<input>`, `<textarea>`, or `<select>` elements.
 
@@ -865,13 +892,89 @@ npx live-server .
 
 ---
 
+## v13 Additions
+
+### WebGPU Training Engine
+
+Optional engine (Options → *Performance & Accélération matérielle*) that runs forward pass, loss gradient, backprop, gradient clipping, L2 and the optimiser as WGSL compute shaders (`GPU_WGSL`). Browsers cannot call CUDA/cuDNN; WebGPU is vendor-neutral and still uses the machine's GPU.
+
+| Function | Role |
+|---|---|
+| `initWebGPU()` / `buildGPUPipelines()` | Adapter/device setup and pipeline creation |
+| `gpuAllocateBuffers()` / `gpuBuildLayerSet()` | Per-architecture buffer bundle (`GPU.main`, keyed by `netSig = NET.L.join(",")`) |
+| `gpuSyncWeightsToDevice()` / `gpuReadWeightsFromDevice()` / `gpuCommitResults()` | CPU ⇄ GPU weight synchronisation |
+| `gpuTrainOneSample(x,y)` / `gpuTrainEpochs(n, checkEarlyStop)` | Single sample / batched epochs (no per-step readback) |
+| `cpuReferenceStep()` / `verifyGPUvsCPU()` | Numerical check against the CPU reference before the GPU path is trusted |
+| `setGPUTrain(on)` / `manualVerifyGPU()` | UI toggle (`nl_gpu_train` in `localStorage`) and manual verification |
+| `gpuOnNetChanged()` | Invalidates buffers when the network changes |
+| `gpuEligible()` | True only if GPU is ready/verified, the layer signature matches, a dataset exists, and **no** Batch Norm, dropout, node patterns, frozen weights or frozen nodes are active |
+
+Coverage: 10 activations + softmax (`ACT_CODE`), 5 losses (`LOSS_CODE`), 6 optimisers (`OPT_CODE`). Otherwise it silently falls back to the CPU. In GPU mode the detailed per-step logs are not generated, and the **Manuel** tab always stays on the CPU. On small networks the CPU can be faster.
+
+### Training Techniques
+
+- **Batch Normalization** — `bnOn()`, `bnMomentum()`, `ensureBN()`; γ/β are learned (`BN_GRAD`), running mean/variance are updated during training, hidden layers only.
+- **Data augmentation** — `augOn()`, `augNoise()`; Gaussian input noise during `trainSample`.
+- **Early stopping** — `earlyOn()`, `earlyPatience()` (default 30), `earlyMinDelta()`, `earlyStopUpdate()`, `stopAutoWithMessage()`.
+
+### Visual Dataset Editor
+
+Opened with `openVDS()` / `closeVDS()` from the Dataset tab; two tabs (`vdsShowTab('class'|'reg')`). The active tab drives `DS`.
+
+- **Classification** (2 inputs → N one-hot outputs): `vdsClassAddClass/RemoveClass`, left-click adds a point of the selected class, right-click removes the nearest (`vdsClassRemoveNearest`), live coloured decision-boundary background (`vdsRenderClass`, refreshed every 400 ms via `vdsStartLive`). Demo sets via `vdsClassGenerate`: `circles`, `spiral`, `checker`, `blobs`.
+- **Regression** (1→1): click to add points on a curve, `vdsRegGenerate`: `linear`, `quad`, `sine`; the network's current prediction curve is drawn live.
+- `vdsArchMismatchMsg()` / `vdsApplyArch()` detect an input/output size mismatch with the network and rebuild the architecture in one click.
+
+### Comparison Mode
+
+`openCompare()` (shortcut `C`) trains **two independent networks** with their own layers, activations, optimiser and learning rate on the current dataset and loss. Engine: `cmpReadCfg`, `cmpBuildNet`, `cmpForward/Backward/Update`, `cmpAccuracy`, `cmpRenderBoundaries`, `drawCompareChart`, `startCompare/stopCompare/resetCompare`, `cmpCopyMain` (load main net into a slot), `cmpApplyToMain` (adopt a trained net). Input/output sizes are forced to match the dataset.
+
+### Matrix Calculation Mode
+
+A switch (`calcSwitchHTML()`, `setCalcMode('indiv'|'matrix')`) rendered in every `.calc-sw-slot` (log, Test, Manuel, Formules, details, labs) chooses between per-neuron and matrix/vector notation. `calcRerenderAll()` re-renders existing views without changing tab. Matrix helpers (`cm*`): `cmFwdAll`, `cmLossHTML`, `cmBackAll`, `cmUpdAll`, `cmBatchHTML`, `cmManFwdFields/DeltaFields/UpdFields` and result grids, `cmFormulaMatrixHTML`, `cmExportBody` (NumPy-style code), and mini-lab variants `cmCnnCalcHTML`, `cmRnnCellHTML`, `cmTfDetHTML`.
+
+### Step-by-Step Explanation Mode
+
+Button **🎓 Pas à pas** (next to *Step*). `build()` computes a full pass on a chosen sample without touching the network; `makeSteps()` produces phases **Entrée → Somme z → Activation a → Erreur → Gradient → Mise à jour**, each with a KaTeX formula and numeric substitution. The canvas highlights the neurons/links involved and reveals values progressively. Controls: first/prev/play/next, slider, speed, sample selector, fold. The update phase really changes the weights: closing before the last step restores the snapshot. Normal training (`doStep/doEpoch/doN/toggleAuto`) closes the mode cleanly.
+
+### Quiz
+
+`QUIZ_BANK` holds **126 questions** — 42 `qcm`, 42 `tf` (true/false), 42 `open` (accepted answers compared after `quizNorm`: lower-case, accents and punctuation stripped). Chapters in `QUIZ_CATS`: Bases (18), Forward (18), Loss & Backprop (18), Optimisation (24), CNN (24), RNN (24); `rl` and `transformer` chapters are declared but have no questions yet. Features: chapter/type filters, random N-question mode (`quizStartRandom`), per-question explanation, end screen with `quizRestartWrong()`.
+
+### Transformer Lab
+
+`openTFLab()`, tabs via `tfShow`: **Théorie** (six-step pipeline: tokens, embeddings, attention, Add & Norm, FFN, output), **Attention** (`tfAttn`: Q/K/V, scores, softmax heat map, per-head detail), **Positions** (`tfPos`: sinusoidal encoding, RoPE), **Décodage** (`tfDec`: temperature, top-k, top-p, entropy), **Taille & coût** (`tfSize`: parameters, FLOPs/token, weight memory, KV-cache with GQA; presets such as GPT-2 small, Llama-3 8B/70B). Educational and deterministic (seeded matrices); not a trainable model.
+
+### RL Lab
+
+`openRLLab()`, tabs via `rlShowTab`:
+
+1. **Concepts** — return, discount γ.
+2. **Bandits** — Bernoulli or Gaussian arms; greedy, ε-greedy, UCB1, softmax, Thompson and a manual "Vous" player compared live.
+3. **Calculateur** — return Gₜ, TD(0), Q-learning vs SARSA vs Expected SARSA, GAE, all step by step.
+4. **Q-Learning / SARSA** — editable grid world (`rlgPaint`, presets, resize, stochastic parameters), ε-greedy, greedy path, comparison with DP.
+5. **Bellman (DP)** — value iteration / policy improvement (`rldSweep`, `rldConverge`, `rldImprove`).
+6. **Policy Gradient** — REINFORCE and Actor-Critic with baseline.
+7. **DQN (CartPole)** — physical CartPole (`rlcpStep`), hand-written dense ReLU network with Adam (`rlNetForward/Backward/Adam`), replay buffer, target network, ε decay (`rlDqnNew/Act/Train`).
+
+### Visual Layer & Performance
+
+- **Aurora pack**, compaction, merged bars, collapsible left-panel sections and journal, mobile readability (type scale, touch targets, bottom-sheet labs).
+- **Satisfaction packs**: ripple, magnetic spotlight, particle sparks, animated counters with accuracy milestones, modal cascade, slider value bubble; all disabled under `prefers-reduced-motion`.
+- **Sliding tab indicator** for every tab group.
+- Canvas context attributes follow the chosen render mode (`canvasCtxAttrs()`); a `ResizeObserver` keeps the canvas in sync with its container.
+- Formula library gains **Bases**, **RL** and **Transformer** categories, a general symbol legend and matrix/individual forms.
+- CNN Lab: kernel presets now include **Laplacian** and **Emboss**; the Model tab supports image sizes up to 768×768 (pixel grid ≤ 32×32, free-drawing canvas editor above).
+
+---
+
 ## Colour Palette Reference
 
 All colours are defined as CSS custom properties on `:root`:
 
 | Variable | Value | Usage |
 |---|---|---|
-| `--bg` | `#05060c` | Main background |
+| `--bg` | `#05060c` (Aurora overrides to `#04050b`) | Main background |
 | `--p1` | `#0a0c18` | Panel background |
 | `--p2` | `#0d1020` | Section/header background |
 | `--brd` | `#192040` | Border colour |

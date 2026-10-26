@@ -29191,5 +29191,305 @@ requestAnimationFrame(frame);
 console.log("✓ Neural Lab — Pack Aurora chargé");
 })();
 </script>
+<style id="mobile-readability-v13">
+/* ═══ MOBILE — lisibilité & confort tactile ═══
+   Tout le bloc est dans @media(max-width:900px) : l'interface desktop n'est pas modifiée.
+   Les tailles de police sont recalculées sur une échelle monotone (6px→9.5px … 11px→12px),
+   donc la hiérarchie entre titres, libellés et petits textes est conservée. */
+@media (max-width: 900px) {
+/* ── 1) Échelle typographique mobile (générée à partir des tailles existantes) ── */
+input[type="text"], input[type="number"], textarea{font-size:12px}
+select{font-size:12px}
+.ds-row{font-size:11.5px}
+.badge{font-size:10.5px}
+.lh h3{font-size:11.5px}
+#log{font-size:11.5px}
+.lf{font-size:11px}
+.log-block-hdr{font-size:11px}
+.log-block-arr{font-size:10.5px}
+.log-layer{font-size:10.5px}
+.log-neuron-id{font-size:11px}
+.log-calc{font-size:11px}
+.log-clbl{font-size:10.5px}
+.log-sub{font-size:10.5px}
+.log-sitem{font-size:11px}
+.log-skey{font-size:10px}
+.log-sval{font-size:12.5px}
+.log-warn-v{font-size:10px}
+.log-warn-e{font-size:10px}
+.log-dim-row{font-size:10.5px}
+.log-epoch-bar{font-size:11.5px}
+.log-formula-box{font-size:11px}
+.math-box{font-size:12px}
+.math-legend-title{font-size:10.5px}
+.math-legend-sym{font-size:11.5px}
+.math-legend-desc{font-size:10.5px}
+.grad-row{font-size:10.5px}
+.card h3{font-size:12.5px}
+.dr{font-size:11.5px}
+.fb{font-size:11.5px}
+.ft{font-size:10.5px}
+.fe{font-size:11px}
+.wt{font-size:11px}
+.wt th{font-size:10.5px}
+.abar-wrap{font-size:11px}
+.fs-box input{font-size:12px}
+.fs-icon{font-size:12px}
+.ftag{font-size:10.5px}
+.fct{font-size:11.5px}
+.fcc{font-size:10.5px}
+.fca{font-size:11px}
+.fsubh{font-size:11px}
+.fsuba{font-size:10.5px}
+.fen{font-size:11.5px}
+.feq{font-size:12px}
+.fed{font-size:10.5px}
+.fetag{font-size:10px}
+.fnone{font-size:11.5px}
+.fdpanel h4{font-size:12px}
+.fdex{font-size:11px}
+.fdpros, .fdcons{font-size:10.5px}
+.fdpc-title{font-size:10px}
+.fdderiv-box .fdderiv-lbl{font-size:10px}
+.fdgrad-box .fdgrad-lbl{font-size:10px}
+.fdinfo-row{font-size:10.5px}
+.fdrange{font-size:10.5px}
+.fdderiv{font-size:10.5px}
+.fleg-title{font-size:10.5px}
+.fleg-row{font-size:10.5px}
+.fleg-sym{font-size:11.5px}
+.fleg-context .fleg-title{font-size:12px}
+.fleg-context .fleg-desc{font-size:12px}
+.matrix-notes-subtitle{font-size:11px}
+.matrix-dim{font-size:12.5px}
+.matrix-note span{font-size:12px}
+.matrix-notes-foot{font-size:12px}
+.fl-t{font-size:12px}
+.fl-n, .fl-mode{font-size:11px}
+.fl-keys{font-size:11px}
+.fl-grp{font-size:10.5px}
+.fl-name b{font-size:12px}
+.fl-name em{font-size:10.25px}
+.fl-desc{font-size:11.75px}
+.fl-rng{font-size:11.5px}
+.cl-title{font-size:10px}
+.csect{font-size:11.5px}
+.cseca{font-size:11px}
+.quiz-chip{font-size:10.5px}
+.quiz-cattag{font-size:10px}
+.quiz-opt{font-size:12.5px}
+.quiz-fb{font-size:12px}
+.quiz-fb-head{font-size:11.5px}
+.quiz-review{font-size:11.5px}
+.quiz-end-pct{font-size:11.5px}
+.quiz-end-mood{font-size:12.5px}
+.crow{font-size:11px}
+.cval{font-size:11px}
+.crow select{font-size:11px}
+.lang-switch-opt{font-size:10.5px}
+.lang-status{font-size:10.5px}
+.test-input-row label{font-size:11px}
+.test-result{font-size:11.5px}
+.test-result .tr-title{font-size:12px}
+.steps-wrap{font-size:11.5px}
+.sph-title{font-size:11.5px}
+.sph-arrow{font-size:11px}
+.step-layer-title{font-size:11px}
+.step-neuron-header{font-size:11px}
+.step-neuron-id{font-size:11.5px}
+.step-neuron-fn{font-size:10.5px}
+.step-formula{font-size:11.5px}
+.step-label{font-size:11px}
+.step-dim{font-size:11px}
+.step-summary-item{font-size:11.5px}
+.step-summary-key{font-size:10.5px}
+.step-loss-formula{font-size:12.5px}
+.step-bp-chain{font-size:11px}
+.step-bp-chain .step-grad{font-size:11.5px}
+.step-update-title{font-size:10.5px}
+.step-warn{font-size:10.5px}
+.dse-row{font-size:11.5px}
+.dse-cell{font-size:11.5px}
+.dse-del{font-size:12.5px}
+.dse-head{font-size:10.5px}
+#tip{font-size:11px}
+#tip .tt{font-size:11.5px}
+.hint{font-size:11px}
+#abld-header p{font-size:11px}
+.lc-badge{font-size:10.5px}
+.lc-info{font-size:11.5px}
+.lc-summary{font-size:11px}
+.lc-toggle{font-size:11px}
+.lc-row{font-size:11px}
+.lc-row .cval{font-size:11px}
+.act-chip{font-size:10.5px}
+.lc-del{font-size:12px}
+.lc-mv{font-size:11.5px}
+.act-info-box{font-size:10.5px}
+.act-info-box .aib-eq{font-size:11px}
+.preset-chip{font-size:10.5px}
+.abld-sec-title{font-size:10.5px}
+.sym-legend .sl-s{font-size:11px}
+.sym-legend .sl-d{font-size:10.5px}
+#boundary-footer{font-size:11px}
+.vds-intro{font-size:11px}
+.vds-mode-row .btn{font-size:10.5px}
+.vds-hint{font-size:10.5px}
+.vds-arch-msg{font-size:10.5px}
+.vds-arch-msg .btn{font-size:10.5px}
+.vds-stat{font-size:11px}
+.vds-legend{font-size:10.5px}
+.save-slot{font-size:11.5px}
+.save-slot .ss-info{font-size:10.5px}
+.cmp-card-title{font-size:12px}
+.cnn-legend{font-size:10.5px}
+.cnn-formula{font-size:11px}
+.cnn-kernel-input{font-size:11px}
+.cnn-pipe-layer .lbl{font-size:10.5px}
+.cnn-pipe-stage .stg-lbl{font-size:10.5px}
+.cnn-train-col h3{font-size:10.5px}
+.cnn-class-chip{font-size:11px}
+.cnn-class-chip button{font-size:11.5px}
+.cnn-ds-item .lbl{font-size:10px}
+.cnn-ds-item .rm{font-size:11px}
+.cnn-prob-row{font-size:11px}
+.cnn-arch-box{font-size:11px}
+.cnn-test-table{font-size:10.5px}
+.rl-h{font-size:11px}
+.rl-p{font-size:11.5px}
+.rl-ctl{font-size:11px}
+.rl-theory>summary{font-size:11.5px}
+.rl-m{font-size:11.5px}
+.rl-calc{font-size:11.25px}
+.rl-tbl{font-size:11.25px}
+.rl-leg{font-size:11px}
+.rl-stat{font-size:11px}
+.rl-in{font-size:11.75px}
+.rnn-step .t-lbl{font-size:10px}
+.rnn-step .t-x{font-size:11.5px}
+.rnn-step .t-h span{font-size:10.5px}
+.rnn-gate-box{font-size:11px}
+.rnn-verdict{font-size:11.5px}
+.rnn-dtext{font-size:11px}
+.rnn-dtext.lbl{font-size:10px}
+.rnn-heatmap-cell{font-size:9px}
+.rnn-heatmap-lbl{font-size:9px}
+.rnn-chain-node{font-size:9px}
+.racer-name{font-size:12.5px}
+.racer-stats{font-size:11px}
+.mob-nav-btn{font-size:10px}
+.btn{font-size:12px}
+lbl, .lbl{font-size:11.5px}
+.sh{font-size:11px}
+.sb .k{font-size:11px}
+.tab{font-size:11.5px}
+.tog-grid .btn{font-size:11.5px}
+.lh .btn{font-size:11.5px}
+#mobile-trainbar .loss-label{font-size:10px}
+.canvas-legend{font-size:11px}
+.version{font-size:11px}
+.calc-sw-lbl{font-size:10.25px}
+.calc-sw-b{font-size:11px}
+.lh .calc-sw-b{font-size:10.5px}
+.cm-intro{font-size:11px}
+.cm-title{font-size:11px}
+.cm-sym{font-size:11px}
+.cm-dimtxt{font-size:10.25px}
+.cm-note{font-size:10.5px}
+.cm-lbl{font-size:10.5px}
+.cm-m td{font-size:10px}
+.cm-dim{font-size:10px}
+.cm-op{font-size:12px}
+.cm-check{font-size:10.5px}
+.cm-in{font-size:11px}
+.rng-bubble{font-size:11.5px}
+.ph p{font-size:10.5px}
+#mobile-topbar h1{font-size:12.5px}
+#mobile-topbar .epoch-pill{font-size:10.5px}
+#mobile-nav .mob-nav-btn{font-size:10.5px}
+#mobile-trainbar .btn{font-size:11.5px}
+#net-stats-bar{font-size:10px!important}
+@media (max-width:600px){
+.fleg-context .fleg-sym{font-size:16px}
+.matrix-notes-title{font-size:12.5px}
+.matrix-equation{font-size:12.5px}
+.fl-sym{font-size:15px}
+}
+
+/* ── 2) Tailles inline trop petites (style="font-size:8px", y compris dans les gabarits JS) ── */
+[style*="font-size:6px"]:not(text):not(tspan):not(svg *),[style*="font-size: 6px"]:not(text):not(tspan):not(svg *){font-size:9.5px!important}
+[style*="font-size:7px"]:not(text):not(tspan):not(svg *),[style*="font-size: 7px"]:not(text):not(tspan):not(svg *){font-size:10px!important}
+[style*="font-size:7.5px"]:not(text):not(tspan):not(svg *),[style*="font-size: 7.5px"]:not(text):not(tspan):not(svg *){font-size:10.25px!important}
+[style*="font-size:8px"]:not(text):not(tspan):not(svg *),[style*="font-size: 8px"]:not(text):not(tspan):not(svg *){font-size:10.5px!important}
+[style*="font-size:8.5px"]:not(text):not(tspan):not(svg *),[style*="font-size: 8.5px"]:not(text):not(tspan):not(svg *){font-size:10.75px!important}
+[style*="font-size:9px"]:not(text):not(tspan):not(svg *),[style*="font-size: 9px"]:not(text):not(tspan):not(svg *){font-size:11px!important}
+[style*="font-size:9.5px"]:not(text):not(tspan):not(svg *),[style*="font-size: 9.5px"]:not(text):not(tspan):not(svg *){font-size:11.25px!important}
+[style*="font-size:10px"]:not(text):not(tspan):not(svg *),[style*="font-size: 10px"]:not(text):not(tspan):not(svg *){font-size:11.5px!important}
+[style*="font-size:10.5px"]:not(text):not(tspan):not(svg *),[style*="font-size: 10.5px"]:not(text):not(tspan):not(svg *){font-size:11.75px!important}
+[style*="font-size:11px"]:not(text):not(tspan):not(svg *),[style*="font-size: 11px"]:not(text):not(tspan):not(svg *){font-size:12px!important}
+[style*="font-size:12px"]:not(text):not(tspan):not(svg *),[style*="font-size: 12px"]:not(text):not(tspan):not(svg *){font-size:12.5px!important}
+
+/* ── 2b) Zones tactiles : boutons, rangées de boutons, petits contrôles ── */
+.btn[style*="padding"]{padding:8px 12px!important}
+[id$="-body"] .btn,[id$="-footer"] .btn,#rpbody .btn{min-height:40px}
+[id$="-body"] .btn-row>.btn,[id$="-footer"] .btn-row>.btn,#rpbody .btn-row>.btn{flex:1 1 auto;justify-content:center}
+[id$="-body"] .btn-row,#rpbody .btn-row{min-width:min(100%,200px)}
+[id$="-body"] :has(> .btn-row),#rpbody :has(> .btn-row){flex-wrap:wrap}
+[id$="-body"] select,#rpbody select{min-height:38px}
+[id$="-body"] select[style*="width"],#rpbody select[style*="width"]{min-width:88px}
+.cnn-tool-btn{width:40px;height:40px;font-size:17px}
+.cnn-color-btn{width:32px;height:32px}
+input[type=color]{width:40px!important;height:32px!important}
+.cnn-class-chip button{min-width:30px;min-height:30px;padding:0 8px;font-size:13px}
+.cnn-ds-item .rm{min-width:26px;min-height:26px;top:0;right:0;font-size:13px}
+.dse-del,.lc-del,.lc-mv{min-width:34px;min-height:34px;padding:6px 8px;font-size:14px}
+.preset-chip,.quiz-chip,.ftag{min-height:32px;padding:7px 12px;display:inline-flex;align-items:center;justify-content:center}
+
+/* ── 3) Journal « Calculs détaillés » : en-tête sur 3 lignes lisibles ── */
+#logPanel{height:clamp(190px,34vh,300px)!important;height:clamp(190px,34dvh,300px)!important;min-height:150px!important;max-height:60vh!important}
+.lh{flex-wrap:wrap;gap:6px 8px;padding:6px 10px!important;align-items:center}
+.lh h3{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+.lh select#logLevel{flex:0 0 auto;width:auto!important;margin:0!important;min-height:34px;font-size:12px!important;padding:6px 24px 6px 8px!important}
+.lh .calc-sw-slot{order:2;flex:1 1 100%;display:block!important;margin:0!important}
+.lh .calc-sw{display:flex;width:100%}
+.lh .calc-sw-b{flex:1 1 0;min-height:34px;padding:7px 6px!important;font-size:12px!important;opacity:.8}
+.lh .calc-sw-b.on{opacity:1}
+.lh .btn{order:3;flex:1 1 0;justify-content:center;min-height:34px;margin:0!important;padding:7px 8px!important;font-size:11.5px!important}
+
+/* ── 4) Sélecteur Calculs individuels / matriciels (partout où il apparaît) ── */
+.calc-sw{display:flex;width:100%}
+.calc-sw-lbl{padding:0 9px}
+.calc-sw-b{flex:1 1 0;min-height:34px;padding:7px 8px;text-align:center}
+
+/* ── 5) Retour à la ligne des rangées de boutons + réactivité tactile ── */
+[id$="-body"] :has(> .btn),#rpbody :has(> .btn){flex-wrap:wrap}
+button,.btn,.tab,.calc-sw-b,.mob-nav-btn{touch-action:manipulation}
+
+/* ── 6) Labos : fenêtres en pleine largeur (feuille du bas), en-tête collant ── */
+#boundary-modal-bg,#saveload-modal-bg,#race-modal-bg,#compare-modal-bg,#cnn-modal-bg,#rnn-modal-bg,#rl-modal-bg,#tf-modal-bg,#vds-modal-bg{align-items:flex-end!important}
+#boundary-modal,#saveload-modal,#race-modal,#compare-modal,#cnn-modal,#rnn-modal,#rl-modal,#tf-modal,#vds-modal{
+  width:100%!important;max-width:100%!important;
+  max-height:96vh!important;max-height:calc(100dvh - 10px)!important;
+  overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  border-radius:14px 14px 0 0!important;border-bottom-width:0!important}
+#saveload-modal{padding:16px 14px!important}
+#cnn-body,#rnn-body,#vds-body,#rl-body,#tf-body,#race-body,#compare-body{padding:10px 10px 18px!important}
+#boundary-header,#vds-header,#cnn-header,#rnn-header,#rl-header,#tf-header,#race-header,#compare-header{padding:9px 12px!important;position:sticky;top:0;z-index:6;gap:10px}
+#boundary-header h2,#vds-header h2,#cnn-header h2,#rnn-header h2,#rl-header h2,#tf-header h2,#race-header h2,#compare-header h2{min-width:0;font-size:13px;line-height:1.3}
+#boundary-header .btn,#vds-header .btn,#cnn-header .btn,#rnn-header .btn,#rl-header .btn,#tf-header .btn,#race-header .btn,#compare-header .btn{flex:0 0 auto;justify-content:center;min-width:40px;min-height:36px}
+#cnn-footer,#rnn-footer,#rl-footer,#tf-footer,#race-footer,#compare-footer{padding:9px 12px!important}
+
+/* ── 7) Curseurs et cases à cocher plus faciles à attraper au doigt ── */
+input[type=range]{height:28px!important}
+input[type=range]::-webkit-slider-thumb{width:22px;height:22px;margin-top:-9.5px}
+input[type=range]::-moz-range-thumb{width:22px;height:22px}
+input[type=checkbox]{width:20px!important;height:20px!important}
+input[type=checkbox]::after{width:10px;height:6px}
+
+/* ── 8) Barre d'entraînement du bas : garder les boutons dans leur barre de 34 px ── */
+#mobile-trainbar .btn{font-size:11px;padding:4px 4px;min-height:0}
+
+}
+</style>
 </body>
 </html>

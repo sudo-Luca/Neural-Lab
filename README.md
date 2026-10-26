@@ -34,7 +34,9 @@ Every computation happens directly in your browser:
 - Decision boundaries
 - Network visualisation
 
-Built with **pure HTML + CSS + Vanilla JavaScript** (with optional **WebGPU** acceleration for training).
+Built with **pure HTML + CSS + Vanilla JavaScript** (optionally accelerated with **WebGPU**).
+
+Beyond multilayer perceptrons, v13 also ships four self-contained labs — **CNN, RNN, Transformer and Reinforcement Learning** — plus a **140-question quiz**, a **step-by-step explainer** and a switch between **neuron-by-neuron** and **matrix** calculations everywhere the maths is shown.
 
 > 🌐 **Language note:** the interface is in French by default, with a built-in FR ⇄ EN translation switch (in the Options tab) if you prefer English.
 
@@ -69,14 +71,10 @@ Features:
 ✅ Interactive neuron and connection editing  
 ✅ Guided creation wizard  
 ✅ Advanced layer-by-layer builder (with ready-made presets: XOR, deep net, autoencoder, 3-class classifier, regression, wide net)  
-✅ Visual dataset editor: click to draw classification points (multi-class) or regression curves, with a live decision-boundary background  
-✅ **Step-by-step explanation mode** (🎓 Pas à pas): input → z → a → error → gradient → update, highlighted on the canvas  
-✅ Individual **or matrix** calculation display (one switch, applied everywhere)  
 ✅ CNN lab  
 ✅ RNN lab  
-✅ **Transformer lab**  
-✅ **Reinforcement-learning lab**  
-✅ **Quiz** (126 questions)
+✅ Transformer lab  
+✅ Reinforcement-learning lab
 
 
 ---
@@ -94,7 +92,8 @@ Training modes:
 - Multiple epochs
 - Automatic training
 - Train until target loss
-- Optional **WebGPU training** (forward, backward and optimiser run on the GPU, checked numerically against the CPU before use)
+- Early stopping (patience + minimum improvement)
+- 🎓 **Step-by-step explainer**: replay one sample as input → z → a → error → gradient → update, with the active neurons and connections highlighted on the canvas
 
 Every step can be inspected:
 
@@ -157,13 +156,7 @@ Compare different learning strategies:
 - AdamW
 - Nesterov (NAG)
 
-Fine-grained control is also available: momentum β, Adam β₁/β₂, epsilon, L2 regularisation, gradient clipping, dropout and LR decay.
-
-## Training Techniques (new in v13)
-
-- **Batch Normalization** (learned γ/β, running statistics, configurable momentum)
-- **Data augmentation** (Gaussian noise on training inputs only; the stored dataset is never modified)
-- **Early stopping** (patience and minimum loss improvement)
+Fine-grained control is also available: momentum β, Adam β₁/β₂, epsilon, and L2 regularisation.
 
 ## Weight Initialisation
 
@@ -173,6 +166,19 @@ Fine-grained control is also available: momentum β, Adam β₁/β₂, epsilon, 
 - Normal
 - Small
 - Zero (debug)
+
+## Training Techniques
+
+- Batch Normalisation (learned γ/β, running statistics, hidden layers only)
+- Dropout
+- L2 regularisation and global gradient clipping
+- Gaussian-noise data augmentation
+- Early stopping
+- Learning-rate scheduler and per-100-epoch LR decay
+
+## GPU Training (WebGPU)
+
+An opt-in **WebGPU** engine runs forward pass, backpropagation and the optimiser update on your GPU. It is numerically checked against the CPU path before use and falls back to the CPU automatically whenever a feature it does not replicate (Batch Norm, Dropout, forced neurons, frozen weights) is active. Small networks are often just as fast on the CPU, so compare both.
 
 
 ---
@@ -218,12 +224,15 @@ Run several optimisers against each other and watch who learns faster.
 ![Optimizer race](screenshots/race.png)
 
 
+### Compare two networks
+
+Configure two networks (architecture, activations, optimiser, learning rate), train them in parallel on the same dataset, and watch the loss curves and both decision boundaries side by side. Send the winner back to the main editor in one click.
+
 ### More tools
 
 - Interactive loss curve (click to zoom / clear)
 - Learning-rate scheduler
 - Layer-by-layer inspection
-- **Comparison mode**: train two networks with different architectures, activations, optimisers and learning rates side by side
 - Speed benchmark
 - Data perturbation testing
 - Network diagram export (PNG)
@@ -235,14 +244,15 @@ Run several optimisers against each other and watch who learns faster.
 
 Neural Lab includes educational features:
 
-- Formula library
+- Formula library (~110 formulas in 12 categories, including a **Bases** category and every RL / Transformer formula), each with a symbol legend
+- **Individual ⇄ matrix calculation switch**: every calculation view (Test, Details, Formulas, Manual, detailed logs, code export) can show the maths neuron by neuron or as real matrix products, with a matrix-notation box (m, L, n_l, shapes of X, W, b, Z, A, δ…)
 - Step-by-step explanations
 - Mathematical notation rendering
 - Detailed training logs
 - Interactive inspection
 - **Manual calculation mode**: compute the forward pass, the delta (error gradient) and the weight updates yourself, then check your answers against the simulator
-- **Quiz**: 126 questions (multiple choice, true/false and free-text answers) across Bases, Forward, Loss & Backprop, Optimisation, CNN and RNN, with chapter / type filters and a random mode
-- Keyboard shortcuts for common actions (step, epoch, auto-train, mutate, compare...)
+- **🧠 Quiz**: 140 questions (multiple choice, true/false, open answer) across 8 chapters, with explanations, random mode, personal records and a "review my mistakes" replay
+- Keyboard shortcuts for common actions (step, epoch, auto-train, mutate...)
 - Training log export to LaTeX or Markdown
 
 
@@ -265,27 +275,33 @@ Which weights were updated?
 
 ---
 
-# 🧬 Go Further: CNN, RNN, Transformer, RL & Evolution
+# 🧬 Go Further: Labs & Evolution
+
+All labs open from the **Outils** tab. The CNN, RNN and Transformer labs also follow the individual / matrix calculation switch.
 
 ## CNN Lab
 
-Step-by-step convolution, a gallery comparing every filter, a multi-layer pipeline with receptive-field view, kernel training via gradient descent, and a full "complete model" mode to build, train (real backpropagation) and test a multi-layer CNN on an image dataset you create on the spot.
+Step-by-step convolution with 7 classic kernels (+ custom), a gallery comparing every filter, a multi-layer pipeline with shrinking feature maps, kernel training via gradient descent, and a full "complete model" mode to build, train (real backpropagation) and test a multi-layer CNN on an image dataset you draw yourself — from 8×8 pixels up to 1536×1536 with a real bitmap editor (brush, pencil, eraser, line, rectangle, ellipse, fill, undo).
 
 ## RNN Lab
 
-Single recurrent cell step-through, unrolling in time with a memory trace, a vanishing/exploding-gradient demo, and a trainable character-level mini-RNN (real BPTT) with its own dataset, model, training and test tabs.
+Four tabs: a single recurrent cell, sequence unrolling, vanishing / exploding gradients, and a trainable character-level RNN (real BPTT, Adagrad) with its own dataset, model, training and test screens — including text generation.
 
 ## Transformer Lab
 
-The architecture behind GPT, Llama and Claude, with every calculation shown: pipeline overview, multi-head attention computed live (heat map and step-by-step detail), positional encodings (sinusoidal, RoPE), decoding (temperature, top-k, top-p) and a parameter / FLOPs / KV-cache calculator with model presets.
+Five tabs on the architecture behind GPT, Llama or Claude: theory (tokens → embeddings → attention → output), live multi-head attention on your own sentence, positional encodings (sinusoidal, learned, RoPE, ALiBi), decoding strategies (greedy, temperature, top-k, top-p), and size / cost estimates with presets (GPT-2 small, Llama-3 8B / 70B, a toy model).
 
-## RL Lab
+## Reinforcement Learning Lab
 
-Six tabs plus a deep-RL demo: concepts, bandits (greedy, ε-greedy, UCB1, softmax, Thompson), a step-by-step calculator (return, TD error, Q-learning vs SARSA, GAE), Q-learning / SARSA on an editable grid world, Bellman equations (value iteration), policy gradient (REINFORCE, Actor-Critic) and a hand-written **DQN** that learns to balance a CartPole.
+Seven tabs: concepts, multi-armed bandits (greedy, ε-greedy, UCB1, softmax, Thompson — or play against them), a step-by-step RL calculator, Q-learning / SARSA / Expected SARSA on an editable grid world, Bellman dynamic programming (value iteration and policy evaluation), policy gradient (REINFORCE with or without baseline, actor-critic), and a DQN agent balancing a CartPole with a neural network trained from scratch (replay buffer, target network, optional Double DQN).
 
 ## Weight Mutation
 
 Randomly mutate a trained network's weights and evaluate the result — a lightweight way to experiment with evolutionary/genetic approaches.
+
+## Visual Dataset Editor
+
+Draw a 2D classification dataset (several classes, one-hot outputs) or a regression point cloud with the mouse, or generate circles / spiral / checkerboard / blobs and linear / quadratic / sine demos, then train the main network on it while the decision regions or learned curve update live.
 
 ---
 
@@ -301,9 +317,10 @@ Randomly mutate a trained network's weights and evaluate the result — a lightw
 # 🎨 Customisation
 
 - 6 color themes: Dark, Neon, Ocean, Fire, Matrix, Pastel
-- "Aurora" visual styling, collapsible side-panel sections and log, sliding tab indicators, ripple / particle micro-interactions (disabled automatically with `prefers-reduced-motion`)
-- Visual effects & sound (Matrix rain, sound toggle, particle flow, celebration effects)
+- Visual effects & sound (Matrix rain, sound toggle, particle flow, celebration effects, subtle micro-interactions — all disabled when your system asks for reduced motion)
 - Adjustable diagram geometry (node spacing, glow intensity, connection opacity...)
+- Performance options (hardware-accelerated canvas, lighter rendering during fast training)
+- Collapsible left-panel sections and log
 
 ---
 
@@ -372,7 +389,7 @@ Optimizer: Adam
 
 ## Spiral Classification
 
-A harder nonlinear problem. Open the visual dataset editor (Dataset tab) and generate the **spiral**, circles, checkerboard or blobs demo, then watch the decision boundary evolve while training.
+A harder nonlinear problem. Generate it in one click from the **Visual Dataset Editor** (Dataset tab).
 
 
 ---
@@ -385,7 +402,13 @@ Approximate mathematical functions:
 y = sin(x)
 ```
 
-Watch the network learn a curve.
+Watch the network learn a curve (use the regression tab of the Visual Dataset Editor and its "sine" demo).
+
+---
+
+## Logic gates and small circuits
+
+Built-in presets: XOR, AND, OR, NAND, XNOR, a half adder (2→2) and a 4-bit identity (4→4).
 
 ---
 
@@ -395,9 +418,13 @@ Learn about CNN with the CNN lab in tools tab
 
 ---
 
-# 📱 Works Everywhere
+## Reinforcement learning
 
-The mobile layout has been reworked in v13 for readability and touch use (larger type scale, 44 px-class touch targets, bottom-sheet labs, sticky lab headers).
+Open the RL lab and let Q-learning solve the "cliff" grid, or train a DQN to balance a CartPole.
+
+---
+
+# 📱 Works Everywhere
 
 Desktop:
 
@@ -412,9 +439,12 @@ Mobile:
 The interface automatically adapts:
 
 - Responsive layout
-- Touch-friendly controls
+- Touch-friendly controls (larger buttons, sliders and checkboxes)
 - Mobile navigation
 - Full-screen panels
+- Readable type scale and labs that open as full-width bottom sheets
+
+The desktop layout is left untouched by the mobile styles.
 
 
 ---
@@ -433,10 +463,12 @@ Single HTML file
 │   └── Dark UI system
 │
 └── JavaScript
-    ├── Neural network engine
+    ├── Neural network engine (CPU + optional WebGPU)
     ├── Training algorithms
     ├── Canvas renderer
-    └── Interactive tools
+    ├── Calculation views (individual / matrix)
+    ├── Quiz & step-by-step explainer
+    └── Labs (CNN, RNN, Transformer, RL)
 ```
 
 No frameworks.
@@ -457,7 +489,10 @@ For a complete technical description of:
 - optimiser formulas
 - rendering engine
 - dataset system
-- v13 extensions, GPU engine, labs
+- calculation modes, quiz and step-by-step explainer
+- WebGPU training
+- CNN, RNN, Transformer and RL labs
+- v12 extensions
 
 See:
 
@@ -465,7 +500,7 @@ See:
 
 ---
 
-# .🎯 Project Goals
+# 🎯 Project Goals
 
 Neural Lab was created with one idea:
 
@@ -491,6 +526,7 @@ Built with:
 | Vanilla JavaScript | Neural engine |
 | CSS Variables | UI system |
 | KaTeX | Mathematical rendering |
+| WebGPU (optional) | GPU training |
 
 
 ---
@@ -499,16 +535,16 @@ Built with:
 
 Possible future improvements:
 
-- [x] More architectures (CNN, RNN, Transformer lab)
-- [x] Reinforcement learning lab
-- [x] More datasets (visual editor with demo sets)
-- [x] WebGPU acceleration (training)
-- [ ] More architectures (GANs, diffusion...)
-- [ ] Trainable Transformer
-- [ ] GPU-accelerated CNN / RNN labs
+- [x] More architectures (CNN, RNN)
+- [x] More datasets (logic gates, visual 2D editor)
+- [x] Transformer lab (theory, attention, positions, decoding, cost)
+- [x] Reinforcement-learning lab
+- [x] WebGPU acceleration (opt-in training on the GPU)
+- [ ] Trainable Transformers, GANs...
+- [ ] More built-in datasets
 - [ ] Collaborative experiments
 
-> ✅ CNN/RNN/Transformer/RL labs and network export/import are already available — see [Go Further](#-go-further-cnn-rnn-transformer-rl--evolution) and [Save, Export & Code Generation](#-save-export--code-generation) above.
+> ✅ The CNN / RNN / Transformer / RL labs and network export/import are already available — see [Go Further](#-go-further-labs--evolution) and [Save, Export & Code Generation](#-save-export--code-generation) above.
 
 
 ---

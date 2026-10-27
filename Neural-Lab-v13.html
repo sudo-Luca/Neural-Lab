@@ -30930,6 +30930,34 @@ html[data-finish="matte"] #net-stats-bar{background:var(--p1)!important}
   background:linear-gradient(var(--x),var(--x)) 5px 7px/9px 2px no-repeat,
   radial-gradient(circle at 52% 34%,var(--x) 0 2.6px,transparent 3.2px),radial-gradient(circle at 68% 68%,var(--y) 0 2.6px,transparent 3.2px),radial-gradient(circle at 86% 38%,var(--x) 0 2.6px,transparent 3.2px),
   linear-gradient(90deg,var(--p) 0 30%,transparent 30%),var(--b)}
+
+/* ═══ Correctif flèche des menus déroulants (placé en dernier) ═══
+   Cause du bug : les règles « select:focus{background:…} » utilisent le raccourci `background`,
+   qui remet à zéro position/répétition/image de la flèche → flèche dupliquée (thèmes) ou absente (Néon).
+   Ici la flèche est redéfinie complètement, aussi à l'état :focus, et se retourne quand le menu est actif. */
+:root{--chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2300e5ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");--chev-up:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 5l4-4 4 4' fill='none' stroke='%2300e5ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+html[data-ui="pro"]{--chev-up:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 5l4-4 4 4' fill='none' stroke='%237fa6cc' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+html[data-ui="aurore"]{--chev-up:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 5l4-4 4 4' fill='none' stroke='%234fd8c4' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+html[data-ui="ambre"]{--chev-up:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 5l4-4 4 4' fill='none' stroke='%23ffb454' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+html[data-ui="clair"]{--chev-up:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 5l4-4 4 4' fill='none' stroke='%232c5bcc' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+
+select:not([multiple]):not([size]),
+html[data-ui] select:not([multiple]):not([size]){
+  background-image:var(--chev);
+  background-repeat:no-repeat;
+  background-position:right 9px center;
+  background-size:10px 6px;
+  padding-right:24px!important;
+}
+select:not([multiple]):not([size]):focus,
+select:not([multiple]):not([size]):focus-visible,
+html[data-ui] select:not([multiple]):not([size]):focus,
+html[data-ui] select:not([multiple]):not([size]):focus-visible{
+  background-image:var(--chev-up);
+  background-repeat:no-repeat;
+  background-position:right 9px center;
+  background-size:10px 6px;
+}
 </style>
 <script>
 /* Les valeurs numériques (époque, perte, stats) s'illuminent brièvement quand elles changent. */

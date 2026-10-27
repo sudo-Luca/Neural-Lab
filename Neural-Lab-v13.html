@@ -6550,11 +6550,12 @@
                 🏔 Labo Paysage de loss
               </div>
               <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">
-                Visualise la surface de la loss autour de tes poids : carte 2D
-                avec courbes de niveau et
-                <b style="color: var(--ylw)">chemin d'entraînement</b> projeté
-                (PCA), tranches 1D (init → actuel), et mesure de la netteté du
-                minimum (plat ou pointu ?)
+                Banc d'essai de la loss : carte 2D et
+                <b style="color: var(--ylw)">relief 3D</b> rotatif autour de tes
+                poids, plan au choix (PCA, aléatoire ou 2 poids), sonde
+                (gradient, hessien), <b style="color: var(--ylw)">course
+                d'optimiseurs</b>, pose d'un point sur le vrai réseau,
+                tranches 1D et netteté du minimum
               </div>
               <button class="btn ok" onclick="openLLLab()" style="width: 100%">
                 🏔 Ouvrir le labo Paysage
@@ -30260,7 +30261,7 @@ input[type=range]::-moz-range-thumb{
 <style>
 #ll-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1500;display:none;align-items:center;justify-content:center}
 #ll-modal-bg.show{display:flex}
-#ll-modal{background:var(--p1);border:1px solid var(--ylw);border-radius:8px;max-width:900px;width:96%;max-height:92vh;overflow-y:auto;box-shadow:0 0 40px rgba(255,214,0,.12)}
+#ll-modal{background:var(--p1);border:1px solid var(--ylw);border-radius:8px;max-width:1240px;width:98%;max-height:94vh;overflow-y:auto;box-shadow:0 0 40px rgba(255,214,0,.12)}
 #ll-header{padding:12px 18px;border-bottom:1px solid var(--brd);background:linear-gradient(135deg,var(--p1),var(--p2));display:flex;align-items:center;gap:8px}
 #ll-header h2{font-family:"Syne",sans-serif;color:var(--ylw);font-size:14px;flex:1}
 #ll-body{padding:14px 18px}
@@ -30270,6 +30271,14 @@ input[type=range]::-moz-range-thumb{
 #llPg>div{height:100%;width:0;background:var(--ylw)}
 .ll-grad{height:8px;border-radius:2px;background:linear-gradient(90deg,#0b1e5b,#00a6ff,#00ff9d,#ffd600,#ff3b5c)}
 #llCv{touch-action:none;cursor:crosshair;aspect-ratio:1/1}
+.ll-g{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media(min-width:901px){.ll-g{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start}.ll-vp{position:sticky;top:0}}
+.ll-vbar{display:flex;gap:6px;margin-bottom:6px}.ll-vbar .btn{flex:1}
+.ll-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.ll-opts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.ll-opts label{display:flex;align-items:center;gap:5px;font-size:10px;padding:5px 8px;border:1px solid var(--brd);border-radius:6px;cursor:pointer;color:var(--text)}
+.ll-par{display:none}.ll-par.show{display:flex}
+@media(max-width:900px){#ll-modal{width:100%;max-width:none;height:100%;max-height:100vh;border-radius:0}#ll-body{padding:10px 12px}#ll-body .btn{font-size:11.5px;padding:9px 10px;min-height:36px}#ll-body .ll-opts label{font-size:11.5px;padding:8px 10px}}
 </style>
 
 <div id="ll-modal-bg">
@@ -30280,9 +30289,11 @@ input[type=range]::-moz-range-thumb{
     </div>
     <div id="ll-body">
       <div class="rl-p">
-        La loss est une <b>surface</b> au-dessus de l'espace des poids. Ici, on la <em>voit</em> : on déplace les poids
-        autour de leur valeur actuelle, on recalcule la loss sur <b>tout le dataset</b>, et on observe vallées,
-        plateaux, minima plats ou pointus — et le chemin suivi par l'entraînement.
+        La loss est une <b>surface</b> au-dessus de l'espace des poids. Ce labo est un <b>banc d'essai</b> :
+        <b>①</b> choisis le plan d'observation (chemin PCA, directions aléatoires ou <em>deux poids de ton choix</em>), regarde-le en carte ou en relief 3D ;
+        <b>②</b> sonde n'importe quel point (gradient, hessien, nature du point) ;
+        <b>③</b> lance une course d'optimiseurs sur le terrain ;
+        <b>④</b> pose le point trouvé sur le vrai réseau — puis mesure tranches 1D et netteté dans les autres onglets.
       </div>
       <div id="llMsg" class="rl-card y" style="display:none">
         <div class="rl-p" style="margin:0">Il faut un réseau construit et un dataset non vide. Lance quelques époques pour enregistrer un chemin d'entraînement.</div>
@@ -30292,33 +30303,78 @@ input[type=range]::-moz-range-thumb{
       </div>
       <div id="llPg"><div></div></div>
       <div class="tabs">
-        <div class="tab active" id="lltab-btn-surf" onclick="llTab('surf')">Surface 2D</div>
+        <div class="tab active" id="lltab-btn-surf" onclick="llTab('surf')">Terrain</div>
         <div class="tab" id="lltab-btn-d1" onclick="llTab('d1')">Tranche 1D</div>
         <div class="tab" id="lltab-btn-sharp" onclick="llTab('sharp')">Netteté</div>
       </div>
 
       <div class="tc show" id="lltab-surf">
-        <div class="rl-card y">
-          <div class="rl-h">Surface L(θ + α·d₁ + β·d₂)</div>
-          <div class="rl-p">
-            <b>PCA du chemin</b> : plan des 2 directions où l'entraînement a le plus bougé (le chemin y est tracé).
-            <b>Aléatoire</b> : 2 directions tirées au hasard, normalisées neurone par neurone (<em>filter normalization</em>) pour que les échelles soient comparables.
+        <div class="ll-g">
+          <div class="ll-vp">
+            <div class="ll-vbar">
+              <button class="btn on" id="llV2" onclick="llView('2d')">🗺 Carte 2D</button>
+              <button class="btn" id="llV3" onclick="llView('3d')">⛰ Relief 3D</button>
+            </div>
+            <canvas id="llCv" class="rl-cv"></canvas>
+            <div class="ll-grad" style="margin-top:5px"></div>
+            <div class="rl-leg" style="justify-content:space-between"><span>loss basse (vallée)</span><span>loss haute</span></div>
+            <div class="rl-p" id="llHint" style="margin:2px 0 0"></div>
+            <div class="rl-stat" id="llSurfInfo"></div>
           </div>
-          <div class="rl-row">
-            <div class="rl-ctl"><span class="rl-cl">Plan</span><select id="llDir"><option value="pca">PCA du chemin</option><option value="rand">Aléatoire</option></select></div>
-            <div class="rl-ctl"><span class="rl-cl">Échelle</span><select id="llScale" onchange="llDraw()"><option value="log">Logarithmique</option><option value="lin">Linéaire</option></select></div>
+          <div class="ll-side">
+            <div class="rl-card y">
+              <div class="rl-h">① Plan d'observation L(θ + α·d₁ + β·d₂)</div>
+              <div class="rl-row">
+                <div class="rl-ctl"><span class="rl-cl">Plan</span><select id="llDir" onchange="llMode()"><option value="pca">PCA du chemin</option><option value="rand">Aléatoire (filter-norm.)</option><option value="par">2 paramètres au choix</option></select></div>
+                <div class="rl-ctl"><span class="rl-cl">Échelle</span><select id="llScale" onchange="llDraw()"><option value="log">Logarithmique</option><option value="lin">Linéaire</option></select></div>
+              </div>
+              <div class="rl-row ll-par" id="llParRow">
+                <div class="rl-ctl"><span class="rl-cl">Axe α</span><select id="llPa" onchange="llAuto()"></select></div>
+                <div class="rl-ctl"><span class="rl-cl">Axe β</span><select id="llPb" onchange="llAuto()"></select></div>
+              </div>
+              <div class="rl-row">
+                <div class="rl-ctl"><span class="rl-cl">Zoom</span><input type="range" id="llZoom" min="0.3" max="3" step="0.1" value="1" oninput="llV('llZoomV',this.value)" onchange="llAuto()" /><b id="llZoomV">1</b></div>
+                <div class="rl-ctl"><span class="rl-cl">Résolution</span><input type="range" id="llRes" min="21" max="61" step="10" value="41" oninput="llV('llResV',this.value)" onchange="llAuto()" /><b id="llResV">41</b></div>
+              </div>
+              <div class="rl-row">
+                <label class="rl-ctl"><input type="checkbox" id="llGrad" onchange="llDraw()" /> Champ de gradient (−∇L)</label>
+              </div>
+              <div class="btn-row"><button class="btn ok" style="flex:1" onclick="llRun()">▶ Recalculer (🎲 nouveau tirage)</button></div>
+            </div>
+
+            <div class="rl-card" id="llProbe"></div>
+
+            <div class="rl-card g">
+              <div class="rl-h">③ Course d'optimiseurs dans ce plan</div>
+              <div class="rl-p">
+                Tous partent de la sonde et descendent le terrain avec un gradient <b>exact</b> (différences finies sur tout le dataset).
+                Pas d'Adam/RMSprop = lr × R/10. Seuls α et β bougent : c'est l'entraînement en version 2D.
+              </div>
+              <div class="ll-opts">
+                <label><input type="checkbox" id="llO_sgd" checked /><i class="ll-dot" style="background:#00e5ff"></i>SGD</label>
+                <label><input type="checkbox" id="llO_mom" checked /><i class="ll-dot" style="background:#00ff9d"></i>Momentum</label>
+                <label><input type="checkbox" id="llO_rms" /><i class="ll-dot" style="background:#ffd600"></i>RMSprop</label>
+                <label><input type="checkbox" id="llO_adam" checked /><i class="ll-dot" style="background:#bf5fff"></i>Adam</label>
+              </div>
+              <div class="rl-row">
+                <div class="rl-ctl"><span class="rl-cl">lr</span><input type="range" id="llLr" min="-3" max="0.5" step="0.1" value="-1" oninput="llLrV(this.value)" /><b id="llLrV">0.10</b></div>
+                <div class="rl-ctl"><span class="rl-cl">Vitesse</span><input type="range" id="llSpd" min="1" max="20" step="1" value="4" /></div>
+              </div>
+              <div class="btn-row">
+                <button class="btn go" id="llGo" style="flex:2" onclick="llGo()">▶ Lancer depuis la sonde</button>
+                <button class="btn" style="flex:1" onclick="llClear()">⏹ Effacer</button>
+              </div>
+              <div id="llRace" style="margin-top:8px"></div>
+              <div class="rl-h" style="margin-top:10px">④ Poser un point sur le vrai réseau</div>
+              <div class="rl-p" style="margin-bottom:6px">Remplace les poids du réseau par ceux d'un point du plan (annulable) : tu vois alors sa vraie loss et sa vraie sortie.</div>
+              <div class="btn-row">
+                <button class="btn warn" style="flex:1" onclick="llApply('probe')">⬇ Sonde</button>
+                <button class="btn warn" style="flex:1" onclick="llApply('best')">⬇ Gagnant</button>
+                <button class="btn" id="llUndo" style="flex:1" onclick="llUndo()" disabled>↩ Origine</button>
+              </div>
+            </div>
           </div>
-          <div class="rl-row">
-            <div class="rl-ctl"><span class="rl-cl">Zoom</span><input type="range" id="llZoom" min="0.3" max="3" step="0.1" value="1" oninput="llV('llZoomV',this.value)" /><b id="llZoomV">1</b></div>
-            <div class="rl-ctl"><span class="rl-cl">Résolution</span><input type="range" id="llRes" min="21" max="61" step="10" value="41" oninput="llV('llResV',this.value)" /><b id="llResV">41</b></div>
-          </div>
-          <div class="btn-row"><button class="btn ok" style="flex:1" onclick="llRun()">▶ Calculer (🎲 nouveau tirage)</button></div>
         </div>
-        <canvas id="llCv" class="rl-cv"></canvas>
-        <div class="ll-grad" style="margin-top:5px"></div>
-        <div class="rl-leg" style="justify-content:space-between"><span>loss basse (vallée)</span><span>loss haute</span></div>
-        <div class="rl-stat" id="llSurfInfo"></div>
-        <div class="rl-card" id="llProbe"></div>
       </div>
 
       <div class="tc" id="lltab-d1">
@@ -30365,7 +30421,7 @@ input[type=range]::-moz-range-thumb{
 (function () {
   "use strict";
   const $ = (id) => document.getElementById(id);
-  const S = { sn: [], stride: 1, k: 0, net: null, tok: 0, surf: null, ran: {}, tab: "surf", cm: "ind", d1: null };
+  const S = { sn: [], stride: 1, k: 0, net: null, tok: 0, surf: null, ran: {}, tab: "surf", cm: "ind", d1: null, view: "2d", run: false, raf: 0, bak: null, ta: 0, tb: null };
   const gs = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.2832 * v); };
   const fx = (v) => (isFinite(v) ? (+v).toPrecision(4) : "∞");
   const ok = () => typeof NET !== "undefined" && NET && NET.W && NET.W.length > 0 && typeof DS !== "undefined" && DS.inputs.length > 0;
@@ -30387,7 +30443,7 @@ input[type=range]::-moz-range-thumb{
     if (typeof NET === "undefined" || !NET || !NET.W || !NET.W.length) return;
     let f; try { f = flat(); } catch (e) { return; }
     const L = S.sn[S.sn.length - 1];
-    if (reset || S.net !== NET || (L && L.th.length !== f.length)) { S.net = NET; S.sn = []; S.stride = 1; S.k = 0; S.surf = null; }
+    if (reset || S.net !== NET || (L && L.th.length !== f.length)) { S.net = NET; S.sn = []; S.stride = 1; S.k = 0; S.surf = null; S.bak = null; S.run = false; }
     const ep = typeof EPOCH === "number" ? EPOCH : 0, last = S.sn[S.sn.length - 1];
     if (last && last.ep === ep) return;
     const first = !S.sn.length; S.k++;
@@ -30522,84 +30578,238 @@ input[type=range]::-moz-range-thumb{
     return (x) => (!isFinite(x) ? 1 : Math.min(1, Math.max(0, (t(x) - a) / (b - a || 1))));
   }
 
-  // ── Onglet Surface 2D ──
+  // ── Onglet Terrain : plan d'observation, carte 2D, relief 3D, sonde, course d'optimiseurs ──
+  const V = { yaw: -0.65, pit: 0.85 };
+  const OPT = { sgd: ["SGD", "#00e5ff"], mom: ["Momentum", "#00ff9d"], rms: ["RMSprop", "#ffd600"], adam: ["Adam", "#bf5fff"] };
+  const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+  const thAt = (s, a, b, th) => { th = th || new Float64Array(s.c.length); for (let k = 0; k < th.length; k++) th[k] = s.c[k] + a * s.d1[k] + b * s.d2[k]; return th; };
+  function fillPar() {
+    const { off, sz } = lay(), o = [];
+    sz.forEach(([no, ni], l) => { for (let j = 0; j < no; j++) { for (let k = 0; k < ni; k++) o.push([off[l] + j * ni + k, `W${l + 1}[${j}][${k}]`]); o.push([off[l] + no * ni + j, `b${l + 1}[${j}]`]); } });
+    const h = o.slice(0, 4000).map(([i, n]) => `<option value="${i}">${n}</option>`).join("");
+    ["llPa", "llPb"].forEach((id, q) => { const e = $(id), v = e.value; e.innerHTML = h; e.value = v && +v < o.length ? v : String(Math.min(o.length - 1, q)); });
+  }
+  function minima(s) {
+    const r = s.res, g = s.g, o = [];
+    for (let iy = 1; iy < r - 1; iy++) for (let ix = 1; ix < r - 1; ix++) {
+      const v = g[iy * r + ix]; if (!isFinite(v)) continue; let k = true;
+      for (let dy = -1; dy <= 1 && k; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && g[(iy + dy) * r + ix + dx] <= v) { k = false; break; }
+      if (k) o.push([-s.R + (2 * s.R * ix) / (r - 1), -s.R + (2 * s.R * iy) / (r - 1), v]);
+    }
+    return o.sort((p, q) => p[2] - q[2]).slice(0, 8);
+  }
+  function hAt(s, a, b) { // hauteur normalisée (0..1) par interpolation bilinéaire de la grille
+    const r = s.res, N = s.N; let x = cl(((a + s.R) / (2 * s.R)) * (r - 1), 0, r - 1.001), y = cl(((b + s.R) / (2 * s.R)) * (r - 1), 0, r - 1.001);
+    const i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j;
+    return (N[j * r + i] * (1 - fx) + N[j * r + i + 1] * fx) * (1 - fy) + (N[(j + 1) * r + i] * (1 - fx) + N[(j + 1) * r + i + 1] * fx) * fy;
+  }
   async function runSurf() {
     const tok = S.tok, f = mkEval(), c = flat(), res = +$("llRes").value, z = +$("llZoom").value;
     let mode = $("llDir").value, p = mode === "pca" ? pca(c) : null, d1, d2, R, pr = null, why = "";
-    if (mode === "pca" && !p) { why = "Pas assez de points de chemin (lance quelques époques) : directions aléatoires utilisées."; mode = "rand"; }
-    if (p) {
+    if (mode === "pca" && !p) { why = "Chemin trop court ou quasi rectiligne (pas de 2ᵉ direction principale) : directions aléatoires utilisées."; mode = "rand"; }
+    if (mode === "par") {
+      const a = +$("llPa").value; let b = +$("llPb").value; if (a === b) { b = (a + 1) % c.length; why = "Mêmes axes choisis : le 2ᵉ est décalé."; }
+      d1 = new Float64Array(c.length); d2 = new Float64Array(c.length); d1[a] = 1; d2[b] = 1;
+      pr = S.sn.map((s) => [s.th[a] - c[a], s.th[b] - c[b]]); let m = 0; pr.forEach((q) => (m = Math.max(m, Math.abs(q[0]), Math.abs(q[1]))));
+      R = z * Math.max(0.8, 1.25 * m, 1.5 * Math.abs(c[a]), 1.5 * Math.abs(c[b]));
+    } else if (p) {
       d1 = p.d[0]; d2 = p.d[1]; pr = S.sn.map((s) => [dotc(s.th, c, d1), dotc(s.th, c, d2)]);
-      let m = 1e-6; pr.forEach((q) => (m = Math.max(m, Math.abs(q[0]), Math.abs(q[1]))));
-      R = m * 1.25 * z;
+      let m = 1e-6; pr.forEach((q) => (m = Math.max(m, Math.abs(q[0]), Math.abs(q[1])))); R = m * 1.25 * z;
     } else { d1 = rdir(c); d2 = rdir(c); R = z; }
     const g = await evalPts(res * res, (i, th) => {
       const a = -R + (2 * R * (i % res)) / (res - 1), b = -R + (2 * R * Math.floor(i / res)) / (res - 1);
       for (let k = 0; k < c.length; k++) th[k] = c[k] + a * d1[k] + b * d2[k];
     }, f, c.length, tok);
     if (!g) return;
-    S.surf = { g, res, R, pr, mode, p, c, d1, d2, f, l0: f(c), why, pb: null };
-    drawSurf();
+    S.run = false;
+    const s = (S.surf = { g, res, R, pr, mode, p, c, d1, d2, f, l0: f(c), why, pb: null, rc: [], N: null, Nk: null, bg: null, bgk: null });
+    s.mins = minima(s);
+    const fin = Array.from(g).filter(isFinite), mn = Math.min(...fin), mx = Math.max(...fin);
+    $("llSurfInfo").innerHTML = `<span>Plan <b>${mode === "pca" ? "PCA" : mode === "par" ? "2 paramètres" : "aléatoire"}</b></span><span>portée ±<b>${fx(R)}</b></span><span>L actuel <b>${fx(s.l0)}</b></span><span>min <b>${fx(mn)}</b> · max <b>${fx(mx)}</b></span><span>minima locaux : <b>${s.mins.length}</b></span>` +
+      (p ? `<span>variance du chemin : <b>${(p.ev[0] * 100).toFixed(0)} %</b> + <b>${(p.ev[1] * 100).toFixed(0)} %</b> (${S.sn.length} pts)</span>` : "") + (why ? `<span style="color:var(--ylw)">${why}</span>` : "");
+    drawSurf(); probeUI(); raceUI();
   }
-  function drawSurf() {
-    const s = S.surf, cv = $("llCv"); if (!s || !cv) return;
-    const W = cv.clientWidth || 320, dpr = Math.min(2, window.devicePixelRatio || 1);
-    cv.width = cv.height = Math.round(W * dpr);
-    const x = cv.getContext("2d"); x.scale(dpr, dpr);
-    const r = s.res, n = nrm(s.g, $("llScale").value === "log"), N = Array.from(s.g, n), cw = W / (r - 1);
-    const o = document.createElement("canvas"); o.width = o.height = r;
+
+  // ── Rendu ──
+  const mk3 = (W, R) => { // projection orthographique : (a, b, hauteur 0..1) → [X, Y, profondeur]
+    const cy = Math.cos(V.yaw), sy = Math.sin(V.yaw), cp = Math.cos(V.pit), sp = Math.sin(V.pit), sc = W * 0.33;
+    return (a, b, h) => { const x1 = (a * cy - b * sy) / R, y1 = (a * sy + b * cy) / R, z = h * 0.9 - 0.25; return [W / 2 + x1 * sc, W * 0.55 - (y1 * sp + z * cp) * sc, y1 * cp - z * sp]; };
+  };
+  function paint2d(g, s, W) {
+    const r = s.res, N = s.N, cw = W / (r - 1), o = document.createElement("canvas"); o.width = o.height = r;
     const ox = o.getContext("2d"), im = ox.createImageData(r, r);
-    for (let iy = 0; iy < r; iy++) for (let ix = 0; ix < r; ix++) {
-      const col = cmap(N[iy * r + ix]), q = ((r - 1 - iy) * r + ix) * 4;
-      im.data[q] = col[0]; im.data[q + 1] = col[1]; im.data[q + 2] = col[2]; im.data[q + 3] = 255;
-    }
-    ox.putImageData(im, 0, 0); x.imageSmoothingEnabled = true; x.drawImage(o, -cw / 2, -cw / 2, W + cw, W + cw);
-    // courbes de niveau (marching squares simplifié)
-    x.strokeStyle = "rgba(255,255,255,.28)"; x.lineWidth = 1; x.beginPath();
+    for (let iy = 0; iy < r; iy++) for (let ix = 0; ix < r; ix++) { const col = cmap(N[iy * r + ix]), q = ((r - 1 - iy) * r + ix) * 4; im.data[q] = col[0]; im.data[q + 1] = col[1]; im.data[q + 2] = col[2]; im.data[q + 3] = 255; }
+    ox.putImageData(im, 0, 0); g.imageSmoothingEnabled = true; g.drawImage(o, -cw / 2, -cw / 2, W + cw, W + cw);
+    g.strokeStyle = "rgba(255,255,255,.28)"; g.lineWidth = 1; g.beginPath(); // courbes de niveau
     for (let L = 1; L < 10; L++) {
       const lv = L / 10;
       for (let iy = 0; iy < r - 1; iy++) for (let ix = 0; ix < r - 1; ix++) {
         const cs = [[ix, iy], [ix + 1, iy], [ix + 1, iy + 1], [ix, iy + 1]], v = cs.map(([a, b]) => N[b * r + a]), P = [];
-        for (let e = 0; e < 4; e++) {
-          const a = v[e], b = v[(e + 1) % 4];
-          if (a < lv !== b < lv) { const t = (lv - a) / (b - a), A = cs[e], C = cs[(e + 1) % 4]; P.push([A[0] + (C[0] - A[0]) * t, A[1] + (C[1] - A[1]) * t]); }
-        }
-        for (let q = 0; q + 1 < P.length; q += 2) { x.moveTo(P[q][0] * cw, W - P[q][1] * cw); x.lineTo(P[q + 1][0] * cw, W - P[q + 1][1] * cw); }
+        for (let e = 0; e < 4; e++) { const a = v[e], b = v[(e + 1) % 4]; if (a < lv !== b < lv) { const t = (lv - a) / (b - a), A = cs[e], C = cs[(e + 1) % 4]; P.push([A[0] + (C[0] - A[0]) * t, A[1] + (C[1] - A[1]) * t]); } }
+        for (let q = 0; q + 1 < P.length; q += 2) { g.moveTo(P[q][0] * cw, W - P[q][1] * cw); g.lineTo(P[q + 1][0] * cw, W - P[q + 1][1] * cw); }
       }
     }
-    x.stroke();
-    const X = (a) => ((a + s.R) / (2 * s.R)) * W, Y = (b) => W - ((b + s.R) / (2 * s.R)) * W;
-    x.font = "10px 'JetBrains Mono',monospace";
-    if (s.pr) { // chemin d'entraînement projeté sur le plan
-      x.strokeStyle = "#fff"; x.lineWidth = 1.6; x.beginPath();
-      s.pr.forEach((q, i) => (i ? x.lineTo(X(q[0]), Y(q[1])) : x.moveTo(X(q[0]), Y(q[1])))); x.lineTo(X(0), Y(0)); x.stroke();
-      const q0 = s.pr[0]; x.fillStyle = "#00ff9d"; x.beginPath(); x.arc(X(q0[0]), Y(q0[1]), 4.5, 0, 7); x.fill();
-      x.fillStyle = "#fff"; x.fillText("init", X(q0[0]) + 7, Y(q0[1]) - 5);
+    g.stroke();
+    if ($("llGrad").checked) { // champ de gradient −∇L sur la grille (direction seulement)
+      const k = Math.max(1, Math.round((r - 1) / 12)); g.strokeStyle = "rgba(255,255,255,.75)"; g.lineWidth = 1.2; g.beginPath();
+      for (let iy = k; iy < r - 1; iy += k) for (let ix = k; ix < r - 1; ix += k) {
+        const gx = -(s.g[iy * r + ix + 1] - s.g[iy * r + ix - 1]), gy = -(s.g[(iy + 1) * r + ix] - s.g[(iy - 1) * r + ix]), m = Math.hypot(gx, gy); if (!isFinite(m) || m < 1e-12) continue;
+        const L = cw * k * 0.4, px = ix * cw, py = W - iy * cw, dx = (gx / m) * L, dy = (-gy / m) * L, an = Math.atan2(dy, dx), ex = px + dx / 2, ey = py + dy / 2;
+        g.moveTo(px - dx / 2, py - dy / 2); g.lineTo(ex, ey);
+        g.moveTo(ex, ey); g.lineTo(ex - 5 * Math.cos(an - 0.45), ey - 5 * Math.sin(an - 0.45)); g.moveTo(ex, ey); g.lineTo(ex - 5 * Math.cos(an + 0.45), ey - 5 * Math.sin(an + 0.45));
+      }
+      g.stroke();
     }
-    x.strokeStyle = "#fff"; x.lineWidth = 2; x.beginPath(); x.arc(X(0), Y(0), 5.5, 0, 7); x.stroke();
-    x.fillStyle = "#fff"; x.fillText("actuel", X(0) + 8, Y(0) + 12);
-    if (s.pb) { x.strokeStyle = "#ff3d5a"; x.lineWidth = 2; const px = X(s.pb.a), py = Y(s.pb.b); x.beginPath(); x.moveTo(px - 7, py); x.lineTo(px + 7, py); x.moveTo(px, py - 7); x.lineTo(px, py + 7); x.stroke(); }
-    const fin = Array.from(s.g).filter(isFinite), mn = Math.min(...fin), mx = Math.max(...fin);
-    $("llSurfInfo").innerHTML = `<span>Plan <b>${s.mode === "pca" ? "PCA" : "aléatoire"}</b></span><span>portée ±<b>${fx(s.R)}</b></span><span>L actuel <b>${fx(s.l0)}</b></span><span>min <b>${fx(mn)}</b> · max <b>${fx(mx)}</b></span>` +
-      (s.p ? `<span>variance du chemin : <b>${(s.p.ev[0] * 100).toFixed(0)} %</b> + <b>${(s.p.ev[1] * 100).toFixed(0)} %</b> (${S.sn.length} pts)</span>` : "") + (s.why ? `<span style="color:var(--ylw)">${s.why}</span>` : "");
-    probeUI();
+  }
+  function surf3d(x, s, W, q) {
+    const r = s.res, N = s.N, n = r * r, X = new Float32Array(n), Y = new Float32Array(n), D = new Float32Array(n), R = s.R;
+    for (let iy = 0; iy < r; iy++) for (let ix = 0; ix < r; ix++) { const i = iy * r + ix, m = q(-R + (2 * R * ix) / (r - 1), -R + (2 * R * iy) / (r - 1), N[i]); X[i] = m[0]; Y[i] = m[1]; D[i] = m[2]; }
+    x.strokeStyle = "rgba(134,200,230,.35)"; x.lineWidth = 1; x.beginPath();
+    [[-R, -R], [R, -R], [R, R], [-R, R]].forEach(([a, b], i) => { const m = q(a, b, 0); i ? x.lineTo(m[0], m[1]) : x.moveTo(m[0], m[1]); }); x.closePath(); x.stroke();
+    const qs = [], dp = new Float32Array((r - 1) * (r - 1));
+    for (let iy = 0; iy < r - 1; iy++) for (let ix = 0; ix < r - 1; ix++) { const i = iy * r + ix; dp[iy * (r - 1) + ix] = (D[i] + D[i + r + 1]) / 2; qs.push(iy * (r - 1) + ix); }
+    qs.sort((a, b) => dp[b] - dp[a]); // painter : du plus loin au plus proche
+    x.lineWidth = 0.6; x.strokeStyle = "rgba(2,3,7,.35)";
+    for (const k of qs) {
+      const ix = k % (r - 1), iy = (k / (r - 1)) | 0, i = iy * r + ix, j = [i, i + 1, i + r + 1, i + r], c = cmap((N[j[0]] + N[j[1]] + N[j[2]] + N[j[3]]) / 4);
+      x.fillStyle = `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`; x.beginPath(); x.moveTo(X[j[0]], Y[j[0]]); for (let t = 1; t < 4; t++) x.lineTo(X[j[t]], Y[j[t]]); x.closePath(); x.fill(); x.stroke();
+    }
+  }
+  function over(x, s, W, pt, d3) {
+    x.font = "10px 'JetBrains Mono',monospace"; x.lineJoin = "round";
+    const line = (arr, col, w) => { x.strokeStyle = col; x.lineWidth = w; x.beginPath(); arr.forEach((q, i) => { const m = pt(q[0], q[1]); i ? x.lineTo(m[0], m[1]) : x.moveTo(m[0], m[1]); }); x.stroke(); };
+    const dot = (a, b, r, fill, stroke) => { const m = pt(a, b); x.beginPath(); x.arc(m[0], m[1], r, 0, 7); if (fill) { x.fillStyle = fill; x.fill(); } if (stroke) { x.strokeStyle = stroke; x.lineWidth = 2; x.stroke(); } return m; };
+    if (s.pr && s.pr.length) { line(s.pr.concat([[0, 0]]), "#fff", 1.6); const q0 = s.pr[0], m = dot(q0[0], q0[1], 4.5, "#00ff9d"); x.fillStyle = "#fff"; x.fillText("init", m[0] + 7, m[1] - 5); }
+    s.mins.forEach(([a, b]) => { const m = pt(a, b); x.fillStyle = "#00e5ff"; x.strokeStyle = "#020307"; x.lineWidth = 1.5; x.beginPath(); x.moveTo(m[0], m[1] + 6); x.lineTo(m[0] - 5, m[1] - 4); x.lineTo(m[0] + 5, m[1] - 4); x.closePath(); x.fill(); x.stroke(); });
+    const m0 = dot(0, 0, 5.5, null, "#fff"); x.fillStyle = "#fff"; x.fillText("actuel", m0[0] + 8, m0[1] + 12);
+    s.rc.forEach((r) => { const c = OPT[r.k][1]; line(r.tr, c, 2); dot(r.p[0], r.p[1], 4.5, c, "#020307"); });
+    const p = s.pb; if (!p) return;
+    const m = pt(p.a, p.b); x.strokeStyle = "#ff3d5a"; x.lineWidth = 2; x.beginPath(); x.moveTo(m[0] - 7, m[1]); x.lineTo(m[0] + 7, m[1]); x.moveTo(m[0], m[1] - 7); x.lineTo(m[0], m[1] + 7); x.stroke();
+    if (d3) return;
+    if (p.gn > 0) { // flèche de descente −∇L
+      const L = 34, ux = -p.ga / p.gn, uy = p.gb / p.gn, ex = m[0] + L * ux, ey = m[1] + L * uy, an = Math.atan2(uy, ux);
+      x.strokeStyle = "#fff"; x.lineWidth = 2; x.beginPath(); x.moveTo(m[0], m[1]); x.lineTo(ex, ey); x.moveTo(ex, ey); x.lineTo(ex - 7 * Math.cos(an - 0.45), ey - 7 * Math.sin(an - 0.45)); x.moveTo(ex, ey); x.lineTo(ex - 7 * Math.cos(an + 0.45), ey - 7 * Math.sin(an + 0.45)); x.stroke();
+    }
+    [[p.ang, p.l1], [p.ang + Math.PI / 2, p.l2]].forEach(([an, lam]) => { // axes de courbure (cyan : λ > 0, rouge : λ < 0)
+      x.strokeStyle = lam >= 0 ? "#00e5ff" : "#ff3d5a"; x.lineWidth = 1.6; x.setLineDash([3, 3]); x.beginPath();
+      x.moveTo(m[0] - 20 * Math.cos(an), m[1] + 20 * Math.sin(an)); x.lineTo(m[0] + 20 * Math.cos(an), m[1] - 20 * Math.sin(an)); x.stroke(); x.setLineDash([]);
+    });
+  }
+  function drawSurf() {
+    const s = S.surf, cv = $("llCv"); if (!s || !cv) return;
+    const W = cv.clientWidth || 320, dpr = Math.min(2, window.devicePixelRatio || 1), px = Math.round(W * dpr);
+    if (cv.width !== px) cv.width = cv.height = px;
+    const x = cv.getContext("2d"), lg = $("llScale").value === "log", R = s.R, d3 = S.view === "3d"; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (s.Nk !== lg) { s.N = Float32Array.from(s.g, nrm(s.g, lg)); s.Nk = lg; s.bgk = null; }
+    x.clearRect(0, 0, W, W);
+    let pt;
+    if (d3) { const q = mk3(W, R); surf3d(x, s, W, q); pt = (a, b) => q(a, b, hAt(s, a, b) + 0.015); }
+    else {
+      const key = W + "|" + lg + "|" + $("llGrad").checked + "|" + dpr;
+      if (s.bgk !== key) { const o = document.createElement("canvas"); o.width = o.height = px; const g = o.getContext("2d"); g.scale(dpr, dpr); paint2d(g, s, W); s.bg = o; s.bgk = key; }
+      x.drawImage(s.bg, 0, 0, W, W); pt = (a, b) => [((a + R) / (2 * R)) * W, W - ((b + R) / (2 * R)) * W];
+    }
+    over(x, s, W, pt, d3);
+  }
+
+  // ── Sonde : gradient et hessien 2×2 exacts au point (α, β) ──
+  function probe(a, b) {
+    const s = S.surf, h1 = s.R * 0.012, h2 = s.R * 0.04, th = new Float64Array(s.c.length), ev = (u, v) => s.f(thAt(s, u, v, th));
+    const L = ev(a, b), ga = (ev(a + h1, b) - ev(a - h1, b)) / (2 * h1), gb = (ev(a, b + h1) - ev(a, b - h1)) / (2 * h1);
+    const fa = ev(a + h2, b), fm = ev(a - h2, b), fb = ev(a, b + h2), fn = ev(a, b - h2), pp = ev(a + h2, b + h2), pm = ev(a + h2, b - h2), mp = ev(a - h2, b + h2), mm = ev(a - h2, b - h2);
+    const haa = (fa - 2 * L + fm) / (h2 * h2), hbb = (fb - 2 * L + fn) / (h2 * h2), hab = (pp - pm - mp + mm) / (4 * h2 * h2);
+    const m = (haa + hbb) / 2, d = Math.hypot((haa - hbb) / 2, hab), l1 = m + d, l2 = m - d, ang = 0.5 * Math.atan2(2 * hab, haa - hbb), gn = Math.hypot(ga, gb);
+    const tol = (1e-3 * (Math.abs(L) + 1e-9)) / (s.R * s.R), crit = gn * s.R < 0.02 * (Math.abs(L) + 1e-9);
+    const kind = !crit ? ["pente", "var(--a1)", "le gradient est non nul : on n'est pas sur un point critique, l'optimiseur descend."]
+      : l1 > tol && l2 > tol ? ["minimum local", "var(--grn)", "courbure positive dans toutes les directions du plan : un bol."]
+      : l1 < -tol && l2 < -tol ? ["maximum local", "var(--red)", "courbure négative partout : un sommet."]
+      : l1 > tol && l2 < -tol ? ["col (selle)", "var(--ylw)", "monte dans un sens, descend dans l'autre : les optimiseurs peuvent y ralentir longtemps."]
+      : ["plateau / vallée plate", "var(--ylw)", "courbure quasi nulle dans au moins une direction."];
+    s.pb = { a, b, L, ga, gb, gn, haa, hbb, hab, l1, l2, ang, h1, h2, kind, kap: l2 > tol && l1 > 0 ? l1 / l2 : null, th: thAt(s, a, b) };
   }
   function probeUI() {
     const s = S.surf, p = s && s.pb, el = $("llProbe"); if (!el) return;
-    if (!p) { el.innerHTML = '<div class="rl-p" style="margin:0">👆 Touche la carte pour sonder un point (α, β) : la loss y est recalculée exactement sur tout le dataset.</div>'; return; }
+    if (!p) { el.innerHTML = '<div class="rl-h">② Sonde</div><div class="rl-p" style="margin:0">👆 Touche ou glisse sur la carte pour sonder un point (α, β) : loss exacte sur tout le dataset, gradient, courbure (hessien 2×2) et nature du point.</div>'; return; }
     const { sz } = lay(), t0 = p.th[0];
-    const ind = `w₀₀⁽¹⁾' = w₀₀⁽¹⁾ + α·d₁ + β·d₂\n       = ${fx(s.c[0])} + (${fx(p.a)})·(${fx(s.d1[0])}) + (${fx(p.b)})·(${fx(s.d2[0])}) = ${fx(t0)}\n(idem pour chacun des ${s.c.length} paramètres)`;
-    const mat = `W⁽ˡ⁾' = W⁽ˡ⁾ + α·D₁⁽ˡ⁾ + β·D₂⁽ˡ⁾ ,   b⁽ˡ⁾' = b⁽ˡ⁾ + α·e₁⁽ˡ⁾ + β·e₂⁽ˡ⁾\n${sz.map(([o, n], l) => `W⁽${l + 1}⁾ ∈ ℝ^(${o}×${n})`).join("  ·  ")}`;
-    el.innerHTML = `<div class="rl-h">Point sondé : (α, β) = (${fx(p.a)}, ${fx(p.b)})</div>
+    const ind = `w₀₀⁽¹⁾' = w₀₀⁽¹⁾ + α·d₁ + β·d₂ = ${fx(s.c[0])} + (${fx(p.a)})·(${fx(s.d1[0])}) + (${fx(p.b)})·(${fx(s.d2[0])}) = ${fx(t0)}\n(idem pour chacun des ${s.c.length} paramètres)\n∂L/∂α ≈ [L(α+h,β) − L(α−h,β)] / 2h = ${fx(p.ga)}      (h = ${fx(p.h1)})\n∂L/∂β ≈ [L(α,β+h) − L(α,β−h)] / 2h = ${fx(p.gb)}\nLαα ≈ [L(α+k,β) − 2L + L(α−k,β)] / k² = ${fx(p.haa)}      (k = ${fx(p.h2)})\nLββ ≈ ${fx(p.hbb)}      Lαβ ≈ ${fx(p.hab)}`;
+    const mat = `θ' = θ + α·d₁ + β·d₂      W⁽ˡ⁾' = W⁽ˡ⁾ + α·D₁⁽ˡ⁾ + β·D₂⁽ˡ⁾ ,   b⁽ˡ⁾' = b⁽ˡ⁾ + α·e₁⁽ˡ⁾ + β·e₂⁽ˡ⁾\n${sz.map(([o, n], l) => `W⁽${l + 1}⁾ ∈ ℝ^(${o}×${n})`).join("  ·  ")}\n∇L = [ ${fx(p.ga)} , ${fx(p.gb)} ]ᵀ\nH = [[ ${fx(p.haa)} , ${fx(p.hab)} ],\n     [ ${fx(p.hab)} , ${fx(p.hbb)} ]]\nλ₁,₂ = tr(H)/2 ± √( ((Lαα−Lββ)/2)² + Lαβ² ) = ${fx(p.l1)} , ${fx(p.l2)}`;
+    el.innerHTML = `<div class="rl-h">② Sonde (α, β) = (${fx(p.a)}, ${fx(p.b)})</div>
+      <div class="rl-stat"><span>L <b>${fx(p.L)}</b></span><span>ΔL vs actuel <b>${fx(p.L - s.l0)}</b></span><span>‖∇L‖ <b>${fx(p.gn)}</b></span></div>
+      <div class="rl-stat"><span>λ₁ <b>${fx(p.l1)}</b></span><span>λ₂ <b>${fx(p.l2)}</b></span>${p.kap ? `<span>κ = λ₁/λ₂ <b>${fx(p.kap)}</b></span>` : ""}</div>
+      <div class="rl-p" style="margin:4px 0"><b style="color:${p.kind[1]}">${p.kind[0]}</b> — ${p.kind[2]}${p.kap && p.kap > 20 ? " Vallée étroite (κ élevé) : SGD zigzague, Momentum/Adam aident." : ""}</div>
+      <div class="rl-leg"><span><i style="background:#fff"></i>−∇L</span><span><i style="background:#00e5ff"></i>courbure +</span><span><i style="background:#ff3d5a"></i>courbure −</span></div>
       <div class="rl-row"><button class="btn ${S.cm === "ind" ? "on" : ""}" onclick="llCm('ind')">Individuel</button><button class="btn ${S.cm === "mat" ? "on" : ""}" onclick="llCm('mat')">Matriciel</button></div>
       <div class="rl-m">${S.cm === "ind" ? ind : mat}</div>
-      <div class="rl-m">L(θ') = (1/m)·Σᵢ ℓ( f(xᵢ ; θ'), yᵢ ) = ${fx(p.L)}\nL(θ)  = ${fx(s.l0)}      →      ΔL = ${fx(p.L - s.l0)}</div>`;
+      <div class="rl-m">L(θ') = (1/m)·Σᵢ ℓ( f(xᵢ ; θ'), yᵢ ) = ${fx(p.L)}      L(θ) = ${fx(s.l0)}      →      ΔL = ${fx(p.L - s.l0)}</div>`;
   }
-  $("llCv").addEventListener("pointerdown", (e) => {
+  (function () {
+    const cv = $("llCv"); let dn = null;
+    const pick2 = (e) => { const s = S.surf; if (!s) return; const b = cv.getBoundingClientRect(); probe(cl(((e.clientX - b.left) / b.width * 2 - 1) * s.R, -s.R, s.R), cl((1 - (e.clientY - b.top) / b.height * 2) * s.R, -s.R, s.R)); drawSurf(); probeUI(); };
+    const pick3 = (e) => { // sommet de la grille le plus proche du doigt (à égalité : le plus près de la caméra)
+      const s = S.surf, b = cv.getBoundingClientRect(), W = cv.clientWidth, q = mk3(W, s.R), mx = e.clientX - b.left, my = e.clientY - b.top, r = s.res; let best = null, bs = 1e18;
+      for (let iy = 0; iy < r; iy++) for (let ix = 0; ix < r; ix++) {
+        const a = -s.R + (2 * s.R * ix) / (r - 1), bb = -s.R + (2 * s.R * iy) / (r - 1), m = q(a, bb, s.N[iy * r + ix]), d = Math.hypot(m[0] - mx, m[1] - my), sc = d < 12 ? d * 0.001 + m[2] - 1000 : d;
+        if (sc < bs) { bs = sc; best = [a, bb]; }
+      }
+      if (best) { probe(best[0], best[1]); drawSurf(); probeUI(); }
+    };
+    cv.addEventListener("pointerdown", (e) => { if (!S.surf) return; try { cv.setPointerCapture(e.pointerId); } catch (_) {} dn = { x: e.clientX, y: e.clientY, yaw: V.yaw, pit: V.pit, mv: 0, t: performance.now() }; if (S.view === "2d") pick2(e); });
+    cv.addEventListener("pointermove", (e) => {
+      if (!dn || !S.surf) return;
+      if (S.view === "2d") { if (performance.now() - dn.t > 40) { dn.t = performance.now(); pick2(e); } return; }
+      const dx = e.clientX - dn.x, dy = e.clientY - dn.y; dn.mv = Math.max(dn.mv, Math.hypot(dx, dy)); V.yaw = dn.yaw - dx * 0.01; V.pit = cl(dn.pit + dy * 0.01, 0.15, 1.45); drawSurf();
+    });
+    cv.addEventListener("pointerup", (e) => { if (dn && S.surf && S.view === "3d" && dn.mv < 5) pick3(e); dn = null; });
+    cv.addEventListener("pointercancel", () => { dn = null; });
+  })();
+
+  // ── Course d'optimiseurs dans le plan (gradient exact par différences finies) ──
+  function stepR(s, r, lr) {
+    const h = s.R * 0.01, th = S.tb && S.tb.length === s.c.length ? S.tb : (S.tb = new Float64Array(s.c.length)), ev = (u, v) => s.f(thAt(s, u, v, th)), [a, b] = r.p;
+    const g = [(ev(a + h, b) - ev(a - h, b)) / (2 * h), (ev(a, b + h) - ev(a, b - h)) / (2 * h)], st = lr * s.R * 0.1; let d;
+    r.gn = Math.hypot(g[0], g[1]); r.t++;
+    if (r.k === "sgd") d = g.map((v) => lr * v);
+    else if (r.k === "mom") { r.v = r.v.map((v, i) => 0.9 * v + g[i]); d = r.v.map((v) => lr * v); }
+    else if (r.k === "rms") { r.q = r.q.map((q, i) => 0.9 * q + 0.1 * g[i] * g[i]); d = g.map((v, i) => (st * v) / (Math.sqrt(r.q[i]) + 1e-8)); }
+    else { r.v = r.v.map((m, i) => 0.9 * m + 0.1 * g[i]); r.q = r.q.map((q, i) => 0.999 * q + 0.001 * g[i] * g[i]); const c1 = 1 - Math.pow(0.9, r.t), c2 = 1 - Math.pow(0.999, r.t); d = g.map((_, i) => (st * (r.v[i] / c1)) / (Math.sqrt(r.q[i] / c2) + 1e-8)); }
+    r.p = [cl(a - d[0], -1.25 * s.R, 1.25 * s.R), cl(b - d[1], -1.25 * s.R, 1.25 * s.R)]; r.tr.push(r.p.slice()); if (r.tr.length > 4000) r.tr.shift();
+    r.L = ev(r.p[0], r.p[1]); if (!isFinite(r.L) || r.gn < 1e-7 || r.t >= 5000) r.done = true;
+  }
+  function loop() {
+    cancelAnimationFrame(S.raf);
+    const go = () => {
+      const s = S.surf;
+      if (!s || !S.run || !$("ll-modal-bg").classList.contains("show")) { S.run = false; raceUI(); return; }
+      const lr = Math.pow(10, +$("llLr").value), sp = +$("llSpd").value, t0 = performance.now();
+      for (let n = 0; n < sp && performance.now() - t0 < 10; n++) s.rc.forEach((r) => { if (!r.done) stepR(s, r, lr); });
+      if (s.rc.every((r) => r.done)) S.run = false;
+      drawSurf(); raceUI(); if (S.run) S.raf = requestAnimationFrame(go);
+    };
+    S.raf = requestAnimationFrame(go);
+  }
+  function raceStart() {
     const s = S.surf; if (!s) return;
-    const b = $("llCv").getBoundingClientRect(), a = ((e.clientX - b.left) / b.width * 2 - 1) * s.R, bb = (1 - (e.clientY - b.top) / b.height * 2) * s.R;
-    const th = new Float64Array(s.c.length); for (let k = 0; k < th.length; k++) th[k] = s.c[k] + a * s.d1[k] + bb * s.d2[k];
-    s.pb = { a, b: bb, L: s.f(th), th }; drawSurf();
-  });
+    if (!s.pb) probe((Math.random() * 1.4 - 0.7) * s.R, (Math.random() * 1.4 - 0.7) * s.R);
+    const { a, b, L } = s.pb; s.rc = [];
+    Object.keys(OPT).forEach((k) => { if ($("llO_" + k).checked) s.rc.push({ k, p: [a, b], tr: [[a, b]], v: [0, 0], q: [0, 0], t: 0, L, gn: null, done: false }); });
+    if (!s.rc.length) { raceUI(); return; }
+    S.run = true; drawSurf(); probeUI(); loop();
+  }
+  function raceUI() {
+    const s = S.surf, el = $("llRace"), rc = s ? s.rc : []; if (!el) return;
+    $("llGo").textContent = S.run ? "⏸ Pause" : rc.length && !rc.every((r) => r.done) ? "▶ Reprendre" : "▶ Lancer depuis la sonde";
+    const best = rc.length ? Math.min(...rc.map((r) => (isFinite(r.L) ? r.L : Infinity))) : 0;
+    el.innerHTML = rc.length ? `<div class="rl-scroll"><table class="rl-tbl"><tr><th>Optimiseur</th><th>pas</th><th>L</th><th>‖∇L‖</th><th></th></tr>` +
+      rc.map((r) => `<tr class="${r.L === best ? "hi" : ""}"><td><i class="ll-dot" style="background:${OPT[r.k][1]}"></i>${OPT[r.k][0]}</td><td>${r.t}</td><td>${fx(r.L)}</td><td>${r.gn == null ? "—" : fx(r.gn)}</td><td>${r.done ? "✓" : ""}</td></tr>`).join("") + `</table></div>`
+      : '<div class="rl-p" style="margin:0">Choisis des optimiseurs, pose une sonde, puis lance : ils partent du même point et descendent le même terrain.</div>';
+    $("llUndo").disabled = !S.bak;
+  }
+  function applyTheta(th) { // écrit un point du plan dans le vrai réseau (sauvegarde des poids d'origine au premier appel)
+    const { off, sz } = lay(); if (!S.bak) S.bak = flat(); S.run = false;
+    NET.W.forEach((W, l) => { const [no, ni] = sz[l]; for (let j = 0; j < no; j++) { for (let k = 0; k < ni; k++) W[j][k] = th[off[l] + j * ni + k]; NET.B[l][j] = th[off[l] + no * ni + j]; } });
+    try { redraw(); updateNetStatsBar(); } catch (e) {}
+    S.surf = null; S.ran = {}; llRun();
+  }
 
   // ── Onglet Tranche 1D ──
   function plot(cv, xs, curves, marks, lg) {
@@ -30671,17 +30881,42 @@ input[type=range]::-moz-range-thumb{
     catch (e) { const el = t === "surf" ? $("llSurfInfo") : t === "d1" ? $("llInfo1") : $("llSharp"); el.innerHTML = '<span style="color:var(--red)">Erreur : ' + e.message + "</span>"; }
   }
   function llTab(t, force) {
-    S.tab = t;
+    S.tab = t; if (t !== "surf") S.run = false;
     ["surf", "d1", "sharp"].forEach((k) => { $("lltab-" + k).classList.toggle("show", k === t); $("lltab-btn-" + k).classList.toggle("active", k === t); });
     $("llMsg").style.display = ok() ? "none" : "block";
     if (ok() && (force || S.ran[t] !== stamp())) llRun();
   }
   window.openLLLab = function () {
     $("ll-modal-bg").classList.add("show"); snap(); $("llSnN").textContent = S.sn.length;
-    $("llDir").value = S.sn.length >= 3 ? "pca" : "rand"; $("llM").value = S.sn.length >= 2 ? "interp" : "rand"; llTab(S.tab, 1);
+    $("llDir").value = S.sn.length >= 3 ? "pca" : "rand"; $("llM").value = S.sn.length >= 2 ? "interp" : "rand";
+    if (ok()) fillPar(); parRow(); llView(S.view); llTab(S.tab, 1);
   };
-  window.closeLLLab = function () { S.tok++; $("ll-modal-bg").classList.remove("show"); };
+  window.closeLLLab = function () { S.tok++; S.run = false; $("ll-modal-bg").classList.remove("show"); };
   window.llTab = llTab; window.llRun = llRun;
+  const parRow = () => $("llParRow").classList.toggle("show", $("llDir").value === "par");
+  window.llMode = () => { parRow(); llAuto(); };
+  window.llAuto = () => { clearTimeout(S.ta); S.ta = setTimeout(() => { if ($("ll-modal-bg").classList.contains("show")) llRun(); }, 250); };
+  window.llView = (v) => {
+    S.view = v; $("llV2").classList.toggle("on", v === "2d"); $("llV3").classList.toggle("on", v === "3d"); $("llCv").style.cursor = v === "3d" ? "grab" : "crosshair";
+    $("llHint").textContent = v === "2d" ? "Touche ou glisse : sonde · ▼ minima locaux · blanc : chemin d'entraînement · pointillés : axes de courbure" : "Glisse : tourner · tape un point : sonder · la hauteur suit l'échelle choisie";
+    drawSurf();
+  };
+  window.llLrV = (v) => ($("llLrV").textContent = Math.pow(10, +v).toPrecision(2));
+  window.llGo = () => {
+    const s = S.surf; if (!s) return;
+    if (S.run) { S.run = false; raceUI(); return; }
+    if (s.rc.length && !s.rc.every((r) => r.done)) { S.run = true; loop(); return; }
+    raceStart();
+  };
+  window.llClear = () => { S.run = false; if (S.surf) S.surf.rc = []; drawSurf(); raceUI(); };
+  window.llApply = (w) => {
+    const s = S.surf; if (!s) return; let th;
+    if (w === "probe") { if (!s.pb) return; th = s.pb.th; }
+    else { const r = s.rc.filter((q) => isFinite(q.L)).sort((a, b) => a.L - b.L)[0]; if (!r) return; th = thAt(s, r.p[0], r.p[1]); }
+    applyTheta(th);
+  };
+  window.addEventListener("resize", () => { if ($("ll-modal-bg").classList.contains("show")) drawSurf(); });
+  window.llUndo = () => { if (!S.bak) return; const th = S.bak; S.bak = null; applyTheta(th); S.bak = null; raceUI(); };
   window.llV = (id, v) => ($(id).textContent = v);
   window.llCm = (m) => { S.cm = m; probeUI(); };
   window.llDraw = () => { drawSurf(); draw1D(); };

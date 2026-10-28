@@ -2921,8 +2921,9 @@
       #boundary-cvs {
         display: block;
         width: 100%;
-        image-rendering: pixelated;
+        aspect-ratio: 1 / 1;
       }
+      #boundary-modal { max-height: 96vh; overflow-y: auto; }
       #boundary-footer {
         padding: 8px 14px;
         border-top: 1px solid var(--brd);
@@ -5059,6 +5060,7 @@
             </div>
           </div>
           <canvas id="lossChart" title="Clic = zoom/effacer"></canvas>
+          <div id="valStatLine" style="display:none;font-size:9px;margin-top:3px"></div>
           <div class="btn-row" style="margin-top: 6px">
             <button class="btn go" onclick="doStep()" style="flex: 1">
               ▶ Step
@@ -5410,6 +5412,32 @@
                 + Ajouter ligne
               </button>
               <button class="btn ok" onclick="applyDS()">✓ Appliquer</button>
+            </div>
+            <div id="dsSplitCard" style="margin-top:10px;padding:8px;border:1px solid var(--brd);border-radius:6px;background:var(--p2)">
+              <div class="sh">✂ Train / Validation (test)</div>
+              <div style="font-size:8px;color:var(--dim);line-height:1.6;margin-bottom:6px">
+                Met une partie des exemples de côté. Le réseau ne s'entraîne que sur « train » ;
+                « validation » sert à mesurer la généralisation : courbe de loss orange, Val loss/acc,
+                frontière de décision (touche B), onglet Test, early stopping.
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;font-size:9px">
+                <span>Validation</span>
+                <input type="range" id="dsValPct" min="10" max="50" step="5" value="20" style="flex:1">
+                <span id="dsValPctV" style="min-width:30px;color:var(--org)">20%</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;margin-top:5px;font-size:9px">
+                <label style="display:flex;gap:3px;align-items:center"><input type="checkbox" id="dsValStrat" checked style="width:auto">Stratifié (classes)</label>
+                <input type="number" id="dsValSeed" placeholder="graine (vide = aléatoire)" style="flex:1;font-size:9px">
+              </div>
+              <div class="btn-row" style="margin-top:6px">
+                <button class="btn ok" onclick="dsSplit()" style="flex:1">✂ Découper</button>
+                <button class="btn" id="dsMergeBtn" onclick="dsSplitMerge()" disabled>⟲ Fusionner</button>
+              </div>
+              <div class="btn-row" style="margin-top:4px">
+                <button class="btn" onclick="dsImportVal()" style="flex:1" title="Utilise le JSON saisi plus bas (tableau de {i,o})">📥 JSON → validation</button>
+              </div>
+              <label style="display:flex;gap:4px;align-items:center;margin-top:6px;font-size:9px;color:var(--dim)"><input type="checkbox" id="dsValEarly" style="width:auto">Early stopping sur la loss de validation</label>
+              <div id="dsSplitInfo" style="margin-top:6px;font-size:9px"></div>
             </div>
             <div style="margin-top: 8px">
               <lbl>Import JSON rapide (tableau de {i:[],o:[]})</lbl>
@@ -6561,6 +6589,39 @@
                 🏔 Ouvrir le labo Paysage
               </button>
             </div>
+
+            <div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--a2);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--a2);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🎯 Labo Généralisation
+              </div>
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">
+                Sépare ton dataset en <b style="color: var(--ylw)">train / validation</b>,
+                compare les deux courbes de loss en direct, détecte
+                automatiquement le <b style="color: var(--ylw)">surapprentissage</b>,
+                arrête l'entraînement au meilleur moment et reviens au meilleur modèle
+              </div>
+              <button class="btn ok" onclick="openGNLab()" style="width: 100%; border-color: var(--a2); color: var(--a2)">
+                🎯 Ouvrir le labo Généralisation
+              </button>
+            </div>
+
 
             <div
               style="
@@ -19910,32 +19971,27 @@ fn loss_accum() {
     <canvas id="matrix-canvas"></canvas>
     <div id="celebrate-banner">🎉 Accuracy 100% — Réseau convergé!</div>
 
-    <!-- Decision Boundary -->
+    <!-- Decision Boundary (v14) -->
     <div id="boundary-modal-bg">
       <div id="boundary-modal">
         <div id="boundary-header">
-          <h2>🗺 Frontière de décision</h2>
-          <button
-            class="btn"
-            onclick="
-              stopBoundaryLive();
-              document
-                .getElementById('boundary-modal-bg')
-                .classList.remove('show');
-            "
-          >
-            ✕
-          </button>
+          <h2>🗺 Frontière de décision <span id="bdLiveTag" style="color:var(--grn);font-size:9px;margin-left:6px"></span></h2>
+          <button class="btn" onclick="stopBoundaryLive();document.getElementById('boundary-modal-bg').classList.remove('show');">✕</button>
         </div>
-        <div style="background: #020307">
-          <canvas id="boundary-cvs" width="400" height="400"></canvas>
+        <div id="bdBar" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:7px 12px;border-bottom:1px solid var(--brd);font-size:9px;color:var(--dim)">
+          <span id="bdAxes" style="display:none;gap:4px;align-items:center">Axes
+            <select id="bdX" onchange="renderBoundary()" style="width:auto"></select>×
+            <select id="bdY" onchange="renderBoundary()" style="width:auto"></select></span>
+          <span id="bdModeWrap" style="display:none">Affichage
+            <select id="bdMode" onchange="renderBoundary()" style="width:auto"></select></span>
+          <label style="display:flex;gap:3px;align-items:center"><input type="checkbox" id="bdShowT" checked onchange="renderBoundary()" style="width:auto">● train</label>
+          <label id="bdValWrap" style="display:none;gap:3px;align-items:center;color:var(--org)"><input type="checkbox" id="bdShowV" checked onchange="renderBoundary()" style="width:auto">◆ validation</label>
         </div>
+        <div style="background:#020307"><canvas id="boundary-cvs" width="480" height="480"></canvas></div>
+        <div id="bdLegend" style="display:flex;flex-wrap:wrap;gap:4px 12px;padding:6px 14px 0;font-size:9px;color:var(--dim)"></div>
+        <div id="bdStats" style="padding:4px 14px 0;font-size:9px;color:var(--dim)"></div>
         <div id="boundary-footer">
-          <div style="flex: 1; font-size: 8px; display: flex; gap: 10px">
-            <span style="color: #00e5ff">■ Classe 0</span>
-            <span style="color: #bf5fff">■ Classe 1</span>
-            <span>● Données</span>
-          </div>
+          <div style="flex:1"></div>
           <button class="btn" onclick="renderBoundary()">🔄</button>
           <button class="btn go" onclick="startBoundaryLive()">▶ Live</button>
           <button class="btn" onclick="stopBoundaryLive()">⏹</button>
@@ -31247,5 +31303,773 @@ function setUITheme(t,silent){
   window.addEventListener("load",()=>{setUITheme(t,true); if(t!=="neon"){try{applyTheme(t)}catch(e){}}});})();
 </script>
 
+<!-- ══════════════ LABO GÉNÉRALISATION (train / validation) ══════════════ -->
+<style>
+#gn-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1500;display:none;align-items:center;justify-content:center}
+#gn-modal-bg.show{display:flex}
+#gn-modal{background:var(--p1);border:1px solid var(--a2);border-radius:8px;max-width:1180px;width:98%;max-height:94vh;overflow-y:auto;box-shadow:0 0 40px rgba(191,95,255,.14)}
+#gn-header{padding:12px 18px;border-bottom:1px solid var(--brd);background:linear-gradient(135deg,var(--p1),var(--p2));display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:2}
+#gn-header h2{font-family:"Syne",sans-serif;color:var(--a2);font-size:14px;flex:1}
+#gn-body{padding:14px 18px}
+#gn-footer{padding:10px 18px;border-top:1px solid var(--brd);display:flex;gap:8px;align-items:center}
+.gn-g{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media(min-width:901px){.gn-g{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}}
+.gn-k{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.gn-k div{background:#020307;border:1px solid var(--brd);border-radius:3px;padding:6px 4px;text-align:center}
+.gn-k b{display:block;font-size:13px;color:var(--text);font-weight:700}
+.gn-k span{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.gn-dg{border-left:3px solid var(--dim);padding:2px 0 2px 10px}
+.gn-dg h3{font-family:"Syne",sans-serif;font-size:13px;margin-bottom:4px}
+.gn-dg ul{margin:4px 0 0 16px;font-size:10px;color:var(--dim);line-height:1.8}
+.gn-dg ul b{color:var(--text)}
+#gnMap{aspect-ratio:1/1;max-width:420px;margin:0 auto}
+@media(max-width:900px){#gn-modal{width:100%;max-width:none;height:100%;max-height:100vh;border-radius:0}#gn-body{padding:10px 12px}#gn-body .btn{font-size:11.5px;padding:9px 10px;min-height:36px}}
+</style>
+
+<div id="gn-modal-bg">
+  <div id="gn-modal">
+    <div id="gn-header">
+      <h2>🎯 Labo Généralisation</h2>
+      <button class="btn" onclick="closeGNLab()">✕</button>
+    </div>
+    <div id="gn-body">
+      <div class="rl-p">
+        Un réseau qui a <b>appris</b> n'est pas un réseau qui a <b>mémorisé</b>. On met de côté des exemples de
+        <em>validation</em> que le réseau ne voit jamais à l'entraînement : quand la courbe de validation remonte
+        alors que celle d'entraînement continue de descendre, c'est du <b>surapprentissage</b>.
+      </div>
+
+      <div class="rl-card p">
+        <div class="rl-h">① Données et split</div>
+        <div class="rl-row">
+          <div class="rl-ctl"><span class="rl-cl">Source</span>
+            <select id="gnSrc" onchange="gnGenRow()">
+              <option value="cur">Dataset actuel</option>
+              <option value="moons">Démo : deux lunes</option>
+              <option value="circles">Démo : cercles</option>
+              <option value="blobs">Démo : deux nuages</option>
+            </select></div>
+          <div class="rl-ctl"><span class="rl-cl">Validation</span>
+            <input type="range" id="gnPct" min="10" max="50" step="5" value="25" oninput="gnV('gnPctV',this.value+'%')" /><b id="gnPctV">25%</b></div>
+        </div>
+        <div class="rl-row" id="gnGen" style="display:none">
+          <div class="rl-ctl"><span class="rl-cl">Points</span>
+            <input type="range" id="gnN" min="20" max="300" step="10" value="80" oninput="gnV('gnNV',this.value)" /><b id="gnNV">80</b></div>
+          <div class="rl-ctl"><span class="rl-cl">Bruit</span>
+            <input type="range" id="gnNoise" min="0" max="0.5" step="0.05" value="0.2" oninput="gnV('gnNoiseV',this.value)" /><b id="gnNoiseV">0.2</b></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn go" style="flex:2" onclick="gnSplit()">✂ Créer / re-mélanger le split</button>
+          <button class="btn" style="flex:1" onclick="gnRelease()">↩ Dataset complet</button>
+        </div>
+        <div class="rl-stat" id="gnSplitInfo" style="margin-top:6px"></div>
+      </div>
+
+      <div class="gn-g">
+        <div>
+          <div class="rl-card">
+            <div class="rl-h">② Courbes d'apprentissage</div>
+            <canvas id="gnCv" class="rl-cv" style="height:230px"></canvas>
+            <div class="rl-leg">
+              <span><i style="background:#00e5ff"></i>entraînement</span>
+              <span><i style="background:#ff8c2a"></i>validation</span>
+              <span><i style="background:#ff3d5a"></i>écart</span>
+              <span><i style="background:#00ff9d"></i>meilleure validation</span>
+            </div>
+            <div class="gn-k" id="gnK"></div>
+          </div>
+          <div class="rl-card y">
+            <div class="rl-h">③ Entraîner</div>
+            <div class="btn-row" style="margin-top:0">
+              <button class="btn ok" style="flex:1" onclick="gnTrain(1)">+1 epoch</button>
+              <button class="btn ok" style="flex:1" onclick="gnTrain(10)">×10</button>
+              <button class="btn ok" style="flex:1" onclick="gnTrain(100)">×100</button>
+              <button class="btn" id="gnAuto" style="flex:1" onclick="gnAuto()">⚡ Auto</button>
+            </div>
+            <div class="rl-row" style="margin-top:8px">
+              <label class="rl-ctl"><input type="checkbox" id="gnStop" checked /> ⏸ Stopper quand la validation remonte</label>
+              <div class="rl-ctl"><span class="rl-cl">Patience</span><input type="number" id="gnPat" min="1" max="2000" value="60" /></div>
+            </div>
+            <div class="rl-row">
+              <label class="rl-ctl"><input type="checkbox" id="gnRest" checked /> Restaurer le meilleur modèle à l'arrêt</label>
+            </div>
+            <div class="btn-row">
+              <button class="btn warn" id="gnBest" style="flex:1" onclick="gnBest()" disabled>↩ Revenir au meilleur modèle</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="rl-card" id="gnDiag"></div>
+          <div class="rl-card">
+            <div class="rl-h">④ Carte de décision</div>
+            <canvas id="gnMap" class="rl-cv"></canvas>
+            <div class="rl-leg" id="gnMapLeg"><span>● entraînement (plein)</span><span>○ validation (anneau)</span><span style="color:var(--red)">◌ validation ratée</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="gn-footer">
+      <div style="font-size:8px;color:var(--dim);flex:1">Réglages L2, Dropout et Early stopping : onglet <b style="color:var(--a1)">Options</b></div>
+      <button class="btn" onclick="closeGNLab()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const G = { t1: 0, cost: 1, full: null, tr: null, va: null, h: [], stride: 1, net: null, best: null, since: 0, stop: false, raf: 0 };
+  const ready = () => typeof NET !== "undefined" && NET && NET.W && NET.W.length > 0;
+  const isOpen = () => $("gn-modal-bg").classList.contains("show");
+  const gs = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.2832 * v); };
+  const am = (a) => a.indexOf(Math.max(...a));
+  const pc = (a) => (a == null ? "—" : a.toFixed(0) + "%");
+  const fl = (v) => (isFinite(v) ? (+v).toFixed(4) : "∞");
+  const mkSet = (x, y) => ({ x, y, cls: y.every((r) => r.every((v) => v === 0 || v === 1)) });
+
+  // Le forward de l'app applique le dropout même hors entraînement : on le coupe pour mesurer.
+  function noDrop(f) { const el = $("cDrop"), v = el.value; el.value = 0; try { return f(); } finally { el.value = v; } }
+  function evalSet(S) {
+    if (!S || !S.x.length) return { l: NaN, a: null };
+    return noDrop(() => {
+      let L = 0, ok = 0;
+      S.x.forEach((x, i) => {
+        const p = forward(x, false).activations.at(-1);
+        L += computeLoss(p, S.y[i]);
+        if (S.cls && (p.length === 1 ? Math.round(p[0]) === S.y[i][0] : am(p) === am(S.y[i]))) ok++;
+      });
+      return { l: L / S.x.length, a: S.cls ? (100 * ok) / S.x.length : null };
+    });
+  }
+  const cl = (o) => JSON.parse(JSON.stringify(o));
+  const snapW = () => ({ W: cl(NET.W), B: cl(NET.B), BN: bnOn() ? cl(BN) : null });
+
+  // ── Données ──
+  const GEN = {
+    moons: (n, s) => Array.from({ length: n }, (_, i) => { const c = i % 2, t = Math.PI * Math.random(); return [[c ? 1 - Math.cos(t) : Math.cos(t), c ? 0.5 - Math.sin(t) : Math.sin(t)], c]; }),
+    circles: (n, s) => Array.from({ length: n }, (_, i) => { const c = i % 2, t = 6.2832 * Math.random(), r = c ? 0.45 : 1; return [[r * Math.cos(t), r * Math.sin(t)], c]; }),
+    blobs: (n, s) => Array.from({ length: n }, (_, i) => { const c = i % 2, m = c ? 0.6 : -0.6; return [[m, m], c]; }),
+  };
+  function generate(kind, n, s) {
+    const raw = GEN[kind](n, s).map(([p, c]) => [[p[0] + gs() * s * (kind === "blobs" ? 2.2 : 1), p[1] + gs() * s * (kind === "blobs" ? 2.2 : 1)], c]);
+    const lo = [0, 1].map((k) => Math.min(...raw.map((r) => r[0][k]))), hi = [0, 1].map((k) => Math.max(...raw.map((r) => r[0][k])));
+    return { x: raw.map((r) => r[0].map((v, k) => 0.05 + (0.9 * (v - lo[k])) / (hi[k] - lo[k] || 1))), y: raw.map((r) => [r[1]]) };
+  }
+  function splitData(src, pct) {
+    const g = {}, tr = [], va = [];
+    src.x.map((_, i) => i).sort(() => Math.random() - 0.5).forEach((i) => (g[src.y[i].join()] ||= []).push(i));
+    Object.values(g).forEach((a) => { const k = Math.min(a.length - 1, Math.max(1, Math.round((a.length * pct) / 100))); a.forEach((i, j) => (j < k ? va : tr).push(i)); });
+    const pick = (ix) => mkSet(ix.map((i) => [...src.x[i]]), ix.map((i) => [...src.y[i]]));
+    return { tr: pick(tr), va: pick(va) };
+  }
+  function syncDS() { try { buildDSEditorFromCurrent(); renderDSPreview(); } catch (e) {} }
+
+  window.gnSplit = function () {
+    const kind = $("gnSrc").value, pct = +$("gnPct").value;
+    if (kind !== "cur") {
+      G.full = generate(kind, +$("gnN").value, +$("gnNoise").value);
+      DS.inN = 2; DS.outN = 1; $("dsIn").value = 2; $("dsOut").value = 1;
+    } else if (!G.full) G.full = { x: DS.inputs.map((r) => [...r]), y: DS.outputs.map((r) => [...r]) };
+    if (G.full.x.length < 6) { setInfo("⚠ Il faut au moins 6 exemples : choisis une source « Démo » pour générer des données."); G.full = null; return; }
+    const s = splitData(G.full, pct); G.tr = s.tr; G.va = s.va;
+    DS.inputs = G.tr.x.map((r) => [...r]); DS.outputs = G.tr.y.map((r) => [...r]); DS.inN = DS.inputs[0].length; DS.outN = DS.outputs[0].length;
+    syncDS();
+    if (kind !== "cur" && (!ready() || NET.L[0] !== 2 || NET.L.at(-1) !== 1)) {
+      $("iLayers").value = "2,16,16,1"; $("iActOut").value = "sigmoid"; $("iLoss").value = "logloss";
+      if ($("iAct").value === "sigmoid") $("iAct").value = "tanh";
+      buildNet();
+    } else if (ready()) { buildNet(); }
+    reset(); record(true); draw();
+  };
+  window.gnRelease = function () {
+    if (!G.full) return;
+    DS.inputs = G.full.x.map((r) => [...r]); DS.outputs = G.full.y.map((r) => [...r]);
+    G.full = G.tr = G.va = null; syncDS(); reset(); draw();
+  };
+  function setInfo(t) { $("gnSplitInfo").innerHTML = t; }
+
+  // ── Enregistrement (observateur : fonctionne avec les boutons du labo ET ceux de l'app) ──
+  function reset() { G.h = []; G.stride = 1; G.best = null; G.since = 0; G.net = ready() ? NET : null; G.stop = false; }
+  function record(force) {
+    if (!G.tr || !ready()) return;
+    let last = G.h.at(-1);
+    if (G.net !== NET || (last && EPOCH < last.ep)) { reset(); last = null; }
+    if (last && EPOCH === last.ep) return;
+    // Budget : la mesure ne doit pas dépasser ~25 % du temps de calcul (sauf en fin de série : force)
+    const t0 = performance.now();
+    if (!force && last && (EPOCH - last.ep < G.stride || t0 - G.t1 < 3 * G.cost)) return;
+    const t = evalSet(G.tr), v = evalSet(G.va), p = { ep: EPOCH, tl: t.l, vl: v.l, ta: t.a, va: v.a };
+    G.h.push(p); G.t1 = performance.now(); G.cost = Math.max(G.t1 - t0, 0.05);
+    if (isFinite(v.l) && (!G.best || v.l < G.best.vl)) G.best = { ...p, snap: snapW() };
+    if (G.h.length > 300) { const n = G.h.length; G.h = G.h.filter((_, i) => i % 2 === 0 || i === n - 1); G.stride *= 2; }
+    if ($("gnStop").checked && G.best && p.ep - Math.max(G.best.ep, G.since) >= (+$("gnPat").value || 60) && v.l > G.best.vl) G.stop = true;
+  }
+  function restore(msg) {
+    if (!G.best || !ready()) return;
+    const s = cl(G.best.snap); NET.W = s.W; NET.B = s.B;
+    if (s.BN) Object.assign(BN, s.BN);
+    G.since = EPOCH;
+    try { gpuOnNetChanged(); } catch (e) {}
+    if (G.h.length && G.h.at(-1).ep === EPOCH) G.h.pop(); // remplace la mesure d'avant restauration
+    record(true);
+    redraw(); if (msg) log(msg);
+  }
+  function hook(n, f) {
+    const o = window[n]; if (typeof o !== "function" || o.__gn) return;
+    const w = function () { const r = o.apply(this, arguments); try { return f(r); } catch (e) { return r; } };
+    w.__gn = 1; window[n] = w;
+  }
+  hook("buildNet", (r) => { if (G.tr) { reset(); } sched(); return r; });
+  hook("updateStats", (r) => { record(true); G.stop = false; sched(); return r; });
+  hook("earlyStopUpdate", (r) => {
+    record(); const s = G.stop; G.stop = false;
+    if (s) {
+      log(`<span style="color:var(--a2);font-weight:700">⏸ Early stopping (validation)</span> — la loss de validation ne s'améliore plus depuis ${+$("gnPat").value || 60} époques (meilleure : <span style="color:var(--grn)">${fl(G.best.vl)}</span> à l'epoch ${G.best.ep}).`);
+      if ($("gnRest").checked) restore(`<span style="color:var(--grn)">↩ Meilleur modèle restauré</span> (epoch ${G.best.ep})`);
+    }
+    sched(); return r || s;
+  });
+
+  // ── Diagnostic ──
+  function diag() {
+    const h = G.h;
+    if (!G.tr) return { c: "var(--dim)", t: "Pas de split actif", d: "Crée un split à l'étape ① : une partie du dataset est mise de côté pour juger la généralisation.", tips: [] };
+    if (h.length < 4) return { c: "var(--dim)", t: "En attente de données", d: "Entraîne quelques epochs pour voir apparaître les courbes.", tips: [] };
+    const L = h.at(-1), b = G.best, f = h[0];
+    const rise = L.vl > b.vl * 1.12 + 1e-4 && L.ep > b.ep, ratio = L.vl / Math.max(L.tl, 1e-6), gap = L.vl - L.tl;
+    if (!rise && ratio > 2 && gap > 0.05)
+      return { c: "var(--org)", t: "Écart qui se creuse", d: `La validation (${fl(L.vl)}) est ${ratio.toFixed(1)}× au-dessus de l'entraînement (${fl(L.tl)}), mais elle progresse encore : surveille la courbe orange. Si elle remonte, c'est du surapprentissage.`,
+        tips: ["Active l'<b>early stopping</b> sur validation ci-contre", "Anticipe avec <b>L2</b> / <b>Dropout</b> dans Options"] };
+    if (rise && L.tl < L.vl)
+      return { c: "var(--red)", t: "⚠ Surapprentissage", d: `La validation (${fl(L.vl)}) remonte depuis son minimum (${fl(b.vl)}, epoch ${b.ep}) alors que l'entraînement continue de baisser (${fl(L.tl)}) : le réseau mémorise au lieu de généraliser.`,
+        tips: ["<b>L2</b> (λ ≈ 0.01) ou <b>Dropout</b> 20-30 % dans Options", "<b>Revenir au meilleur modèle</b> (epoch " + b.ep + ")", "Réseau plus <b>petit</b>, ou plus de données (source Démo, + de points)", "Active l'<b>early stopping</b> sur validation ci-contre"] };
+    if (L.tl > f.tl * 0.6 || (L.ta != null && L.ta < 80))
+      return { c: "var(--ylw)", t: "Sous-apprentissage", d: `Même la loss d'entraînement reste haute (${fl(L.tl)}${L.ta != null ? ", " + pc(L.ta) + " de réussite" : ""}) : le réseau n'a pas encore assez appris.`,
+        tips: ["Entraîne <b>plus longtemps</b> (×100)", "Plus de <b>capacité</b> : couches/neurones en plus", "Ajuste le <b>learning rate</b> ou l'optimiseur (Adam)"] };
+    return { c: "var(--grn)", t: "✓ Bon ajustement", d: `Entraînement (${fl(L.tl)}) et validation (${fl(L.vl)}) restent proches : le réseau généralise.${L.vl < L.tl * 0.9 ? " (Validation meilleure que l'entraînement : petit jeu de validation ou dropout actif.)" : ""}`,
+      tips: ["Continue tant que la validation baisse", "Teste la robustesse en re-mélangeant le split (✂)"] };
+  }
+
+  // ── Rendu ──
+  function fit(cv, H) {
+    const d = window.devicePixelRatio || 1, W = cv.clientWidth || 300;
+    cv.width = W * d; cv.height = H * d; const x = cv.getContext("2d"); x.setTransform(d, 0, 0, d, 0, 0); return { x, W, H };
+  }
+  function drawCurves() {
+    const { x, W, H } = fit($("gnCv"), 230), h = G.h;
+    x.font = "9px JetBrains Mono"; x.fillStyle = "#80e1ff";
+    if (h.length < 2) { x.fillText("Pas encore de courbe : crée le split puis entraîne.", 12, H / 2); return; }
+    const m = { l: 42, r: 8, t: 10, b: 20 }, w = W - m.l - m.r, hh = H - m.t - m.b, e0 = h[0].ep, e1 = Math.max(h.at(-1).ep, e0 + 1);
+    let mx = 0; h.forEach((p) => { if (isFinite(p.tl)) mx = Math.max(mx, p.tl); if (isFinite(p.vl)) mx = Math.max(mx, p.vl); }); mx = mx > 0 ? mx : 1;
+    const X = (e) => m.l + ((e - e0) / (e1 - e0)) * w, Y = (v) => m.t + hh - (Math.min(isFinite(v) ? v : mx, mx) / mx) * hh;
+    x.strokeStyle = "#192040"; x.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) { const y = m.t + (hh * i) / 4; x.beginPath(); x.moveTo(m.l, y); x.lineTo(W - m.r, y); x.stroke(); x.fillText((mx * (1 - i / 4)).toPrecision(2), 4, y + 3); }
+    x.fillText(e0, m.l, H - 6); x.fillText("epoch " + e1, W - m.r - 52, H - 6);
+    x.beginPath(); h.forEach((p, i) => (i ? x.lineTo(X(p.ep), Y(p.vl)) : x.moveTo(X(p.ep), Y(p.vl))));
+    for (let i = h.length - 1; i >= 0; i--) x.lineTo(X(h[i].ep), Y(h[i].tl));
+    x.closePath(); x.fillStyle = "rgba(255,61,90,.13)"; x.fill();
+    if (G.best) { x.strokeStyle = "#00ff9d"; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(X(G.best.ep), m.t); x.lineTo(X(G.best.ep), m.t + hh); x.stroke(); x.setLineDash([]); x.fillStyle = "#00ff9d"; x.fillText("min val", Math.min(X(G.best.ep) + 3, W - 50), m.t + 9); }
+    [["tl", "#00e5ff"], ["vl", "#ff8c2a"]].forEach(([k, c]) => { x.strokeStyle = c; x.lineWidth = 2; x.beginPath(); h.forEach((p, i) => (i ? x.lineTo(X(p.ep), Y(p[k])) : x.moveTo(X(p.ep), Y(p[k])))); x.stroke(); });
+  }
+  function drawMap() {
+    const cv = $("gnMap"), ok = ready() && G.tr && NET.L[0] === 2 && NET.L.at(-1) === 1;
+    $("gnMapLeg").style.display = cv.style.display = ok ? "" : "none";
+    if (!ok) return;
+    const { x, W } = fit(cv, cv.clientWidth || 300), R = 44, lo = -0.1, sp = 1.2, oc = document.createElement("canvas"); oc.width = oc.height = R;
+    const o = oc.getContext("2d"), im = o.createImageData(R, R);
+    noDrop(() => { for (let py = 0; py < R; py++) for (let px = 0; px < R; px++) {
+      const p = forward([lo + (px / (R - 1)) * sp, lo + (1 - py / (R - 1)) * sp], false).activations.at(-1)[0], k = (py * R + px) * 4, c = Math.max(0, Math.min(1, p));
+      im.data[k] = 20 + 160 * c; im.data[k + 1] = 40 + 110 * (1 - c) * 0.9; im.data[k + 2] = 90 + 150 * (1 - c * 0.3); im.data[k + 3] = 255;
+    } });
+    o.putImageData(im, 0, 0); x.imageSmoothingEnabled = true; x.drawImage(oc, 0, 0, W, W);
+    const P = (v, up) => ((up ? 1 - (v - lo) / sp : (v - lo) / sp) * W);
+    const dot = (S, val) => S.x.forEach((q, i) => {
+      const c = S.y[i][0] > 0.5, pr = noDrop(() => forward(q, false).activations.at(-1)[0]), bad = (pr > 0.5) !== c;
+      x.beginPath(); x.arc(P(q[0]), P(q[1], 1), val ? 5 : 3.5, 0, 6.2832);
+      if (val) { x.lineWidth = bad ? 2.5 : 1.6; x.strokeStyle = bad ? "#ff3d5a" : c ? "#00ff9d" : "#ffffff"; x.stroke(); }
+      else { x.fillStyle = c ? "#00ff9d" : "#ffffff"; x.fill(); x.lineWidth = 1; x.strokeStyle = "#020307"; x.stroke(); }
+    });
+    dot(G.tr, false); dot(G.va, true);
+  }
+  function drawInfo() {
+    const L = G.h.at(-1), g = G.tr ? G.tr.x.length + " train · " + G.va.x.length + " val" : "";
+    $("gnK").innerHTML = L ? [["Loss train", fl(L.tl), "#00e5ff"], ["Loss val", fl(L.vl), "#ff8c2a"], ["Écart", fl(L.vl - L.tl), L.vl - L.tl > 0.05 ? "#ff3d5a" : "#00ff9d"], ["Réussite train", pc(L.ta), ""], ["Réussite val", pc(L.va), ""], ["Meilleure val", G.best ? fl(G.best.vl) + " @" + G.best.ep : "—", "#00ff9d"]]
+      .map(([k, v, c]) => `<div><b style="${c ? "color:" + c : ""}">${v}</b><span>${k}</span></div>`).join("") : "";
+    setInfo(G.tr ? `Split actif : <b>${g}</b> — le réseau n'entraîne que sur le « train »` : "Aucun split actif — le dataset complet sert à l'entraînement.");
+    const d = diag();
+    $("gnDiag").className = "rl-card"; $("gnDiag").style.borderColor = d.c;
+    $("gnDiag").innerHTML = `<div class="rl-h">Diagnostic automatique</div><div class="gn-dg" style="border-color:${d.c}"><h3 style="color:${d.c}">${d.t}</h3><div class="rl-p" style="margin:0">${d.d}</div>${d.tips.length ? "<ul>" + d.tips.map((t) => "<li>" + t + "</li>").join("") + "</ul>" : ""}</div>`;
+    $("gnBest").disabled = !G.best; $("gnBest").textContent = G.best ? `↩ Revenir au meilleur modèle (epoch ${G.best.ep})` : "↩ Revenir au meilleur modèle";
+    $("gnAuto").className = "btn" + (typeof autoRunning !== "undefined" && autoRunning ? " on pulse" : ""); $("gnAuto").textContent = typeof autoRunning !== "undefined" && autoRunning ? "⏹ Stop" : "⚡ Auto";
+  }
+  function draw() { if (!isOpen()) return; drawCurves(); drawMap(); drawInfo(); }
+  function sched() { if (!isOpen() || G.raf) return; G.raf = requestAnimationFrame(() => { G.raf = 0; draw(); }); }
+
+  window.gnV = (id, v) => ($(id).textContent = v);
+  window.gnGenRow = () => ($("gnGen").style.display = $("gnSrc").value === "cur" ? "none" : "flex");
+  window.gnTrain = async (n) => { if (!ready()) return; if (n === 1) await doEpoch(); else await doN(n); record(true); draw(); };
+  window.gnAuto = () => { if (!ready()) return; toggleAuto(); draw(); };
+  window.gnBest = () => { restore(`<span style="color:var(--grn)">↩ Meilleur modèle restauré</span> (epoch ${G.best.ep})`); record(true); draw(); };
+  window.openGNLab = function () {
+    $("gn-modal-bg").classList.add("show");
+    if (!G.tr && DS.inputs.length < 8) $("gnSrc").value = "moons";
+    gnGenRow(); record(true); draw();
+  };
+  window.closeGNLab = () => $("gn-modal-bg").classList.remove("show");
+  $("gn-modal-bg").addEventListener("click", (e) => { if (e.target === $("gn-modal-bg")) closeGNLab(); });
+  window.addEventListener("resize", () => { if (isOpen()) draw(); });
+})();
+</script>
+
+<script>
+/* ═══ v14 — Frontière de décision refaite + Train / Validation intégré ═══ */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const PAL = ["#00e5ff", "#bf5fff", "#ff8c2a", "#00ff9d", "#ff3d9a", "#ffd23f", "#4d8bff", "#a0ff4d"];
+  const PAL_RGB = PAL.map((h) => h2r(h));
+  const hasVal = () => !!(DS.valInputs && DS.valInputs.length);
+  const am = (a) => a.indexOf(Math.max(...a));
+  let VALH = [];
+  DS.valInputs = DS.valInputs || [];
+  DS.valOutputs = DS.valOutputs || [];
+
+  /* ───── Inférence pure : pas de dropout, pas de mise à jour BN, pas d'effet de bord ───── */
+  function makeFn() {
+    const nL = NET.W.length, fns = [];
+    for (let l = 0; l < nL; l++) fns.push(getActForLayer(l));
+    const useBN = bnOn();
+    if (useBN) ensureBN();
+    const pat = NET.nodePatterns || null;
+    return function (inp) {
+      let a = inp;
+      for (let l = 0; l < nL; l++) {
+        const out = [], last = l === nL - 1;
+        for (let j = 0; j < NET.W[l].length; j++) {
+          const w = NET.W[l][j];
+          let z = NET.B[l][j];
+          for (let k = 0; k < a.length; k++) z += w[k] * a[k];
+          if (useBN && !last && BN.gamma[l])
+            z = BN.gamma[l][j] * ((z - BN.runMean[l][j]) / Math.sqrt(BN.runVar[l][j] + 1e-5)) + BN.beta[l][j];
+          let v = act(z, fns[l]);
+          const p = pat && pat[`${l + 1}-${j}`];
+          if (p === "0") v = 0; else if (p === "1") v = 1; else if (p === "sin") v = Math.sin(EPOCH * 0.1 + j);
+          out.push(isFinite(v) ? v : 0);
+        }
+        a = last && fns[l] === "softmax" ? softmax(out) : out;
+      }
+      return a;
+    };
+  }
+  const isBin = (Y) => Y.length > 0 && Y.every((r) => r.every((v) => v === 0 || v === 1));
+  function evalSet(fn, X, Y) {
+    if (!X.length) return { loss: NaN, acc: null };
+    const cls = isBin(Y);
+    let L = 0, ok = 0;
+    for (let i = 0; i < X.length; i++) {
+      const p = fn(X[i]);
+      L += computeLoss(p, Y[i]);
+      if (cls && p.every((v, j) => Math.round(v) === Y[i][j])) ok++;
+    }
+    return { loss: L / X.length, acc: cls ? (100 * ok) / X.length : null };
+  }
+  const f4 = (v) => (isFinite(v) ? v.toFixed(4) : "—");
+  const pc = (v) => (v == null ? "—" : v.toFixed(0) + "%");
+
+  /* ═════════════ FRONTIÈRE DE DÉCISION ═════════════ */
+  const BD = { mode: "auto", nIn: -1, nOut: -1, W: 480 };
+
+  function bdTask(nOut, Y) {
+    const bin = isBin(Y);
+    const onehot = bin && nOut > 1 && Y.every((r) => r.reduce((s, v) => s + v, 0) === 1);
+    if (nOut === 1) return bin || !Y.length ? "bin" : "reg";
+    return onehot || !Y.length ? "argmax" : "pattern";
+  }
+  function bdSetup(nIn, nOut, task) {
+    if (BD.nIn !== nIn) {
+      const opts = Array.from({ length: nIn }, (_, i) => `<option value="${i}">x[${i}]</option>`).join("");
+      $("bdX").innerHTML = opts; $("bdY").innerHTML = opts;
+      $("bdX").value = 0; $("bdY").value = Math.min(1, nIn - 1);
+      BD.nIn = nIn;
+    }
+    $("bdAxes").style.display = nIn > 2 ? "flex" : "none";
+    if (BD.nOut !== nOut) {
+      let o = nOut > 1 ? '<option value="auto">Auto</option><option value="argmax">Classe prédite (argmax)</option><option value="pattern">Motif binaire des sorties</option>' : "";
+      for (let k = 0; k < nOut && nOut > 1; k++) o += `<option value="o${k}">Sortie ${k} seule</option>`;
+      $("bdMode").innerHTML = o; BD.mode = "auto"; BD.nOut = nOut;
+    }
+    $("bdModeWrap").style.display = nOut > 1 ? "" : "none";
+    $("bdValWrap").style.display = hasVal() ? "" : "none";
+  }
+  // Résout (classe, confiance) d'un vecteur de sortie selon le mode d'affichage
+  function bdClass(o, mode) {
+    if (mode === "argmax") {
+      const c = am(o), n = o.length, s = o.reduce((a, b) => a + Math.max(b, 0), 0) || 1;
+      return { c, k: Math.max(0, Math.min(1, (o[c] / s - 1 / n) / (1 - 1 / n))) };
+    }
+    if (mode === "pattern") {
+      let c = 0, k = 1;
+      o.forEach((v, j) => { if (v >= 0.5) c |= 1 << j; k = Math.min(k, Math.abs(v - 0.5) * 2); });
+      return { c, k: Math.min(1, k) };
+    }
+    const j = mode[0] === "o" ? parseInt(mode.slice(1)) : 0, v = o[j];
+    return { c: v >= 0.5 ? 1 : 0, k: Math.min(1, Math.abs(v - 0.5) * 2) };
+  }
+  const bdRGB = (c) => PAL_RGB[c % PAL_RGB.length];
+  const lerp = (a, b, t) => a + (b - a) * t;
+  function rampRGB(t) {
+    t = Math.max(0, Math.min(1, t));
+    const S = [[20, 60, 210], [150, 70, 225], [255, 160, 40]], s = t * 2, i = Math.min(1, Math.floor(s)), u = s - i;
+    return S[i].map((v, k) => lerp(v, S[i + 1][k], u));
+  }
+
+  window.showBoundary = function () {
+    $("boundary-modal-bg").classList.add("show");
+    renderBoundary();
+  };
+  window.showBoundaryAnim = function () { showBoundary(); startBoundaryLive(); };
+  window.startBoundaryLive = function () {
+    stopBoundaryLive();
+    boundaryLiveTimer = setInterval(renderBoundary, 300);
+    const b = $("bdLiveTag"); if (b) b.textContent = "● Live";
+  };
+  window.stopBoundaryLive = function () {
+    if (boundaryLiveTimer) { clearInterval(boundaryLiveTimer); boundaryLiveTimer = null; }
+    const b = $("bdLiveTag"); if (b) b.textContent = "";
+  };
+
+  window.renderBoundary = function () {
+    const cvs = $("boundary-cvs");
+    if (!cvs) return;
+    if (!$("boundary-modal-bg").classList.contains("show")) { stopBoundaryLive(); return; }
+    const W = BD.W, ctx = cvs.getContext("2d");
+    cvs.width = W; cvs.height = W;
+    ctx.fillStyle = "#020307"; ctx.fillRect(0, 0, W, W);
+    const msg = (t) => {
+      ctx.fillStyle = "#8fa3c7"; ctx.font = "13px JetBrains Mono,monospace"; ctx.textAlign = "center";
+      t.split("\n").forEach((l, i) => ctx.fillText(l, W / 2, W / 2 - 8 + i * 18));
+      $("bdLegend").innerHTML = ""; $("bdStats").innerHTML = "";
+    };
+    if (!NET || !NET.W || !NET.W.length) return msg("Aucun réseau construit.");
+    const nIn = NET.L[0], nOut = NET.L[NET.L.length - 1];
+    const TX = DS.inputs, TY = DS.outputs, VX = DS.valInputs, VY = DS.valOutputs;
+    if (TX.length && (TX[0].length !== nIn || TY[0].length !== nOut))
+      return msg(`Réseau ${nIn}→${nOut} ≠ dataset ${TX[0].length}→${TY[0].length}\nReconstruis le réseau ou change le dataset.`);
+    const allX = TX.concat(VX), allY = TY.concat(VY);
+    const task = bdTask(nOut, allY);
+    bdSetup(nIn, nOut, task);
+    let mode = task === "bin" ? "o0" : task === "reg" ? "reg" : BD.mode;
+    if (nOut > 1) { BD.mode = $("bdMode").value || "auto"; mode = BD.mode === "auto" ? task : BD.mode; }
+    const fn = makeFn();
+    const showT = $("bdShowT").checked, showV = $("bdShowV").checked && hasVal();
+    const mean = Array.from({ length: nIn }, (_, k) => (allX.length ? allX.reduce((s, r) => s + r[k], 0) / allX.length : 0.5));
+    const ix = Math.min(parseInt($("bdX").value) || 0, nIn - 1), iy = nIn > 1 ? Math.min(parseInt($("bdY").value) || 0, nIn - 1) : 0;
+    const rng = (k) => {
+      if (!allX.length) return [-0.2, 1.2];
+      let lo = Infinity, hi = -Infinity;
+      allX.forEach((r) => { lo = Math.min(lo, r[k]); hi = Math.max(hi, r[k]); });
+      const m = (hi - lo) * 0.15 || 0.5;
+      return [lo - m, hi + m];
+    };
+    const [x0, x1] = rng(ix), [y0, y1] = nIn > 1 ? rng(iy) : [0, 1];
+    const res = Math.max(32, Math.min(160, parseInt(($("bdRes") || {}).value) || 64));
+    let lo = 0, hi = 1;
+    if (mode === "reg") {
+      const ys = allY.map((r) => r[0]);
+      lo = Math.min(...ys); hi = Math.max(...ys); if (hi - lo < 1e-9) { lo -= 0.5; hi += 0.5; }
+    }
+    const sx = (v) => ((v - x0) / (x1 - x0)) * W;
+    const colorOf = (y) => (mode === "reg" ? rampRGB((y[0] - lo) / (hi - lo)) : bdRGB(bdClass(y, mode).c));
+    ctx.textAlign = "left";
+
+    if (nIn === 1) {
+      /* ── 1 entrée : courbe de la sortie en fonction de x ── */
+      const N = 240, curves = Array.from({ length: nOut }, () => []);
+      let ymin = Infinity, ymax = -Infinity;
+      for (let i = 0; i < N; i++) {
+        const o = fn([x0 + ((x1 - x0) * i) / (N - 1)]);
+        o.forEach((v, k) => { curves[k].push(v); ymin = Math.min(ymin, v); ymax = Math.max(ymax, v); });
+      }
+      allY.forEach((r) => r.forEach((v) => { ymin = Math.min(ymin, v); ymax = Math.max(ymax, v); }));
+      const m = (ymax - ymin) * 0.12 || 0.5; ymin -= m; ymax += m;
+      const sy = (v) => W - ((v - ymin) / (ymax - ymin)) * W;
+      ctx.strokeStyle = "rgba(80,100,150,.25)"; ctx.lineWidth = 1;
+      [0, 0.5, 1].forEach((g) => { if (g > ymin && g < ymax) { ctx.beginPath(); ctx.moveTo(0, sy(g)); ctx.lineTo(W, sy(g)); ctx.stroke(); } });
+      curves.forEach((cv, k) => {
+        ctx.beginPath(); ctx.strokeStyle = PAL[k % PAL.length]; ctx.lineWidth = 2.5;
+        cv.forEach((v, i) => (i ? ctx.lineTo((i / (N - 1)) * W, sy(v)) : ctx.moveTo(0, sy(v))));
+        ctx.stroke();
+      });
+      const pts = (X, Y, val) => X.forEach((r, i) => Y[i].forEach((v, k) => {
+        ctx.beginPath();
+        if (val) { const px = sx(r[0]), py = sy(v); ctx.moveTo(px, py - 5); ctx.lineTo(px + 5, py); ctx.lineTo(px, py + 5); ctx.lineTo(px - 5, py); ctx.closePath(); }
+        else ctx.arc(sx(r[0]), sy(v), 3.5, 0, 6.2832);
+        ctx.fillStyle = PAL[k % PAL.length]; ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.2; ctx.fill(); ctx.stroke();
+      }));
+      if (showT) pts(TX, TY, false);
+      if (showV) pts(VX, VY, true);
+      ctx.fillStyle = "#8fa3c7"; ctx.font = "10px JetBrains Mono,monospace";
+      ctx.fillText(`x[0] ∈ [${x0.toFixed(2)} ; ${x1.toFixed(2)}]`, 6, W - 6);
+      $("bdLegend").innerHTML = Array.from({ length: nOut }, (_, k) => `<span style="color:${PAL[k % PAL.length]}">━ sortie ${k}</span>`).join("") + "<span>● train</span>" + (hasVal() ? "<span>◆ val</span>" : "");
+    } else {
+      /* ── ≥ 2 entrées : carte 2D ── */
+      const off = document.createElement("canvas");
+      off.width = off.height = res;
+      const octx = off.getContext("2d"), img = octx.createImageData(res, res), inp = mean.slice();
+      for (let py = 0; py < res; py++) {
+        inp[iy] = y1 - ((py + 0.5) / res) * (y1 - y0);
+        for (let px = 0; px < res; px++) {
+          inp[ix] = x0 + ((px + 0.5) / res) * (x1 - x0);
+          const o = fn(inp), i4 = (py * res + px) * 4;
+          let r, g, b;
+          if (mode === "reg") [r, g, b] = rampRGB((o[0] - lo) / (hi - lo));
+          else {
+            const q = bdClass(o, mode), c = bdRGB(q.c), t = 0.18 + 0.72 * q.k;
+            r = lerp(8, c.r, t); g = lerp(10, c.g, t); b = lerp(20, c.b, t);
+          }
+          img.data[i4] = r; img.data[i4 + 1] = g; img.data[i4 + 2] = b; img.data[i4 + 3] = 255;
+        }
+      }
+      octx.putImageData(img, 0, 0);
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(off, 0, 0, W, W);
+      const sy = (v) => W - ((v - y0) / (y1 - y0)) * W;
+      const pts = (X, Y, val) => X.forEach((r, i) => {
+        const px = sx(r[ix]), py = sy(r[iy]), cc = colorOf(Y[i]);
+        let wrong = false;
+        if (mode !== "reg") wrong = bdClass(fn(r), mode).c !== bdClass(Y[i], mode).c;
+        ctx.beginPath();
+        if (val) { ctx.moveTo(px, py - 6); ctx.lineTo(px + 6, py); ctx.lineTo(px, py + 6); ctx.lineTo(px - 6, py); ctx.closePath(); }
+        else ctx.arc(px, py, 4, 0, 6.2832);
+        ctx.fillStyle = `rgb(${cc[0] ?? cc.r},${cc[1] ?? cc.g},${cc[2] ?? cc.b})`;
+        ctx.strokeStyle = wrong ? "#ff3d5a" : "#fff"; ctx.lineWidth = wrong ? 2.4 : 1.3;
+        ctx.fill(); ctx.stroke();
+      });
+      if (showT) pts(TX, TY, false);
+      if (showV) pts(VX, VY, true);
+      ctx.fillStyle = "rgba(220,230,255,.85)"; ctx.font = "10px JetBrains Mono,monospace";
+      ctx.fillText(`x[${ix}] →  ${x0.toFixed(2)} … ${x1.toFixed(2)}`, 6, W - 6);
+      ctx.save(); ctx.translate(12, W - 8 - 4); ctx.rotate(-Math.PI / 2);
+      ctx.fillText(`x[${iy}] →  ${y0.toFixed(2)} … ${y1.toFixed(2)}`, 6, 0); ctx.restore();
+      let leg = "";
+      if (mode === "reg") leg = `<span style="color:#1e3cd2">■ ${lo.toFixed(2)}</span><span style="color:#ff9f28">■ ${hi.toFixed(2)}</span><span>(valeur de sortie)</span>`;
+      else {
+        const K = mode === "argmax" ? nOut : mode === "pattern" ? Math.min(1 << nOut, 8) : 2;
+        for (let c = 0; c < K; c++) {
+          const name = mode === "pattern" ? "[" + Array.from({ length: nOut }, (_, j) => (c >> j) & 1).join("") + "]" : "classe " + c;
+          leg += `<span style="color:${PAL[c % PAL.length]}">■ ${name}</span>`;
+        }
+      }
+      $("bdLegend").innerHTML = leg + "<span>● train</span>" + (hasVal() ? "<span>◆ val</span>" : "") + '<span style="color:#ff3d5a">◯ erreur</span>' +
+        (nIn > 2 ? `<span>autres entrées = moyenne</span>` : "");
+    }
+    const t = evalSet(fn, TX, TY), v = evalSet(fn, VX, VY);
+    $("bdStats").innerHTML = `Epoch <b>${EPOCH}</b> · Train : loss <b>${f4(t.loss)}</b>${t.acc != null ? " · acc <b>" + pc(t.acc) + "</b>" : ""}` +
+      (hasVal() ? ` &nbsp;|&nbsp; <span style="color:var(--org)">Val : loss <b>${f4(v.loss)}</b>${v.acc != null ? " · acc <b>" + pc(v.acc) + "</b>" : ""}</span>` : "");
+  };
+
+  /* ═════════════ TRAIN / VALIDATION ═════════════ */
+  function mulberry(seed) {
+    let a = seed >>> 0;
+    return () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function refresh() {
+    try { buildDSEditorFromCurrent(); renderDSPreview(); } catch (e) {}
+    splitUI();
+    try { if (LOSS_H.length) updateStats(LOSS_H[LOSS_H.length - 1]); else { drawLossChart(); valLine(); } } catch (e) {}
+    if ($("boundary-modal-bg").classList.contains("show")) renderBoundary();
+  }
+  function splitUI() {
+    const el = $("dsSplitInfo"); if (!el) return;
+    el.innerHTML = hasVal()
+      ? `<span style="color:var(--a1)">● Train : <b>${DS.inputs.length}</b></span> &nbsp; <span style="color:var(--org)">◆ Validation : <b>${DS.valInputs.length}</b></span><br><span style="color:var(--dim)">Le réseau s'entraîne uniquement sur « train ».</span>`
+      : '<span style="color:var(--dim)">Aucun split — tout le dataset sert à l\'entraînement.</span>';
+    $("dsMergeBtn").disabled = !hasVal();
+  }
+  function say(t) { try { log(t); } catch (e) {} }
+  window.dsSplit = function () {
+    const X = DS.inputs.concat(DS.valInputs), Y = DS.outputs.concat(DS.valOutputs), n = X.length;
+    if (n < 4) { $("dsSplitInfo").innerHTML = '<span style="color:var(--red)">⚠ Il faut au moins 4 exemples.</span>'; return; }
+    const pct = +$("dsValPct").value / 100, sv = $("dsValSeed").value.trim();
+    const rnd = sv === "" ? Math.random : mulberry(parseInt(sv) || 1);
+    const idx = [...Array(n).keys()];
+    for (let i = n - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+    const strat = $("dsValStrat").checked && isBin(Y), groups = {};
+    idx.forEach((i) => (groups[strat ? Y[i].join() : "_"] ||= []).push(i));
+    const tr = [], va = [];
+    Object.values(groups).forEach((g) => {
+      const k = g.length < 2 ? 0 : Math.min(g.length - 1, Math.max(1, Math.round(g.length * pct)));
+      g.forEach((i, j) => (j < k ? va : tr).push(i));
+    });
+    if (!va.length) va.push(tr.pop());
+    DS.inputs = tr.map((i) => [...X[i]]); DS.outputs = tr.map((i) => [...Y[i]]);
+    DS.valInputs = va.map((i) => [...X[i]]); DS.valOutputs = va.map((i) => [...Y[i]]);
+    VALH = [];
+    say(`<span class="ls">✂ Split</span> — train ${tr.length} · validation ${va.length}${strat ? " (stratifié)" : ""}`);
+    refresh();
+  };
+  window.dsSplitMerge = function () {
+    if (!hasVal()) return;
+    DS.inputs = DS.inputs.concat(DS.valInputs.map((r) => [...r]));
+    DS.outputs = DS.outputs.concat(DS.valOutputs.map((r) => [...r]));
+    DS.valInputs = []; DS.valOutputs = []; VALH = [];
+    say('<span class="ls">⟲ Train + validation fusionnés</span>');
+    refresh();
+  };
+  function dropVal(why) {
+    if (!hasVal()) return;
+    DS.valInputs = []; DS.valOutputs = []; VALH = [];
+    say(`<span style="color:var(--org)">⚠ Jeu de validation retiré (${why})</span>`);
+    splitUI();
+  }
+  window.dsImportVal = function () {
+    try {
+      const d = JSON.parse($("dsJSON").value);
+      if (!Array.isArray(d) || !d.length) throw "tableau de {i,o} attendu";
+      const vi = d.map((r) => r.i), vo = d.map((r) => r.o);
+      if (vi[0].length !== DS.inN || vo[0].length !== DS.outN) throw `dimensions ${vi[0].length}→${vo[0].length} ≠ dataset ${DS.inN}→${DS.outN}`;
+      DS.valInputs = vi; DS.valOutputs = vo; VALH = [];
+      say(`<span class="ls">📥 Jeu de validation importé</span> — ${vi.length} exemples`);
+      refresh();
+    } catch (e) { alert("Import validation impossible : " + e); }
+  };
+
+  /* ── Courbe de loss : train + validation ── */
+  const _dlc = window.drawLossChart;
+  window.drawLossChart = function () {
+    const vals = VALH.filter((v) => v != null);
+    if (!hasVal() || !vals.length || LOSS_H.length < 2) return _dlc.apply(this, arguments);
+    const c = $("lossChart"), g = c.getContext("2d", canvasCtxAttrs()), dpr = window.devicePixelRatio || 1;
+    c.width = c.clientWidth * dpr; c.height = 66 * dpr; g.scale(dpr, dpr);
+    const cw = c.clientWidth, ch = 66, n = Math.min(400, LOSS_H.length), off = LOSS_H.length - n;
+    const tr = LOSS_H.slice(-n), va = VALH.slice(-n);
+    const all = tr.concat(va.filter((v) => v != null)).filter(isFinite);
+    const mn = Math.min(...all), mx = Math.max(...all), rg = mx - mn || 1;
+    const Y = (v) => ch - ch * 0.1 - ((v - mn) / rg) * ch * 0.8;
+    g.clearRect(0, 0, cw, ch);
+    const line = (arr, col) => {
+      g.beginPath(); g.strokeStyle = col; g.lineWidth = 1.5; let pen = false;
+      arr.forEach((v, i) => {
+        if (v == null || !isFinite(v)) { pen = false; return; }
+        const x = (i / (n - 1)) * cw; pen ? g.lineTo(x, Y(v)) : g.moveTo(x, Y(v)); pen = true;
+      });
+      g.stroke();
+    };
+    line(tr, "#00e5ff"); line(va, "#ff8c2a");
+    g.font = "8px JetBrains Mono,monospace"; g.textAlign = "right";
+    g.fillStyle = "rgba(0,229,255,.9)"; g.fillText("train " + tr[n - 1].toFixed(5), cw - 2, 10);
+    g.fillStyle = "rgba(255,140,42,.95)"; g.fillText("val " + (vals[vals.length - 1]).toFixed(5), cw - 2, 20);
+  };
+  function valLine() {
+    const el = $("valStatLine"); if (!el) return;
+    if (!hasVal() || !NET) { el.style.display = "none"; return; }
+    const fn = makeFn(), v = evalSet(fn, DS.valInputs, DS.valOutputs), t = evalSet(fn, DS.inputs, DS.outputs);
+    const over = isFinite(v.loss) && v.loss > Math.max(t.loss * 1.5, t.loss + 0.02) && EPOCH > 20;
+    el.style.display = "";
+    el.innerHTML = `<span style="color:var(--org)">◆ Val</span> loss <b>${f4(v.loss)}</b>${v.acc != null ? " · acc <b>" + pc(v.acc) + "</b>" : ""} &nbsp;<span style="color:var(--dim)">(train ${f4(t.loss)}${t.acc != null ? " · " + pc(t.acc) : ""})</span>` +
+      (over ? ' <span style="color:var(--red)">⚠ surapprentissage probable</span>' : "");
+    return v;
+  }
+  const _us = window.updateStats;
+  window.updateStats = function () {
+    if (hasVal() && NET && LOSS_H.length) {
+      const v = evalSet(makeFn(), DS.valInputs, DS.valOutputs).loss;
+      if (VALH.length > LOSS_H.length) VALH.length = LOSS_H.length;
+      while (VALH.length < LOSS_H.length - 1) VALH.push(null);
+      VALH[LOSS_H.length - 1] = v;
+    } else if (!LOSS_H.length) VALH = [];
+    const r = _us.apply(this, arguments);
+    valLine();
+    return r;
+  };
+  /* ── Early stopping sur la loss de validation (option) ── */
+  const _esu = window.earlyStopUpdate;
+  window.earlyStopUpdate = function (avg) {
+    const cb = $("dsValEarly");
+    if (cb && cb.checked && hasVal() && NET) avg = evalSet(makeFn(), DS.valInputs, DS.valOutputs).loss;
+    return _esu.call(this, avg);
+  };
+  /* ── Onglet Test : ajoute le jeu de validation au « test complet » ── */
+  const _rat = window.runAllTest;
+  window.runAllTest = function () {
+    const r = _rat.apply(this, arguments);
+    if (hasVal() && NET && $("testResult")) {
+      const fn = makeFn(), cls = isBin(DS.valOutputs);
+      let ok = 0, h = '<div class="test-result"><div class="tr-title" style="color:var(--org)">Jeu de validation (non entraîné)</div>';
+      DS.valInputs.forEach((x, i) => {
+        const p = fn(x), good = cls && p.every((v, j) => Math.round(v) === DS.valOutputs[i][j]);
+        if (good) ok++;
+        if (i < 40) h += `<div class="tr-row"><span class="tr-key">[${x.map((v) => +v.toFixed(2)).join(",")}]</span><span class="tr-val" style="color:${cls ? (good ? "var(--grn)" : "var(--red)") : "var(--a1)"}">${p.map((v) => v.toFixed(3)).join(",")} ${cls ? (good ? "✓" : "✗") : ""}</span></div>`;
+      });
+      const e = evalSet(fn, DS.valInputs, DS.valOutputs);
+      h += `<div class="tr-row" style="margin-top:6px;border-top:1px solid var(--brd)"><span class="tr-key">Val loss${cls ? " · accuracy" : ""}</span><span class="tr-val">${f4(e.loss)}${cls ? " · " + ok + "/" + DS.valInputs.length + " (" + pc(e.acc) + ")" : ""}</span></div></div>`;
+      $("testResult").insertAdjacentHTML("beforeend", h);
+    }
+    return r;
+  };
+  /* ── Aperçu / export / import compatibles avec le split ── */
+  const _rdp = window.renderDSPreview;
+  window.renderDSPreview = function () {
+    const r = _rdp.apply(this, arguments);
+    const el = $("dsPreview");
+    if (el && hasVal()) {
+      let h = `<div class="sh" style="margin-top:8px;color:var(--org)">Validation (${DS.valInputs.length})</div>`;
+      DS.valInputs.slice(0, 5).forEach((x, i) => (h += `<div class="ds-row"><span>[${x.map((v) => v.toFixed(2)).join(",")}]</span><span>→</span><span>[${DS.valOutputs[i].join(",")}]</span></div>`));
+      if (DS.valInputs.length > 5) h += `<div style="font-size:9px;color:var(--dim);text-align:center;padding:4px">+${DS.valInputs.length - 5} autres</div>`;
+      el.insertAdjacentHTML("beforeend", h);
+    }
+    return r;
+  };
+  const _exp = window.exportDSJSON;
+  window.exportDSJSON = function () {
+    if (!hasVal()) return _exp.apply(this, arguments);
+    const m = (X, Y) => X.map((i, k) => ({ i, o: Y[k] }));
+    $("dsJSON").value = JSON.stringify({ train: m(DS.inputs, DS.outputs), val: m(DS.valInputs, DS.valOutputs) }, null, 1);
+  };
+  const _imp = window.importDSJSON;
+  window.importDSJSON = function () {
+    let d = null;
+    try { d = JSON.parse($("dsJSON").value); } catch (e) {}
+    if (d && !Array.isArray(d) && Array.isArray(d.train) && d.train.length) {
+      DS.inputs = d.train.map((r) => r.i); DS.outputs = d.train.map((r) => r.o);
+      DS.valInputs = (d.val || []).map((r) => r.i); DS.valOutputs = (d.val || []).map((r) => r.o);
+      DS.inN = DS.inputs[0].length; DS.outN = DS.outputs[0].length;
+      $("dsIn").value = DS.inN; $("dsOut").value = DS.outN; VALH = [];
+      say(`<span class="ls">📥 Dataset importé</span> — train ${DS.inputs.length} · validation ${DS.valInputs.length}`);
+      return refresh();
+    }
+    dropVal("dataset remplacé");
+    return _imp.apply(this, arguments);
+  };
+  /* ── Les actions qui remplacent tout le dataset retirent la validation (dimensions potentiellement différentes) ── */
+  ["loadPreset", "vdsClassSync", "vdsRegSync"].forEach((name) => {
+    const o = window[name];
+    if (typeof o !== "function") return;
+    window[name] = function () {
+      if (name !== "loadPreset" || $("dsPreset").value !== "custom") dropVal("dataset remplacé");
+      return o.apply(this, arguments);
+    };
+  });
+  const _ads = window.applyDS;
+  window.applyDS = function () {
+    const r = _ads.apply(this, arguments);
+    if (hasVal() && (DS.valInputs[0].length !== DS.inN || DS.valOutputs[0].length !== DS.outN)) dropVal("dimensions modifiées");
+    splitUI(); valLine();
+    return r;
+  };
+  /* ── Le labo de généralisation part du dataset complet : on fusionne avant son propre split ── */
+  window.addEventListener("load", () => {
+    const g = window.gnSplit;
+    if (typeof g === "function") window.gnSplit = function () { if (hasVal()) dsSplitMerge(); return g.apply(this, arguments); };
+    splitUI();
+  });
+  document.addEventListener("input", (e) => {
+    if (e.target && e.target.id === "dsValPct") $("dsValPctV").textContent = e.target.value + "%";
+    if (e.target && e.target.id === "bdRes") $("bdResVal") && ($("bdResVal").textContent = e.target.value);
+  });
+  splitUI();
+})();
+
+</script>
 </body>
 </html>

@@ -5290,6 +5290,14 @@
         </div>
         <div
           class="tab"
+          id="tab-labs"
+          onclick="showTab('labs')"
+          style="color: var(--a2)"
+        >
+          🧪 Labs
+        </div>
+        <div
+          class="tab"
           id="tab-tools"
           onclick="showTab('tools')"
           style="color: var(--org)"
@@ -6379,6 +6387,243 @@
           </div>
         </div>
         <!-- ── TOOLS TAB v12 ── -->
+        <!-- ── LABS ── -->
+        <div id="tc-labs" class="tc">
+          <div style="padding: 10px 11px 16px">
+            <div
+              style="
+                margin-bottom: 10px;
+                padding: 9px 12px;
+                border-left: 3px solid var(--a2);
+                background: linear-gradient(90deg, rgba(191, 95, 255, 0.08), transparent);
+                border-radius: 0 4px 4px 0;
+              "
+            >
+              <div
+                style="
+                  font-size: 10px;
+                  color: var(--a2);
+                  font-weight: 700;
+                  letter-spacing: 0.1em;
+                  text-transform: uppercase;
+                  margin-bottom: 4px;
+                "
+              >
+                🧪 Laboratoires
+              </div>
+              <div style="font-size: 9px; color: var(--dim); line-height: 1.7">
+                Des bancs d'essai interactifs qui s'ouvrent en plein écran :
+                chaque labo explore une famille de modèles ou un aspect de
+                l'apprentissage, avec calculs détaillés et explications.
+              </div>
+            </div>
+<div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--a1);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--a1);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🧩 Labo CNN (Convolution)
+              </div>
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
+              >
+                Convolution pas-à-pas, galerie comparant tous les filtres,
+                pipeline multi-couches avec champ réceptif, entraînement d'un
+                noyau par descente de gradient, et un onglet
+                <b style="color: var(--grn)">« Modèle complet »</b> pour
+                construire, entraîner (vraie rétropropagation) et tester un CNN
+                multi-couches sur un dataset d'images créé sur place
+              </div>
+              <button class="btn ok" onclick="openCNNLab()" style="width: 100%">
+                🧠 Ouvrir le labo CNN
+              </button>
+            </div>
+<div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--a2);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--a2);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🔁 Labo RNN (Récurrent)
+              </div>
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
+              >
+                Cellule récurrente pas-à-pas, déroulement dans le temps avec
+                trace de mémoire, démonstration du vanishing/exploding gradient,
+                et entraînement réel (BPTT) d'un mini-RNN
+                caractère-par-caractère
+              </div>
+              <button class="btn on" onclick="openRNNLab()" style="width: 100%">
+                🔁 Ouvrir le labo RNN
+              </button>
+            </div>
+<div style="margin-bottom: 8px; background: #030408; border: 1px solid var(--a2); border-radius: 4px; padding: 10px 12px">
+              <div style="font-size: 8px; color: var(--a2); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 7px; font-weight: 700">🔮 Labo Transformer</div>
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">Pipeline complet, attention multi-têtes calculée en direct (carte de chaleur + détail pas-à-pas), encodages de position (sinus, RoPE), décodage (température, top-k, top-p) et calculateur paramètres / FLOPs / KV-cache</div>
+              <button class="btn on" onclick="openTFLab()" style="width: 100%">🔮 Ouvrir le labo Transformer</button>
+            </div>
+<div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--grn);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--grn);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🎮 Labo RL (Reinforcement Learning)
+              </div>
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
+              >
+                Bandits (ε-glouton, UCB, Thompson), calculateur pas-à-pas
+                (retour, TD, GAE), Q-learning / SARSA sur grille éditable,
+                équations de Bellman (itération de valeur), policy gradient
+                (REINFORCE, Actor-Critic) et un
+                <b style="color: var(--grn)">DQN</b> codé à la main qui apprend
+                à équilibrer un CartPole
+              </div>
+              <button class="btn ok" onclick="openRLLab()" style="width: 100%">
+                🎮 Ouvrir le labo RL
+              </button>
+            </div>
+<div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--ylw);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--ylw);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🏔 Labo Paysage de loss
+              </div>
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">
+                Banc d'essai de la loss : carte 2D et
+                <b style="color: var(--ylw)">relief 3D</b> rotatif autour de tes
+                poids, plan au choix (PCA, aléatoire ou 2 poids), sonde
+                (gradient, hessien), <b style="color: var(--ylw)">course
+                d'optimiseurs</b>, pose d'un point sur le vrai réseau,
+                tranches 1D et netteté du minimum
+              </div>
+              <button class="btn ok" onclick="openLLLab()" style="width: 100%">
+                🏔 Ouvrir le labo Paysage
+              </button>
+            </div>
+<div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--a2);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--a2);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🎯 Labo Généralisation
+              </div>
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">
+                Sépare ton dataset en <b style="color: var(--ylw)">train / validation</b>,
+                compare les deux courbes de loss en direct, détecte
+                automatiquement le <b style="color: var(--ylw)">surapprentissage</b>,
+                arrête l'entraînement au meilleur moment et reviens au meilleur modèle
+              </div>
+              <button class="btn ok" onclick="openGNLab()" style="width: 100%; border-color: var(--a2); color: var(--a2)">
+                🎯 Ouvrir le labo Généralisation
+              </button>
+            </div>
+<div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--flashy);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--flashy);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🩺 Labo Diagnostic
+              </div>
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">
+                <b style="color: var(--ylw)">Radiographie</b> du réseau (neurones
+                morts, saturation, flux de gradient, score de santé avec
+                conseils), <b style="color: var(--ylw)">trouveur de learning rate</b>
+                en un clic et <b style="color: var(--ylw)">élagage</b> des poids
+                avec courbe de robustesse
+              </div>
+              <button class="btn ok" onclick="openDGLab()" style="width: 100%; border-color: var(--flashy); color: var(--flashy)">
+                🩺 Ouvrir le labo Diagnostic
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div id="tc-tools" class="tc">
           <div style="padding: 10px 11px 16px">
             <div
@@ -6444,183 +6689,12 @@
               </div>
             </div>
 
-            <div
-              style="
-                margin-bottom: 8px;
-                background: #030408;
-                border: 1px solid var(--a1);
-                border-radius: 4px;
-                padding: 10px 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 8px;
-                  color: var(--a1);
-                  text-transform: uppercase;
-                  letter-spacing: 0.12em;
-                  margin-bottom: 7px;
-                  font-weight: 700;
-                "
-              >
-                🧩 Labo CNN (Convolution)
-              </div>
-              <div
-                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
-              >
-                Convolution pas-à-pas, galerie comparant tous les filtres,
-                pipeline multi-couches avec champ réceptif, entraînement d'un
-                noyau par descente de gradient, et un onglet
-                <b style="color: var(--grn)">« Modèle complet »</b> pour
-                construire, entraîner (vraie rétropropagation) et tester un CNN
-                multi-couches sur un dataset d'images créé sur place
-              </div>
-              <button class="btn ok" onclick="openCNNLab()" style="width: 100%">
-                🧠 Ouvrir le labo CNN
-              </button>
-            </div>
 
-            <div
-              style="
-                margin-bottom: 8px;
-                background: #030408;
-                border: 1px solid var(--a2);
-                border-radius: 4px;
-                padding: 10px 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 8px;
-                  color: var(--a2);
-                  text-transform: uppercase;
-                  letter-spacing: 0.12em;
-                  margin-bottom: 7px;
-                  font-weight: 700;
-                "
-              >
-                🔁 Labo RNN (Récurrent)
-              </div>
-              <div
-                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
-              >
-                Cellule récurrente pas-à-pas, déroulement dans le temps avec
-                trace de mémoire, démonstration du vanishing/exploding gradient,
-                et entraînement réel (BPTT) d'un mini-RNN
-                caractère-par-caractère
-              </div>
-              <button class="btn on" onclick="openRNNLab()" style="width: 100%">
-                🔁 Ouvrir le labo RNN
-              </button>
-            </div>
 
-            <div style="margin-bottom: 8px; background: #030408; border: 1px solid var(--a2); border-radius: 4px; padding: 10px 12px">
-              <div style="font-size: 8px; color: var(--a2); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 7px; font-weight: 700">🔮 Labo Transformer</div>
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">Pipeline complet, attention multi-têtes calculée en direct (carte de chaleur + détail pas-à-pas), encodages de position (sinus, RoPE), décodage (température, top-k, top-p) et calculateur paramètres / FLOPs / KV-cache</div>
-              <button class="btn on" onclick="openTFLab()" style="width: 100%">🔮 Ouvrir le labo Transformer</button>
-            </div>
 
-            <div
-              style="
-                margin-bottom: 8px;
-                background: #030408;
-                border: 1px solid var(--grn);
-                border-radius: 4px;
-                padding: 10px 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 8px;
-                  color: var(--grn);
-                  text-transform: uppercase;
-                  letter-spacing: 0.12em;
-                  margin-bottom: 7px;
-                  font-weight: 700;
-                "
-              >
-                🎮 Labo RL (Reinforcement Learning)
-              </div>
-              <div
-                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
-              >
-                Bandits (ε-glouton, UCB, Thompson), calculateur pas-à-pas
-                (retour, TD, GAE), Q-learning / SARSA sur grille éditable,
-                équations de Bellman (itération de valeur), policy gradient
-                (REINFORCE, Actor-Critic) et un
-                <b style="color: var(--grn)">DQN</b> codé à la main qui apprend
-                à équilibrer un CartPole
-              </div>
-              <button class="btn ok" onclick="openRLLab()" style="width: 100%">
-                🎮 Ouvrir le labo RL
-              </button>
-            </div>
 
-            <div
-              style="
-                margin-bottom: 8px;
-                background: #030408;
-                border: 1px solid var(--ylw);
-                border-radius: 4px;
-                padding: 10px 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 8px;
-                  color: var(--ylw);
-                  text-transform: uppercase;
-                  letter-spacing: 0.12em;
-                  margin-bottom: 7px;
-                  font-weight: 700;
-                "
-              >
-                🏔 Labo Paysage de loss
-              </div>
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">
-                Banc d'essai de la loss : carte 2D et
-                <b style="color: var(--ylw)">relief 3D</b> rotatif autour de tes
-                poids, plan au choix (PCA, aléatoire ou 2 poids), sonde
-                (gradient, hessien), <b style="color: var(--ylw)">course
-                d'optimiseurs</b>, pose d'un point sur le vrai réseau,
-                tranches 1D et netteté du minimum
-              </div>
-              <button class="btn ok" onclick="openLLLab()" style="width: 100%">
-                🏔 Ouvrir le labo Paysage
-              </button>
-            </div>
 
-            <div
-              style="
-                margin-bottom: 8px;
-                background: #030408;
-                border: 1px solid var(--a2);
-                border-radius: 4px;
-                padding: 10px 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 8px;
-                  color: var(--a2);
-                  text-transform: uppercase;
-                  letter-spacing: 0.12em;
-                  margin-bottom: 7px;
-                  font-weight: 700;
-                "
-              >
-                🎯 Labo Généralisation
-              </div>
-              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">
-                Sépare ton dataset en <b style="color: var(--ylw)">train / validation</b>,
-                compare les deux courbes de loss en direct, détecte
-                automatiquement le <b style="color: var(--ylw)">surapprentissage</b>,
-                arrête l'entraînement au meilleur moment et reviens au meilleur modèle
-              </div>
-              <button class="btn ok" onclick="openGNLab()" style="width: 100%; border-color: var(--a2); color: var(--a2)">
-                🎯 Ouvrir le labo Généralisation
-              </button>
-            </div>
+
 
 
             <div
@@ -7690,6 +7764,20 @@
                   backprop, optimisation, CNN, RNN), en QCM, vrai/faux ou
                   questions ouvertes. Un mode aléatoire tire N questions toutes
                   catégories confondues.
+                </div>
+                <div style="padding-left: 8px">
+                  <b style="color: var(--a2)">🧪 Labs</b> — les laboratoires
+                  interactifs (CNN, RNN, Transformer, RL, paysage de loss,
+                  généralisation, diagnostic). Raccourci
+                  <kbd
+                    style="
+                      background: #0a0c18;
+                      padding: 1px 3px;
+                      border-radius: 2px;
+                      color: var(--a2);
+                    "
+                    >L</kbd
+                  >.
                 </div>
                 <div style="padding-left: 8px">
                   <b style="color: var(--org)">🛠 Outils</b> — panneau
@@ -12102,6 +12190,7 @@ fn loss_accum() {
           "guide",
           "quiz",
           "manuel",
+          "labs",
           "tools",
         ].forEach((t) => {
           const te = document.getElementById(`tab-${t}`);
@@ -12109,6 +12198,10 @@ fn loss_accum() {
           const tce = document.getElementById(`tc-${t}`);
           if (tce) tce.className = "tc" + (t === name ? " show" : "");
         });
+        // L'onglet actif reste visible dans la barre (utile quand elle défile, ex. mobile).
+        const _at = document.getElementById(`tab-${name}`);
+        if (_at && _at.parentElement && _at.parentElement.scrollWidth > _at.parentElement.clientWidth)
+          _at.parentElement.scrollTo({ left: Math.max(0, _at.offsetLeft - 24), behavior: "smooth" });
         if (name === "manuel") manPopulateSamples();
         if (name === "quiz") quizInit();
         if (name === "tools") {
@@ -26693,6 +26786,8 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           openCompare();
         } else if (e.key === "t" || e.key === "T") {
           showTab("tools");
+        } else if (e.key === "l" || e.key === "L") {
+          showTab("labs");
         } else if (e.key === "g" || e.key === "G") {
           analyzeGradients();
         } else if (e.key === "h" || e.key === "H") {
@@ -32071,5 +32166,406 @@ function setUITheme(t,silent){
 })();
 
 </script>
+
+<!-- ══════════════ LABO DIAGNOSTIC (radiographie · trouveur de LR · élagage) ══════════════ -->
+<style>
+#dg-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:1500;display:none;align-items:center;justify-content:center}
+#dg-modal-bg.show{display:flex}
+#dg-modal{background:var(--p1);border:1px solid var(--flashy);border-radius:8px;max-width:1180px;width:98%;max-height:94vh;overflow-y:auto;box-shadow:0 0 44px rgba(157,255,0,.12)}
+#dg-header{padding:11px 18px 0;border-bottom:1px solid var(--brd);background:linear-gradient(135deg,var(--p1),var(--p2));position:sticky;top:0;z-index:3}
+.dg-hr{display:flex;align-items:center;gap:10px}
+#dg-header h2{font-family:"Syne",sans-serif;color:var(--flashy);font-size:14px;letter-spacing:.02em}
+.dg-ecg{width:84px;height:22px;flex-shrink:0}
+.dg-ecg polyline{fill:none;stroke:var(--flashy);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:120;stroke-dashoffset:120;animation:dgEcg 2.4s linear infinite;filter:drop-shadow(0 0 3px var(--flashy))}
+@keyframes dgEcg{0%{stroke-dashoffset:120}60%,100%{stroke-dashoffset:0}}
+.dg-tabs{display:flex;gap:2px;margin-top:9px;overflow-x:auto;scrollbar-width:none}
+.dg-tabs::-webkit-scrollbar{display:none}
+.dg-tab{flex:0 0 auto;padding:9px 15px;font:600 11px "JetBrains Mono",monospace;color:var(--dim);background:none;border:0;border-bottom:2px solid transparent;cursor:pointer;letter-spacing:.04em;text-transform:uppercase;transition:.15s}
+.dg-tab:hover{color:var(--text)}
+.dg-tab.on{color:var(--flashy);border-bottom-color:var(--flashy);background:linear-gradient(180deg,transparent,rgba(157,255,0,.07))}
+#dg-body{padding:14px 18px 18px}
+.dg-pane{display:none}.dg-pane.on{display:block;animation:dgIn .25s ease}
+@keyframes dgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.dg-top{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-bottom:12px}
+@media(min-width:901px){.dg-top{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}}
+.dg-verdict{display:flex;gap:16px;align-items:center}
+.dg-ring{position:relative;width:96px;height:96px;flex-shrink:0}
+.dg-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.dg-ring circle{fill:none;stroke-width:8}
+.dg-ring .bg{stroke:var(--brd)}
+.dg-ring .fg{stroke:var(--c,var(--grn));stroke-linecap:round;transition:stroke-dasharray .6s cubic-bezier(.2,.8,.2,1),stroke .3s;filter:drop-shadow(0 0 5px var(--c,var(--grn)))}
+.dg-ring b{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 24px "Syne",sans-serif;color:var(--c,var(--grn))}
+.dg-ring b small{font:400 8px "JetBrains Mono",monospace;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+.dg-find{list-style:none;font-size:10.5px;line-height:1.6;color:var(--dim);display:flex;flex-direction:column;gap:6px}
+.dg-find li{padding:5px 9px;border-left:3px solid var(--c);background:rgba(255,255,255,.02);border-radius:0 3px 3px 0}
+.dg-find li b{color:var(--text)}
+.dg-kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;align-content:start}
+.dg-kpi div{background:#020307;border:1px solid var(--brd);border-radius:4px;padding:8px 6px;text-align:center}
+.dg-kpi b{display:block;font-size:14px;color:var(--text)}
+.dg-kpi span{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.dg-cv{display:block;width:100%}
+.dg-lays{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.dg-lay{background:#030408;border:1px solid var(--brd);border-left:3px solid var(--c);border-radius:4px;padding:9px 11px;transition:border-color .2s,box-shadow .2s}
+.dg-lay:hover{box-shadow:0 8px 24px -14px var(--c)}
+.dg-lh{display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:10px}
+.dg-lh b{color:var(--text);font-family:"Syne",sans-serif;font-size:12px}
+.dg-lh span{color:var(--dim);flex:1;font-size:9px}
+.dg-chip{font-style:normal;font-size:8px;font-weight:700;padding:2px 7px;border-radius:9px;color:var(--c);border:1px solid var(--c);text-transform:uppercase;letter-spacing:.06em}
+.dg-met{display:grid;grid-template-columns:96px 1fr 54px;gap:6px;align-items:center;font-size:9px;color:var(--dim);margin-top:5px}
+.dg-met i{font-style:normal;text-align:right;color:var(--text)}
+.dg-bar{height:5px;background:#10152b;border-radius:3px;overflow:hidden}
+.dg-bar u{display:block;height:100%;background:var(--c);border-radius:3px;transition:width .5s}
+.dg-note{font-size:9px;color:var(--dim);line-height:1.7;margin-top:8px}
+.dg-note code{color:var(--ylw);font-family:inherit}
+.dg-sug{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:10px 12px;margin-top:8px;border:1px dashed var(--flashy);border-radius:4px;background:rgba(157,255,0,.04);font-size:10.5px;color:var(--dim)}
+.dg-sug .v{font-family:"Syne",sans-serif;font-size:19px;color:var(--flashy)}
+.dg-mats{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-top:8px}
+.dg-mats figure{margin:0;text-align:center;font-size:8px;color:var(--dim);letter-spacing:.06em}
+.dg-mats canvas{display:block;margin:0 auto 4px;image-rendering:pixelated;border:1px solid var(--brd);max-width:100%}
+.dg-leg{display:flex;gap:12px;flex-wrap:wrap;font-size:9px;color:var(--dim);margin-top:6px}
+.dg-leg s{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px;text-decoration:none;border-radius:2px}
+@media(max-width:900px){#dg-modal{width:100%;max-width:none;height:100%;max-height:100vh;border-radius:0}#dg-body{padding:10px 12px 18px}#dg-modal .btn{font-size:11.5px;padding:9px 10px;min-height:36px}.dg-verdict{flex-direction:column;align-items:flex-start}.dg-met{grid-template-columns:88px 1fr 50px}.dg-ecg{display:none}}
+@media(prefers-reduced-motion:reduce){.dg-ecg polyline{animation:none;stroke-dashoffset:0}.dg-pane.on{animation:none}}
+</style>
+
+<div id="dg-modal-bg">
+  <div id="dg-modal" role="dialog" aria-label="Labo Diagnostic">
+    <div id="dg-header">
+      <div class="dg-hr">
+        <h2>🩺 Labo Diagnostic</h2>
+        <svg class="dg-ecg" viewBox="0 0 84 22" aria-hidden="true"><polyline points="0,11 18,11 23,11 27,3 32,19 36,11 52,11 56,8 60,11 84,11"/></svg>
+        <span style="flex:1"></span>
+        <button class="btn" onclick="closeDGLab()">✕</button>
+      </div>
+      <div class="dg-tabs" role="tablist">
+        <button class="dg-tab on" data-t="sante" onclick="dgTab('sante')">① Radiographie</button>
+        <button class="dg-tab" data-t="lr" onclick="dgTab('lr')">② Trouveur de LR</button>
+        <button class="dg-tab" data-t="prune" onclick="dgTab('prune')">③ Élagage</button>
+      </div>
+    </div>
+    <div id="dg-body">
+      <!-- ① RADIOGRAPHIE -->
+      <div class="dg-pane on" id="dg-p-sante">
+        <div class="rl-p">Un réseau qui n'apprend pas a presque toujours une <b>cause visible</b> : neurones morts, activations saturées, gradients qui s'évanouissent ou explosent, pas d'apprentissage trop timide ou trop violent. Ici, on l'ausculte <em>sans le modifier</em> et on obtient un diagnostic.</div>
+        <div class="btn-row" style="margin:0 0 10px">
+          <button class="btn go" onclick="dgScan()">↻ Réanalyser</button>
+          <button class="btn on" id="dgLive" onclick="dgToggleLive()">● Live</button>
+          <button class="btn" onclick="dgTrain(1)">+1 Epoch</button>
+          <button class="btn" onclick="dgTrain(100)">×100</button>
+        </div>
+        <div id="dgSante"></div>
+      </div>
+      <!-- ② TROUVEUR DE LR -->
+      <div class="dg-pane" id="dg-p-lr">
+        <div class="rl-p">Quel <b>learning rate</b> choisir ? On le fait croître de façon exponentielle pendant quelques pas d'entraînement et on observe la loss : elle <em>descend</em> tant que le LR est raisonnable, puis <em>explose</em>. Le meilleur LR se trouve dans la zone de descente nette, un peu avant le minimum et bien avant l'explosion. Le réseau est <b>restauré</b> après le test.</div>
+        <div class="rl-card y">
+          <div class="rl-row">
+            <div class="rl-ctl"><span class="rl-cl">LR min</span><input type="number" id="dgLo" value="0.00001" step="any" min="0.0000001"></div>
+            <div class="rl-ctl"><span class="rl-cl">LR max</span><input type="number" id="dgHi" value="5" step="any" min="0.001"></div>
+            <div class="rl-ctl"><span class="rl-cl">Pas</span><input type="range" id="dgSteps" min="30" max="150" value="70" oninput="this.nextElementSibling.textContent=this.value"><b>70</b></div>
+            <div class="rl-ctl"><span class="rl-cl">Batch</span><input type="range" id="dgB" min="1" max="32" value="12" oninput="this.nextElementSibling.textContent=this.value"><b>12</b></div>
+          </div>
+          <div class="btn-row"><button class="btn go" id="dgRun" onclick="dgRunLR()" style="flex:1">▶ Lancer le balayage</button></div>
+        </div>
+        <canvas class="dg-cv" id="dgLRcv"></canvas>
+        <div class="dg-leg"><span><s style="background:var(--a1)"></s>loss lissée</span><span><s style="background:#3a4770"></s>loss brute</span><span><s style="background:var(--flashy)"></s>LR suggéré</span><span><s style="background:var(--ylw)"></s>LR actuel</span></div>
+        <div id="dgLRout"></div>
+      </div>
+      <!-- ③ ÉLAGAGE -->
+      <div class="dg-pane" id="dg-p-prune">
+        <div class="rl-p">Combien de connexions ton réseau utilise-t-il <b>vraiment</b> ? L'<em>élagage par magnitude</em> met à zéro les poids les plus petits. Si la précision tient, ces poids étaient superflus : le réseau est <b>compressible</b>. Aperçu en direct, sans rien casser tant que tu n'as pas cliqué sur « Appliquer ».</div>
+        <div class="rl-card p">
+          <div class="rl-row"><div class="rl-ctl" style="flex:1 1 100%"><span class="rl-cl">Élagage</span><input type="range" id="dgSp" min="0" max="98" value="0" oninput="dgPreview()"><b id="dgSpV">0%</b></div></div>
+          <div class="dg-kpi" style="grid-template-columns:repeat(4,1fr)" id="dgPK"></div>
+          <div class="btn-row"><button class="btn" onclick="dgCurve()">📈 Tracer la courbe de robustesse</button><button class="btn warn" onclick="dgApplyPrune()">✂ Appliquer</button><button class="btn" id="dgUndo" onclick="dgUndoPrune()" disabled>↩ Annuler</button></div>
+        </div>
+        <canvas class="dg-cv" id="dgPCv" style="display:none"></canvas>
+        <div class="dg-leg" id="dgPLeg" style="display:none"><span><s style="background:var(--grn)"></s>précision</span><span><s style="background:var(--org)"></s>loss (relative)</span><span><s style="background:var(--red)"></s>seuil actuel</span></div>
+        <div class="rl-h" style="margin-top:12px">Matrices de poids (vert +, rouge −, noir = élagué)</div>
+        <div class="dg-mats" id="dgMats"></div>
+        <div class="dg-note">Après « Appliquer », les poids mis à zéro peuvent <b>repousser</b> si tu continues d'entraîner : l'élagage n'est pas verrouillé par un masque.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || "#888";
+  const ready = () => typeof NET !== "undefined" && NET && NET.W && NET.W.length > 0 && DS.inputs.length > 0;
+  const isOpen = () => $("dg-modal-bg").classList.contains("show");
+  const FONT = '9px "JetBrains Mono",monospace';
+  const nz = (v) => (isFinite(v) ? v : 0);
+  const ex = (v) => (v === 0 ? "0" : v.toExponential(1).replace("e", "e").replace("+", ""));
+  const pc = (v) => (100 * v).toFixed(v < 0.1 && v > 0 ? 1 : 0) + "%";
+  const S = { tab: "sante", live: true, snap: null, lr: [], lrRun: false, lrStop: false, curve: null, undo: null, scan: null };
+
+  // Le forward de l'app applique le dropout même hors entraînement : on le coupe pour mesurer.
+  function noDrop(f) { const el = $("cDrop"), v = el.value; el.value = 0; try { return f(); } finally { el.value = v; } }
+  function sub(cap) { const n = DS.inputs.length, st = Math.max(1, Math.ceil(n / cap)), r = []; for (let i = 0; i < n; i += st) r.push(i); return r; }
+  const isCls = () => DS.outputs.every((r) => r.every((v) => v === 0 || v === 1));
+  const am = (a) => a.indexOf(Math.max(...a));
+  function evalNet() {
+    const idx = sub(400), cls = isCls();
+    return noDrop(() => {
+      let L = 0, ok = 0;
+      idx.forEach((i) => {
+        const p = forward(DS.inputs[i], false).activations.at(-1), y = DS.outputs[i];
+        L += computeLoss(p, y);
+        if (cls && (p.length === 1 ? Math.round(p[0]) === y[0] : am(p) === am(y))) ok++;
+      });
+      return { loss: L / idx.length, acc: cls ? (100 * ok) / idx.length : null };
+    });
+  }
+  function cv(c, h) {
+    const d = window.devicePixelRatio || 1, w = c.clientWidth || 320;
+    c.width = Math.round(w * d); c.height = Math.round(h * d); c.style.height = h + "px";
+    const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.font = FONT; return { g, w, h };
+  }
+  const col = (s) => (s === 2 ? css("--red") : s === 1 ? css("--org") : css("--grn"));
+
+  /* ═════════ ① RADIOGRAPHIE ═════════ */
+  function scan() {
+    const nL = NET.W.length, idx = sub(160), lr = getLR(), opt = getOpt();
+    const adaptive = ["adam", "adamw", "rmsprop"].includes(opt);
+    const Ls = NET.W.map((W, l) => ({ l, n: W.length, nin: W[0].length, fn: getActForLayer(l), dead: new Array(W.length).fill(0), g: W.map((r) => new Array(r.length).fill(0)) }));
+    let loss = 0;
+    noDrop(() => idx.forEach((i) => {
+      const { activations: A, zs } = forward(DS.inputs[i], false), D = backward(A, zs, DS.outputs[i]);
+      loss += computeLoss(A[nL], DS.outputs[i]);
+      Ls.forEach((o) => {
+        for (let j = 0; j < o.n; j++) {
+          if (o.l < nL - 1 && Math.abs(actD(A[o.l + 1][j], zs[o.l][j], o.fn)) < 0.005) o.dead[j]++;
+          const gr = o.g[j], d = D[o.l][j];
+          for (let k = 0; k < o.nin; k++) gr[k] += d * A[o.l][k];
+        }
+      });
+    }));
+    const N = idx.length, finds = [];
+    let pen = 0, params = 0, bad = false;
+    Ls.forEach((o) => {
+      const W = NET.W[o.l], all = W.flat(), m = all.reduce((a, v) => Math.max(a, Math.abs(nz(v))), 1e-12);
+      o.finite = all.every(isFinite) && NET.B[o.l].every(isFinite);
+      o.rmsW = Math.sqrt(all.reduce((s, v) => s + nz(v) * nz(v), 0) / all.length);
+      o.absW = all.reduce((s, v) => s + Math.abs(nz(v)), 0) / all.length;
+      o.grms = Math.sqrt(o.g.flat().reduce((s, v) => s + (v / N) * (v / N), 0) / all.length);
+      o.hist = new Array(21).fill(0); o.m = m;
+      all.forEach((v) => { o.hist[clamp(Math.floor(((nz(v) + m) / (2 * m)) * 21), 0, 20)]++; });
+      params += all.length + o.n;
+      const hid = o.l < nL - 1;
+      o.deadPct = hid ? o.dead.filter((c) => c / N > 0.98).length / o.n : null;
+      o.sat = hid ? o.dead.reduce((s, c) => s + c / N, 0) / o.n : null;
+      o.ratio = (adaptive ? lr : lr * o.grms) / (o.rmsW || 1e-9);
+      let st = 0; const nm = `Couche ${o.l + 1}`;
+      const flag = (s, p, msg) => { st = Math.max(st, s); pen += p; finds.push({ s, msg }); };
+      if (!o.finite) { st = 2; bad = true; finds.push({ s: 2, msg: `<b>${nm}</b> contient des valeurs <b>NaN/∞</b> : l'entraînement a divergé. Réduis le LR puis ↺ Réinit.` }); }
+      if (hid && o.deadPct > 0.5) flag(2, 25, `<b>${nm}</b> : ${pc(o.deadPct)} de neurones <b>morts</b> (gradient ≈ 0 sur tout le dataset). Essaie Leaky ReLU/ELU, une init He ou un LR plus petit.`);
+      else if (hid && o.deadPct > 0.2) flag(1, 12, `<b>${nm}</b> : ${pc(o.deadPct)} de neurones morts. Un LR plus faible ou Leaky ReLU les gardera en vie.`);
+      else if (hid && o.deadPct > 0.05) { pen += 4; }
+      if (hid && o.sat > 0.6 && o.deadPct <= 0.2) flag(o.sat > 0.8 ? 2 : 1, o.sat > 0.8 ? 12 : 6, `<b>${nm}</b> : activations <b>saturées</b> (${pc(o.sat)} des pas ont une dérivée ≈ 0). Init Xavier, entrées normalisées, ou ReLU/GELU.`);
+      const dead = hid && o.deadPct > 0.5;
+      if (dead) { /* déjà signalé : pas d'alerte redondante */ } else if (o.ratio < 1e-5) flag(1, o.ratio < 1e-6 ? 10 : 5, `<b>${nm}</b> : mises à jour minuscules (ratio ${ex(o.ratio)}). LR trop petit… ou réseau déjà convergé.`);
+      else if (o.ratio > 0.1) flag(o.ratio > 0.3 ? 2 : 1, o.ratio > 0.3 ? 15 : 8, `<b>${nm}</b> : mises à jour <b>violentes</b> (ratio ${ex(o.ratio)}, idéal ≈ 1e-3). Diminue le LR.`);
+      o.st = st;
+    });
+    const ratioF = nL > 1 ? (Ls[0].grms + 1e-30) / (Ls[nL - 1].grms + 1e-30) : 1;
+    if (nL > 1 && Ls[nL - 1].grms > 1e-9) {
+      if (ratioF < 0.01) { pen += ratioF < 0.001 ? 15 : 8; finds.push({ s: ratioF < 0.001 ? 2 : 1, msg: `<b>Gradient qui s'évanouit</b> : la couche 1 reçoit ${ex(1 / ratioF)}× moins de gradient que la sortie. ReLU/ELU, Batch Norm ou moins de couches.` }); }
+      else if (ratioF > 100) { pen += ratioF > 1000 ? 15 : 8; finds.push({ s: ratioF > 1000 ? 2 : 1, msg: `<b>Gradient qui explose</b> : la couche 1 reçoit ${ex(ratioF)}× plus de gradient que la sortie. LR plus petit, init plus faible.` }); }
+    }
+    finds.sort((a, b) => b.s - a.s);
+    const score = bad ? 0 : clamp(100 - pen, 0, 100);
+    return { Ls, finds, score, flow: ratioF, params, loss: loss / N, N, acc: isCls() ? evalNet().acc : null };
+  }
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const meter = (lab, txt, f, c) => `<div class="dg-met" style="--c:${c}"><span>${lab}</span><div class="dg-bar"><u style="width:${clamp(f, 0, 1) * 100}%"></u></div><i>${txt}</i></div>`;
+
+  function drawHist(c, o, color) {
+    const { g, w, h } = cv(c, 64), n = o.hist.length, mx = Math.max(...o.hist), bw = w / n;
+    g.fillStyle = "#02030a"; g.fillRect(0, 0, w, h);
+    o.hist.forEach((v, i) => {
+      const bh = (v / mx) * (h - 14), neg = i < n / 2 - 0.5, mid = i === (n - 1) / 2;
+      g.fillStyle = mid ? css("--a1") : neg ? css("--red") : css("--grn"); g.globalAlpha = 0.85;
+      g.fillRect(i * bw + 1, h - 12 - bh, bw - 2, bh);
+    });
+    g.globalAlpha = 1; g.fillStyle = css("--dim"); g.fillText("−" + o.m.toFixed(2), 2, h - 2); g.textAlign = "right"; g.fillText("+" + o.m.toFixed(2), w - 2, h - 2); g.textAlign = "left";
+  }
+  function drawFlow(R) {
+    const c = $("dgFlow"); if (!c) return;
+    const { g, w, h } = cv(c, 130), n = R.Ls.length, bw = Math.min(70, (w - 70) / n - 14);
+    g.fillStyle = "#02030a"; g.fillRect(0, 0, w, h);
+    g.strokeStyle = "#141a34"; g.fillStyle = css("--dim");
+    for (let e = 0; e >= -8; e -= 2) { const y = 10 + ((0 - e) / 8) * (h - 36); g.beginPath(); g.moveTo(34, y); g.lineTo(w - 6, y); g.stroke(); g.fillText("1e" + e, 2, y + 3); }
+    R.Ls.forEach((o, i) => {
+      const x = 44 + i * ((w - 60) / n) + ((w - 60) / n - bw) / 2, v = clamp((Math.log10(o.grms + 1e-30) + 8) / 8, 0.01, 1), bh = v * (h - 36), c2 = col(o.st);
+      const gr = g.createLinearGradient(0, h - 26 - bh, 0, h - 26); gr.addColorStop(0, c2); gr.addColorStop(1, c2 + "33");
+      g.fillStyle = gr; g.fillRect(x, h - 26 - bh, bw, bh);
+      g.fillStyle = css("--text"); g.textAlign = "center"; g.fillText(ex(o.grms), x + bw / 2, h - 30 - bh); g.fillStyle = css("--dim"); g.fillText("C" + (o.l + 1), x + bw / 2, h - 10); g.textAlign = "left";
+    });
+  }
+  function renderScan() {
+    const host = $("dgSante"), R = S.scan;
+    if (!ready()) { host.innerHTML = `<div class="rl-card"><div class="rl-p" style="margin:0">Crée d'abord un réseau et un dataset, puis reviens ici.</div></div>`; return; }
+    const sc = R.score, c = sc >= 75 ? css("--grn") : sc >= 45 ? css("--org") : css("--red");
+    const title = sc >= 75 ? "Réseau en bonne santé" : sc >= 45 ? "À surveiller" : "Réseau en difficulté";
+    const fl = R.finds.length ? R.finds.map((f) => `<li style="--c:${col(f.s)}">${f.msg}</li>`).join("") : `<li style="--c:${css("--grn")}">Rien d'anormal détecté : neurones vivants, gradients et mises à jour dans des plages saines.</li>`;
+    const circ = 2 * Math.PI * 40;
+    host.innerHTML = `<div class="dg-top">
+      <div class="rl-card" style="margin:0;--c:${c}"><div class="dg-verdict">
+        <div class="dg-ring" style="--c:${c}"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="40"/><circle class="fg" cx="50" cy="50" r="40" stroke-dasharray="${(sc / 100) * circ} ${circ}"/></svg><b>${Math.round(sc)}<small>santé</small></b></div>
+        <div style="flex:1;min-width:0"><div class="rl-h" style="color:${c}">${title}</div><ul class="dg-find">${fl}</ul></div></div></div>
+      <div class="dg-kpi"><div><b>${R.params}</b><span>Paramètres</span></div><div><b>${R.loss < 1e4 ? R.loss.toFixed(4) : "∞"}</b><span>Loss</span></div><div><b>${R.acc == null ? "—" : R.acc.toFixed(0) + "%"}</b><span>Précision</span></div><div><b>${R.N}</b><span>Exemples scannés</span></div></div>
+    </div>
+    <div class="rl-card"><div class="rl-h">Flux de gradient par couche <span style="color:var(--dim);text-transform:none;letter-spacing:0">(RMS, échelle log)</span></div><canvas class="dg-cv" id="dgFlow"></canvas>
+      <div class="dg-note">Des barres qui <b>s'effondrent vers la gauche</b> = gradient évanescent ; qui <b>montent</b> = explosion. L'idéal : des hauteurs comparables.</div></div>
+    <div class="dg-lays">${R.Ls.map((o) => {
+      const cc = col(o.st), hid = o.deadPct != null;
+      return `<div class="dg-lay" style="--c:${cc}"><div class="dg-lh"><b>Couche ${o.l + 1}</b><span>${o.nin}→${o.n} · ${o.fn}${hid ? "" : " · sortie"}</span><i class="dg-chip">${["sain", "attention", "alerte"][o.st]}</i></div>
+        <canvas class="dg-cv" id="dgH${o.l}"></canvas>
+        ${hid ? meter("Neurones morts", pc(o.deadPct), o.deadPct * 2, cc) + meter("Saturation", pc(o.sat), o.sat, cc) : ""}
+        ${meter("Gradient RMS", ex(o.grms), (Math.log10(o.grms + 1e-30) + 8) / 8, cc)}${meter("Ratio MAJ/poids", ex(o.ratio), (Math.log10(o.ratio + 1e-30) + 6) / 5, cc)}${meter("|w| moyen", o.absW.toFixed(3), o.absW, cc)}</div>`;
+    }).join("")}</div>
+    <div class="dg-note"><b>Ratio MAJ/poids</b> = amplitude relative d'un pas de mise à jour (<code>lr·|∇|/|w|</code> en SGD, <code>lr/|w|</code> pour les optimiseurs adaptatifs). Repère classique : ≈ <code>1e-3</code>.</div>`;
+    R.Ls.forEach((o) => drawHist($("dgH" + o.l), o));
+    drawFlow(R);
+  }
+  window.dgScan = function () { if (!ready()) { S.scan = null; renderScan(); return; } S.scan = scan(); renderScan(); };
+  window.dgToggleLive = function () { S.live = !S.live; $("dgLive").classList.toggle("on", S.live); };
+  window.dgTrain = async function (n) { if (!ready()) return; if (n === 1) await doEpoch(); else await doN(n); dgScan(); };
+
+  /* ═════════ ② TROUVEUR DE LR ═════════ */
+  const snapW = () => ({ W: NET.W.map((a) => a.map((r) => r.slice())), B: NET.B.map((r) => r.slice()) });
+  function restore(s) { s.W.forEach((a, l) => a.forEach((r, j) => r.forEach((v, k) => (NET.W[l][j][k] = v)))); s.B.forEach((r, l) => r.forEach((v, j) => (NET.B[l][j] = v))); }
+  function suggest(P) {
+    if (P.length < 8) return null;
+    let mi = 0; P.forEach((p, i) => { if (p.sm < P[mi].sm) mi = i; });
+    const base = P.slice(0, 5).reduce((a, p) => a + p.sm, 0) / 5, drop = base - P[mi].sm;
+    // Réseau déjà bien entraîné : pas de vraie descente, on retombe sur « LR de loss minimale ÷ 10 ».
+    if (drop < 0.1 * Math.abs(base) + 1e-9) return { best: P[mi].lr / 10, minLR: P[mi].lr, flat: true };
+    // Zone de descente nette : premier LR où la loss a parcouru 60 % de sa descente totale (robuste au bruit des batchs).
+    let bi = -1;
+    for (let i = 5; i <= mi; i++) if (P[i].sm <= base - 0.6 * drop) { bi = i; break; }
+    const best = Math.min(bi >= 0 ? P[bi].lr : P[mi].lr / 3, P[mi].lr / 3);
+    return { best, minLR: P[mi].lr, flat: false };
+  }
+  function drawLR() {
+    const c = $("dgLRcv"), { g, w, h } = cv(c, 280), P = S.lr, lo = +$("dgLo").value, hi = +$("dgHi").value, L0 = Math.log10(lo), L1 = Math.log10(hi), pl = 44, pb = 22, pt = 10, pr = 10;
+    g.fillStyle = "#02030a"; g.fillRect(0, 0, w, h);
+    const X = (lr) => pl + ((Math.log10(lr) - L0) / (L1 - L0)) * (w - pl - pr);
+    g.strokeStyle = "#141a34"; g.fillStyle = css("--dim");
+    for (let e = Math.ceil(L0); e <= L1; e++) { const x = X(Math.pow(10, e)); g.beginPath(); g.moveTo(x, pt); g.lineTo(x, h - pb); g.stroke(); g.textAlign = "center"; g.fillText("1e" + e, x, h - 8); }
+    g.textAlign = "left";
+    if (!P.length) { g.fillStyle = css("--dim"); g.textAlign = "center"; g.fillText("Lance le balayage pour tracer la courbe", w / 2, h / 2); g.textAlign = "left"; return; }
+    const vals = P.map((p) => p.sm).concat(P.map((p) => p.raw)), mn = Math.min(...vals), cap = Math.min(Math.max(...vals), mn + (P[0].sm - mn) * 3 + 0.5), Y = (v) => pt + (1 - (clamp(v, mn, cap) - mn) / (cap - mn || 1)) * (h - pb - pt);
+    g.fillStyle = css("--dim"); g.textAlign = "right"; g.fillText(cap.toFixed(2), pl - 4, pt + 6); g.fillText(mn.toFixed(2), pl - 4, h - pb); g.textAlign = "left";
+    const line = (k, stroke, lw) => { g.beginPath(); P.forEach((p, i) => (i ? g.lineTo(X(p.lr), Y(p[k])) : g.moveTo(X(p.lr), Y(p[k])))); g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); };
+    line("raw", "#3a4770", 1); g.save(); g.shadowColor = css("--a1"); g.shadowBlur = 8; line("sm", css("--a1"), 2); g.restore();
+    const cur = getLR(); if (cur >= lo && cur <= hi) { g.setLineDash([4, 4]); g.strokeStyle = css("--ylw"); g.beginPath(); g.moveTo(X(cur), pt); g.lineTo(X(cur), h - pb); g.stroke(); g.setLineDash([]); }
+    const sg = suggest(P); if (!S.lrRun && sg && sg.best) { g.strokeStyle = css("--flashy"); g.lineWidth = 2; g.beginPath(); g.moveTo(X(sg.best), pt); g.lineTo(X(sg.best), h - pb); g.stroke(); g.lineWidth = 1; }
+  }
+  window.dgRunLR = async function () {
+    if (S.lrRun) { S.lrStop = true; return; }
+    if (!ready()) { $("dgLRout").innerHTML = `<div class="dg-note">Crée d'abord un réseau et un dataset.</div>`; return; }
+    const lo = +$("dgLo").value, hi = +$("dgHi").value, N = +$("dgSteps").value, B = +$("dgB").value;
+    if (!(lo > 0 && hi > lo)) { $("dgLRout").innerHTML = `<div class="dg-note">Il faut 0 &lt; LR min &lt; LR max.</div>`; return; }
+    if (typeof autoRunning !== "undefined" && autoRunning) toggleAuto();
+    S.lrRun = true; S.lrStop = false; S.lr = []; $("dgRun").textContent = "⏹ Arrêter"; $("dgRun").classList.add("pulse"); $("dgLRout").innerHTML = "";
+    const snap = snapW(), nL = NET.W.length, n = DS.inputs.length, el = $("cDrop"), dv = el.value; el.value = 0;
+    let ema = null, best = Infinity;
+    try {
+      for (let i = 0; i < N && !S.lrStop; i++) {
+        const lr = lo * Math.pow(hi / lo, i / (N - 1)), gW = NET.W.map((a) => a.map((r) => r.map(() => 0))), gB = NET.B.map((r) => r.map(() => 0));
+        let bl = 0;
+        for (let b = 0; b < B; b++) {
+          const s = Math.floor(Math.random() * n), y = DS.outputs[s], { activations: A, zs } = forward(DS.inputs[s], false), D = backward(A, zs, y);
+          bl += computeLoss(A[nL], y);
+          for (let l = 0; l < nL; l++) for (let j = 0; j < NET.W[l].length; j++) { gB[l][j] += D[l][j]; for (let k = 0; k < NET.W[l][j].length; k++) gW[l][j][k] += D[l][j] * A[l][k]; }
+        }
+        bl /= B; if (!isFinite(bl)) break;
+        ema = ema == null ? bl : 0.8 * ema + 0.2 * bl; best = Math.min(best, ema); S.lr.push({ lr, raw: bl, sm: ema });
+        if (i > 6 && ema > Math.max(4 * best, best + 0.5)) break;
+        for (let l = 0; l < nL; l++) for (let j = 0; j < NET.W[l].length; j++) { NET.B[l][j] -= (lr * gB[l][j]) / B; for (let k = 0; k < NET.W[l][j].length; k++) NET.W[l][j][k] -= (lr * gW[l][j][k]) / B; }
+        if (i % 2 === 0) { drawLR(); await new Promise(requestAnimationFrame); }
+      }
+    } finally { el.value = dv; restore(snap); S.lrRun = false; $("dgRun").textContent = "▶ Relancer le balayage"; $("dgRun").classList.remove("pulse"); }
+    drawLR(); lrOut();
+  };
+  function lrOut() {
+    const sg = suggest(S.lr), adaptive = ["adam", "adamw", "rmsprop"].includes(getOpt());
+    if (!sg || !sg.best) { $("dgLRout").innerHTML = `<div class="dg-sug">Pas de descente nette détectée : la loss ne diminue pas dans cette plage. Élargis-la, ou vérifie l'init et le dataset.</div>`; return; }
+    const v = +sg.best.toPrecision(2);
+    $("dgLRout").innerHTML = `<div class="dg-sug"><div>LR suggéré<br><b class="v">${v}</b></div><div>LR de loss minimale<br><b class="v" style="color:var(--text);font-size:15px">${+sg.minLR.toPrecision(2)}</b></div>
+      <button class="btn go" onclick="dgApplyLR(${v})">✔ Appliquer ${v}</button>
+      <div style="flex:1 1 220px;font-size:9.5px;line-height:1.6">${sg.flat ? "La loss descend à peine : réseau déjà bien entraîné, la suggestion est donc « LR de loss minimale ÷ 10 ». " : ""}Test réalisé en <b>SGD simple</b>. ${adaptive ? `Ton optimiseur (<b>${getOpt()}</b>) est adaptatif : en pratique son LR idéal est plus bas, prends plutôt ${+(v / 10).toPrecision(2)} à ${+(v / 100).toPrecision(2)}.` : "Garde une marge : un LR juste sous le point d'explosion reste instable."}</div></div>`;
+  }
+  window.dgApplyLR = function (v) { syncLR(v); drawLR(); };
+
+  /* ═════════ ③ ÉLAGAGE ═════════ */
+  const sortedAbs = () => NET.W.flat(2).map(Math.abs).sort((a, b) => a - b);
+  const thrAt = (sorted, p) => (p <= 0 ? -1 : sorted[Math.min(sorted.length - 1, Math.max(0, Math.floor((sorted.length * p) / 100) - 1))]);
+  function withPrune(thr, f) { const s = snapW(); NET.W.forEach((a) => a.forEach((r) => r.forEach((v, k) => { if (Math.abs(v) <= thr) r[k] = 0; }))); try { return f(); } finally { restore(s); } }
+  function kept(thr) { let t = 0, z = 0; NET.W.forEach((a) => a.forEach((r) => r.forEach((v) => { t++; if (Math.abs(v) <= thr) z++; }))); return { t, z }; }
+  function drawMats(thr) {
+    const host = $("dgMats"); host.innerHTML = "";
+    NET.W.forEach((W, l) => {
+      const no = W.length, ni = W[0].length, cell = clamp(Math.floor(120 / Math.max(no, ni)), 2, 18), mx = W.flat().reduce((a, v) => Math.max(a, Math.abs(v)), 1e-9);
+      const f = document.createElement("figure"), c = document.createElement("canvas"); c.width = ni * cell; c.height = no * cell; c.style.width = ni * cell + "px"; c.style.height = no * cell + "px";
+      const g = c.getContext("2d"); g.fillStyle = "#000"; g.fillRect(0, 0, c.width, c.height);
+      W.forEach((r, j) => r.forEach((v, k) => { if (Math.abs(v) <= thr) return; const a = 0.25 + 0.75 * Math.min(1, Math.abs(v) / mx); g.fillStyle = v > 0 ? `rgba(0,255,157,${a})` : `rgba(255,61,90,${a})`; g.fillRect(k * cell, j * cell, cell - (cell > 4 ? 1 : 0), cell - (cell > 4 ? 1 : 0)); }));
+      f.appendChild(c); f.appendChild(document.createTextNode(`W${l + 1} · ${no}×${ni}`)); host.appendChild(f);
+    });
+  }
+  window.dgPreview = function () {
+    if (!ready()) { $("dgPK").innerHTML = `<div style="grid-column:1/-1;font-size:10px">Crée d'abord un réseau et un dataset.</div>`; return; }
+    const p = +$("dgSp").value, sorted = sortedAbs(), thr = thrAt(sorted, p), base = S.base || (S.base = evalNet()), ev = withPrune(thr, evalNet), k = kept(thr);
+    $("dgSpV").textContent = p + "%";
+    const dA = ev.acc == null ? null : ev.acc - base.acc, ok = ev.acc == null ? ev.loss <= base.loss * 1.2 + 1e-4 : dA >= -2;
+    $("dgPK").innerHTML = `<div><b>${k.t - k.z}/${k.t}</b><span>Poids gardés</span></div><div><b style="color:${p === 0 ? "var(--text)" : ok ? "var(--grn)" : "var(--red)"}">${ev.acc == null ? "—" : ev.acc.toFixed(0) + "%"}</b><span>Précision${dA == null || !p ? "" : " (" + (dA >= 0 ? "+" : "") + dA.toFixed(0) + ")"}</span></div><div><b>${ev.loss.toFixed(4)}</b><span>Loss</span></div><div><b>${(k.t / Math.max(1, k.t - k.z)).toFixed(1)}×</b><span>Compression</span></div>`;
+    drawMats(thr);
+    if (S.curve) drawCurve(p);
+  };
+  window.dgCurve = function () {
+    if (!ready()) return;
+    const sorted = sortedAbs(), pts = [];
+    for (let p = 0; p <= 98; p += 2) { const e = withPrune(thrAt(sorted, p), evalNet); pts.push({ p, acc: e.acc, loss: e.loss }); }
+    S.curve = pts; $("dgPCv").style.display = "block"; $("dgPLeg").style.display = "flex"; drawCurve(+$("dgSp").value);
+  };
+  function drawCurve(cur) {
+    const { g, w, h } = cv($("dgPCv"), 200), P = S.curve, pl = 34, pb = 20, pt = 8, pr = 10, X = (p) => pl + (p / 98) * (w - pl - pr), mxL = Math.max(...P.map((q) => q.loss), 1e-9), Yp = (v) => pt + (1 - v) * (h - pt - pb);
+    g.fillStyle = "#02030a"; g.fillRect(0, 0, w, h); g.strokeStyle = "#141a34"; g.fillStyle = css("--dim");
+    for (let i = 0; i <= 4; i++) { const y = Yp(i / 4); g.beginPath(); g.moveTo(pl, y); g.lineTo(w - pr, y); g.stroke(); g.textAlign = "right"; g.fillText(i * 25 + "%", pl - 4, y + 3); }
+    g.textAlign = "center"; for (let p = 0; p <= 90; p += 10) g.fillText(p + "%", X(p), h - 6); g.textAlign = "left";
+    const ln = (f, c, lw) => { g.beginPath(); P.forEach((q, i) => (i ? g.lineTo(X(q.p), Yp(f(q))) : g.moveTo(X(q.p), Yp(f(q))))); g.strokeStyle = c; g.lineWidth = lw; g.stroke(); };
+    ln((q) => q.loss / mxL, css("--org"), 1.5); if (P[0].acc != null) { g.save(); g.shadowColor = css("--grn"); g.shadowBlur = 7; ln((q) => q.acc / 100, css("--grn"), 2); g.restore(); }
+    g.setLineDash([4, 4]); g.strokeStyle = css("--red"); g.lineWidth = 1; g.beginPath(); g.moveTo(X(cur), pt); g.lineTo(X(cur), h - pb); g.stroke(); g.setLineDash([]);
+  }
+  window.dgApplyPrune = function () {
+    if (!ready()) return; const p = +$("dgSp").value; if (!p) return;
+    S.undo = snapW(); const thr = thrAt(sortedAbs(), p);
+    NET.W.forEach((a) => a.forEach((r) => r.forEach((v, k) => { if (Math.abs(v) <= thr) r[k] = 0; })));
+    $("dgUndo").disabled = false; afterChange(); S.base = null; S.curve = null; $("dgPCv").style.display = "none"; $("dgPLeg").style.display = "none"; $("dgSp").value = 0; dgPreview();
+    try { log(`<span class="ls">✂ ÉLAGAGE</span> — ${p}% des poids les plus faibles mis à zéro`); } catch (e) {}
+  };
+  window.dgUndoPrune = function () { if (!S.undo) return; restore(S.undo); S.undo = null; $("dgUndo").disabled = true; afterChange(); S.base = null; S.curve = null; $("dgPCv").style.display = "none"; $("dgPLeg").style.display = "none"; dgPreview(); };
+  function afterChange() { try { if (typeof gpuSyncWeightsToDevice === "function") gpuSyncWeightsToDevice(); } catch (e) {} try { redraw(); } catch (e) {} }
+
+  /* ═════════ Navigation / cycle de vie ═════════ */
+  window.dgTab = function (t) {
+    S.tab = t;
+    document.querySelectorAll(".dg-tab").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
+    document.querySelectorAll(".dg-pane").forEach((p) => p.classList.toggle("on", p.id === "dg-p-" + t));
+    if (t === "sante") dgScan(); else if (t === "lr") { drawLR(); if (S.lr.length && !S.lrRun) lrOut(); } else { S.base = null; dgPreview(); if (S.curve) drawCurve(+$("dgSp").value); }
+  };
+  window.openDGLab = function () { $("dg-modal-bg").classList.add("show"); S.base = null; dgTab(S.tab); };
+  window.closeDGLab = function () { S.lrStop = true; $("dg-modal-bg").classList.remove("show"); };
+  $("dg-modal-bg").addEventListener("click", (e) => { if (e.target === $("dg-modal-bg")) closeDGLab(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && isOpen()) closeDGLab(); });
+  window.addEventListener("resize", () => { if (!isOpen()) return; if (S.tab === "sante" && S.scan) renderScan(); else if (S.tab === "lr") drawLR(); else if (S.curve) drawCurve(+$("dgSp").value); });
+  setInterval(() => { if (isOpen() && S.live && S.tab === "sante" && !S.lrRun && ready() && typeof autoRunning !== "undefined" && autoRunning) dgScan(); }, 900);
+})();
+</script>
+
 </body>
 </html>

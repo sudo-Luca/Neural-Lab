@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Neural Lab v13</title>
+    <title>Neural Lab v14</title>
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800;900&display=swap"
       rel="stylesheet"
@@ -6626,6 +6626,44 @@
 
         <div id="tc-tools" class="tc">
           <div style="padding: 10px 11px 16px">
+<div style="margin-bottom:8px;background:linear-gradient(135deg,rgba(0,229,255,.07),rgba(191,95,255,.07)),#030408;border:1px solid var(--a2);border-radius:4px;padding:10px 12px;box-shadow:inset 0 0 22px rgba(191,95,255,.06)">
+<div style="font-size:8px;color:var(--a2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:7px;font-weight:700">🩺 Autopsie du réseau</div>
+<div style="font-size:9px;color:var(--dim);margin-bottom:6px;line-height:1.6">Diagnostic automatique : neurones morts ou saturés, gradients, poids, stagnation de la perte, déséquilibre du dataset. Score de santé, explications claires et correctif en un clic.</div>
+<button class="btn ok" onclick="autOpen()" style="width:100%">🩺 Lancer le diagnostic</button></div>
+            <div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
+                border: 1px solid var(--a1);
+                border-radius: 4px;
+                padding: 10px 12px;
+                box-shadow: inset 0 0 22px rgba(0, 229, 255, 0.05);
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--a1);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                🔭 Atlas des neurones
+              </div>
+              <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px; line-height: 1.6">
+                Une carte par neurone : à quoi réagit-il dans le plan d'entrée ?
+                Repère les neurones éteints, la droite z = 0 de chaque neurone de
+                la 1re couche et ce que chaque couche ajoute à la précédente.
+              </div>
+              <div class="btn-row">
+                <button class="btn ok" onclick="openAtlas()" style="flex: 1">
+                  🔭 Ouvrir
+                </button>
+                <button class="btn" onclick="openAtlas(true)">▶ Live</button>
+              </div>
+            </div>
             <div
               style="
                 margin-bottom: 8px;
@@ -32567,5 +32605,569 @@ function setUITheme(t,silent){
 })();
 </script>
 
+<!-- ══════════════ ATLAS DES NEURONES ══════════════ -->
+<style id="atlas-css">
+  #atlas-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1200;display:none;align-items:center;justify-content:center}
+  #atlas-modal-bg.show{display:flex}
+  #atlas-modal{background:var(--p1);border:1px solid var(--a1);border-radius:8px;width:95%;max-width:780px;max-height:96vh;overflow-y:auto;box-shadow:0 0 40px rgba(0,229,255,.18)}
+  #atlas-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--brd);background:linear-gradient(135deg,var(--p1),var(--p2))}
+  #atlas-head h2{font-family:"Syne",sans-serif;color:var(--a1);font-size:13px;flex:1}
+  #atLive{color:var(--grn);font-size:9px;margin-left:6px}
+  #atlas-bar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:7px 14px;border-bottom:1px solid var(--brd);font-size:9px;color:var(--dim)}
+  #atlas-bar select{width:auto}
+  #atlas-bar label,#atAxes{display:flex;gap:4px;align-items:center}
+  #atlas-msg{display:none;padding:28px 16px;text-align:center;font-size:10px;line-height:2;color:var(--dim)}
+  #atlas-focus{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--brd);background:#030408}
+  .at-fcv canvas{display:block;width:180px;height:180px;border:1px solid var(--a2);border-radius:5px;box-shadow:var(--glow2)}
+  .at-fin{flex:1;min-width:190px;font-size:10px;line-height:1.8}
+  .at-fin h3{font-family:"Syne",sans-serif;font-size:13px;color:var(--a2);font-weight:600}
+  .at-fin .k{color:var(--dim)}
+  .at-eq{display:block;padding:5px 8px;margin:5px 0;background:var(--p1);border-left:2px solid var(--a1);color:var(--a1);overflow-x:auto;white-space:nowrap}
+  .at-hint{font-size:10px;line-height:1.7;color:var(--dim)}
+  .at-layer{padding:10px 14px 2px}
+  .at-lt{display:flex;gap:10px;align-items:baseline;margin-bottom:6px;font-size:10px}
+  .at-lt b{font-family:"Syne",sans-serif;font-size:12px;color:var(--text);font-weight:600}
+  .at-lt span{color:var(--dim);font-size:9px}
+  .at-row{display:flex;flex-wrap:wrap;gap:8px}
+  .at-tile{width:92px;padding:4px;cursor:pointer;background:#030408;border:1px solid var(--brd);border-radius:5px;transition:.15s}
+  .at-tile:hover{border-color:var(--a1)}
+  .at-tile.sel{border-color:var(--a2);box-shadow:var(--glow2)}
+  .at-tile.off{border-color:rgba(255,61,90,.55)}
+  .at-tile canvas{display:block;width:100%;aspect-ratio:1/1;border-radius:3px}
+  .at-tile .c{display:flex;justify-content:space-between;gap:4px;margin-top:3px;font-size:8px;color:var(--dim);white-space:nowrap}
+  .at-tile .c b{color:var(--red);font-weight:500}
+  #atlas-foot{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:10px 14px;margin-top:8px;border-top:1px solid var(--brd);font-size:9px;color:var(--dim)}
+  #atlas-foot i{display:inline-block;width:70px;height:7px;border-radius:2px;vertical-align:middle;margin:0 4px;background:linear-gradient(90deg,#060814,#3a1a8a,#bf5fff,#8ff3ff)}
+  @media (max-width:768px){
+    #atlas-modal-bg{align-items:flex-end}
+    #atlas-modal{width:100%;max-width:100%;max-height:calc(100dvh - 10px);border-radius:14px 14px 0 0;border-bottom-width:0}
+    .at-tile{width:calc(25% - 6px)}
+    .at-fcv canvas{width:140px;height:140px}
+  }
+</style>
+
+<div id="atlas-modal-bg">
+  <div id="atlas-modal">
+    <div id="atlas-head">
+      <h2>🔭 Atlas des neurones <span id="atLive"></span></h2>
+      <button class="btn" onclick="closeAtlas()">✕</button>
+    </div>
+    <div id="atlas-msg">Aucun réseau pour l'instant.<br />Clique sur « ▶ Créer » dans le panneau de gauche, puis rouvre l'atlas.</div>
+    <div id="atlas-body" style="display:none">
+      <div id="atlas-bar">
+        <span id="atAxes" style="display:none">Axes
+          <select id="atX" onchange="atlasRender()"></select>×
+          <select id="atY" onchange="atlasRender()"></select>
+        </span>
+        <span>Échelle
+          <select id="atS" onchange="atlasRender()" style="width:auto">
+            <option value="n">par neurone</option>
+            <option value="l">commune à la couche</option>
+          </select>
+        </span>
+        <label><input type="checkbox" id="atP" checked onchange="atlasRender()" style="width:auto" />points</label>
+        <label><input type="checkbox" id="atZ" checked onchange="atlasRender()" style="width:auto" />droite z = 0</label>
+      </div>
+      <div id="atlas-focus"></div>
+      <div id="atlas-grid"></div>
+      <div id="atlas-foot">
+        <span>faible<i></i>forte activation</span>
+        <span style="color:var(--red)">cadre rouge : neurone éteint ou plat</span>
+        <div style="flex:1"></div>
+        <button class="btn" onclick="atlasRender()">🔄</button>
+        <button class="btn go" id="atLiveBtn" onclick="atlasToggleLive()">▶ Live</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const A = { sel: null, timer: null, sig: "", tiles: [] };
+    const RES = 34, BIG = 96, SUB = "₀₁₂₃₄₅₆₇₈₉";
+    const f2 = (v) => (Math.abs(v) < 0.005 ? "0" : (v < 0 ? "−" : "") + Math.abs(v).toFixed(2));
+    const xn = (k) => "x" + String(k + 1).split("").map((d) => SUB[+d]).join("");
+    const STOPS = [[6, 8, 20], [58, 26, 138], [191, 95, 255], [143, 243, 255]];
+    function ramp(t) {
+      t = Math.max(0, Math.min(1, t)) * 3;
+      const i = Math.min(2, Math.floor(t)), f = t - i, a = STOPS[i], b = STOPS[i + 1];
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+    }
+    // Forward « pur » : pas de dropout, pas d'effet de bord sur BN ni sur LAST_ACT
+    function fwd(inp) {
+      const bn = bnOn(), nL = NET.W.length, out = [inp];
+      let a = inp;
+      for (let l = 0; l < nL; l++) {
+        const fn = getActForLayer(l), last = l === nL - 1, aL = [];
+        for (let j = 0; j < NET.W[l].length; j++) {
+          const w = NET.W[l][j];
+          let z = NET.B[l][j];
+          for (let k = 0; k < a.length; k++) z += w[k] * a[k];
+          if (bn && !last && BN.runMean[l] && BN.runMean[l][j] !== undefined)
+            z = BN.gamma[l][j] * ((z - BN.runMean[l][j]) / Math.sqrt(BN.runVar[l][j] + 1e-5)) + BN.beta[l][j];
+          aL.push(act(z, fn));
+        }
+        a = last && fn === "softmax" ? softmax(aL) : aL;
+        out.push(a);
+      }
+      return out;
+    }
+    function syncAxes() {
+      const n = NET.L[0], wrap = $("atAxes");
+      wrap.style.display = n > 2 ? "flex" : "none";
+      if (n > 2 && $("atX").options.length !== n) {
+        const opts = Array.from({ length: n }, (_, k) => `<option value="${k}">${xn(k)}</option>`).join("");
+        $("atX").innerHTML = opts; $("atY").innerHTML = opts;
+        $("atX").value = 0; $("atY").value = 1;
+      }
+    }
+    function range() {
+      const n = NET.L[0];
+      let ax = n > 2 ? +$("atX").value : 0, ay = n > 1 ? (n > 2 ? +$("atY").value : 1) : -1;
+      if (ay === ax && n > 1) ay = (ax + 1) % n;
+      const ok = DS && DS.inputs && DS.inputs.length && DS.inputs[0].length === n;
+      const lim = (k) => {
+        if (!ok) return [-0.2, 1.2];
+        let lo = Infinity, hi = -Infinity;
+        for (const r of DS.inputs) { if (r[k] < lo) lo = r[k]; if (r[k] > hi) hi = r[k]; }
+        if (!(hi > lo)) return [lo - 0.5, hi + 0.5];
+        const p = (hi - lo) * 0.15;
+        return [lo - p, hi + p];
+      };
+      const base = Array.from({ length: n }, (_, k) =>
+        ok ? DS.inputs.reduce((s, r) => s + r[k], 0) / DS.inputs.length : 0.5);
+      const [x0, x1] = lim(ax), [y0, y1] = ay >= 0 ? lim(ay) : [0, 1];
+      return { ax, ay, x0, x1, y0, y1, base, ok };
+    }
+    function compute(res, R) {
+      const nL = NET.W.length, M = [];
+      for (let l = 0; l < nL; l++) M.push(NET.W[l].map(() => new Float32Array(res * res)));
+      const inp = R.base.slice();
+      for (let py = 0; py < res; py++) {
+        const y = R.y1 - (py / (res - 1)) * (R.y1 - R.y0);
+        for (let px = 0; px < res; px++) {
+          inp[R.ax] = R.x0 + (px / (res - 1)) * (R.x1 - R.x0);
+          if (R.ay >= 0) inp[R.ay] = y;
+          const a = fwd(inp), o = py * res + px;
+          for (let l = 0; l < nL; l++) for (let j = 0; j < a[l + 1].length; j++) M[l][j][o] = a[l + 1][j];
+        }
+      }
+      return M;
+    }
+    const mm = (d) => { let lo = Infinity, hi = -Infinity; for (const v of d) { if (v < lo) lo = v; if (v > hi) hi = v; } return [lo, hi]; };
+    function paint(cv, d, res, lo, hi, size, R, l, j) {
+      const off = paint.o || (paint.o = document.createElement("canvas"));
+      off.width = off.height = res;
+      const oc = off.getContext("2d"), im = oc.createImageData(res, res), span = hi - lo || 1;
+      for (let i = 0; i < d.length; i++) {
+        const c = ramp((d[i] - lo) / span), k = i * 4;
+        im.data[k] = c[0]; im.data[k + 1] = c[1]; im.data[k + 2] = c[2]; im.data[k + 3] = 255;
+      }
+      oc.putImageData(im, 0, 0);
+      cv.width = cv.height = size;
+      const c = cv.getContext("2d");
+      c.imageSmoothingEnabled = true;
+      c.drawImage(off, 0, 0, size, size);
+      const X = (x) => ((x - R.x0) / (R.x1 - R.x0)) * size, Y = (y) => (1 - (y - R.y0) / (R.y1 - R.y0)) * size;
+      if (l === 0 && $("atZ").checked && !bnOn() && R.ay >= 0) {
+        const w = NET.W[0][j];
+        let cst = NET.B[0][j];
+        for (let k = 0; k < w.length; k++) if (k !== R.ax && k !== R.ay) cst += w[k] * R.base[k];
+        let p = null;
+        if (Math.abs(w[R.ay]) > 1e-9) p = [[R.x0, -(w[R.ax] * R.x0 + cst) / w[R.ay]], [R.x1, -(w[R.ax] * R.x1 + cst) / w[R.ay]]];
+        else if (Math.abs(w[R.ax]) > 1e-9) p = [[-cst / w[R.ax], R.y0], [-cst / w[R.ax], R.y1]];
+        if (p) {
+          c.beginPath(); c.moveTo(X(p[0][0]), Y(p[0][1])); c.lineTo(X(p[1][0]), Y(p[1][1]));
+          c.lineWidth = Math.max(1, size / 40); c.strokeStyle = "rgba(5,6,12,.55)"; c.stroke();
+          c.setLineDash([size * 0.045, size * 0.03]); c.lineWidth = Math.max(1, size / 90);
+          c.strokeStyle = "rgba(255,255,255,.9)"; c.stroke(); c.setLineDash([]);
+        }
+      }
+      if ($("atP").checked && R.ok) {
+        const r = Math.max(1.6, size * 0.022);
+        for (let i = 0; i < DS.inputs.length; i++) {
+          const x = DS.inputs[i][R.ax], y = R.ay >= 0 ? DS.inputs[i][R.ay] : (R.y0 + R.y1) / 2;
+          c.beginPath(); c.arc(X(x), Y(y), r, 0, 6.2832);
+          c.fillStyle = (DS.outputs[i] && DS.outputs[i][0] > 0.5) ? "#9dff00" : "#ff8c2a";
+          c.fill(); c.lineWidth = 1; c.strokeStyle = "rgba(5,6,12,.8)"; c.stroke();
+        }
+      }
+    }
+    function build() {
+      const host = $("atlas-grid"), nL = NET.W.length;
+      host.innerHTML = ""; A.tiles = [];
+      for (let l = 0; l < nL; l++) {
+        const n = NET.W[l].length, shown = Math.min(n, 24);
+        const sec = document.createElement("div");
+        sec.className = "at-layer";
+        sec.innerHTML = `<div class="at-lt"><b>${l === nL - 1 ? "Sortie" : "Cachée " + (l + 1)}</b><span>${getActForLayer(l)} · ${n} neurone${n > 1 ? "s" : ""}${n > shown ? " (" + shown + " affichés)" : ""}</span></div><div class="at-row"></div>`;
+        const row = sec.lastChild;
+        A.tiles[l] = [];
+        for (let j = 0; j < shown; j++) {
+          const t = document.createElement("div");
+          t.className = "at-tile";
+          t.innerHTML = `<canvas></canvas><div class="c"><span>N${j + 1}</span><span></span></div>`;
+          t.onclick = () => pick(l, j);
+          row.appendChild(t);
+          A.tiles[l][j] = { el: t, cv: t.firstChild, cap: t.lastChild.lastChild };
+        }
+        host.appendChild(sec);
+      }
+      A.sel = null; mkFocus();
+    }
+    function mkFocus() {
+      const box = $("atlas-focus");
+      if (!A.sel) {
+        box.innerHTML = '<div class="at-hint">Touche une carte pour l’agrandir : équation du neurone, poids dominants et lien direct vers le réseau.</div>';
+        return;
+      }
+      box.innerHTML = '<div class="at-fcv"><canvas id="atBig"></canvas></div><div class="at-fin" id="atInfo"></div>';
+    }
+    function pick(l, j) {
+      A.sel = { l, j }; mkFocus();
+      A.tiles.forEach((row, L) => row.forEach((t, J) => t.el.classList.toggle("sel", L === l && J === j)));
+      atlasRender();
+    }
+    function updFocus(R) {
+      if (!A.sel || !$("atBig")) return;
+      const { l, j } = A.sel, nL = NET.W.length;
+      if (!NET.W[l] || !NET.W[l][j]) return;
+      const d = compute(BIG, R)[l][j], [lo, hi] = mm(d);
+      paint($("atBig"), d, BIG, lo, hi, 360, R, l, j);
+      const w = NET.W[l][j], b = NET.B[l][j], fn = getActForLayer(l);
+      let eq, extra = "";
+      if (l === 0) {
+        const t = w.slice(0, 5).map((v, k) => (k ? (v < 0 ? " − " : " + ") : v < 0 ? "−" : "") + Math.abs(v).toFixed(2) + "·" + xn(k)).join("");
+        eq = `z = ${t}${w.length > 5 ? " …" : ""} ${b < 0 ? "−" : "+"} ${Math.abs(b).toFixed(2)}`;
+      } else {
+        const top = w.map((v, k) => [v, k]).sort((p, q) => Math.abs(q[0]) - Math.abs(p[0])).slice(0, 3);
+        eq = `z = Σ wᵢ·aᵢ + ${f2(b)}`;
+        extra = `<div><span class="k">Influences fortes</span> ${top.map(([v, k]) => `N${k + 1} (${f2(v)})`).join(", ")}</div>`;
+      }
+      $("atInfo").innerHTML = `<h3>${l === nL - 1 ? "Sortie" : "Cachée " + (l + 1)} · N${j + 1}</h3>
+        <div><span class="k">activation</span> ${fn} <span class="k">· valeurs</span> ${f2(lo)} → ${f2(hi)}</div>
+        <code class="at-eq">${eq}</code>${extra}
+        <div class="btn-row"><button class="btn ok" onclick="atlasGoto()">↗ Voir dans le réseau</button></div>`;
+    }
+    window.atlasRender = function () {
+      if (!NET) { $("atlas-msg").style.display = "block"; $("atlas-body").style.display = "none"; return; }
+      $("atlas-msg").style.display = "none"; $("atlas-body").style.display = "block";
+      syncAxes();
+      const sig = NET.L.join(",") + "|" + NET.W.map((_, l) => getActForLayer(l)).join(",");
+      if (sig !== A.sig) { A.sig = sig; build(); }
+      const R = range(), M = compute(RES, R), shared = $("atS").value === "l";
+      M.forEach((layer, l) => {
+        let LO = Infinity, HI = -Infinity;
+        if (shared) layer.forEach((d) => { const [a, b] = mm(d); if (a < LO) LO = a; if (b > HI) HI = b; });
+        layer.forEach((d, j) => {
+          const t = A.tiles[l] && A.tiles[l][j];
+          if (!t) return;
+          const [lo, hi] = mm(d), flat = hi - lo < 0.01;
+          paint(t.cv, d, RES, shared ? LO : lo, shared ? HI : hi, 170, R, l, j);
+          t.el.classList.toggle("off", flat);
+          t.cap.innerHTML = flat ? (Math.max(Math.abs(lo), Math.abs(hi)) < 0.01 ? "<b>éteint</b>" : "<b>plat</b>") : f2(lo) + "→" + f2(hi);
+        });
+      });
+      updFocus(R);
+    };
+    window.atlasGoto = function () {
+      const s = A.sel;
+      if (!s) return;
+      closeAtlas();
+      const p = POS.find((q) => q.l === s.l + 1 && q.j === s.j);
+      if (!p) return;
+      SELECTED = { type: "node", l: p.l, j: p.j };
+      redraw();
+      showNodeDetail(p);
+    };
+    function stopLive() {
+      if (A.timer) { clearInterval(A.timer); A.timer = null; }
+      $("atLive").textContent = ""; $("atLiveBtn").textContent = "▶ Live";
+    }
+    window.atlasToggleLive = function () {
+      if (A.timer) return stopLive();
+      A.timer = setInterval(atlasRender, 450);
+      $("atLive").textContent = "● live"; $("atLiveBtn").textContent = "⏹ Stop";
+    };
+    window.openAtlas = function (live) {
+      $("atlas-modal-bg").classList.add("show");
+      A.sig = "";
+      atlasRender();
+      if (NET && SELECTED && SELECTED.type === "node" && SELECTED.l > 0 && A.tiles[SELECTED.l - 1] && A.tiles[SELECTED.l - 1][SELECTED.j])
+        pick(SELECTED.l - 1, SELECTED.j);
+      stopLive();
+      if (live && NET) atlasToggleLive();
+    };
+    window.closeAtlas = function () {
+      $("atlas-modal-bg").classList.remove("show");
+      stopLive();
+    };
+    $("atlas-modal-bg").addEventListener("click", (e) => { if (e.target.id === "atlas-modal-bg") closeAtlas(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAtlas(); });
+  })();
+</script>
+
+<style>
+#aut-ov{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;background:rgba(3,4,8,.82);backdrop-filter:blur(6px);padding:12px}
+#aut-ov.on{display:flex;animation:autIn .25s ease-out}
+@keyframes autIn{from{opacity:0}to{opacity:1}}
+#aut-box{width:min(600px,100%);max-height:90vh;overflow:auto;background:linear-gradient(160deg,#0a0c18,#05060c);border:1px solid var(--a1);border-radius:10px;box-shadow:0 0 40px rgba(0,229,255,.18),inset 0 0 30px rgba(191,95,255,.05);padding:16px 16px 14px;color:var(--text)}
+.aut-h{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.aut-ring{position:relative;width:96px;height:96px;flex:none}
+.aut-ring svg{transform:rotate(-90deg)}
+.aut-ring b{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px;line-height:1}
+.aut-ring b small{font-size:8px;letter-spacing:.14em;color:var(--dim);margin-top:3px;font-weight:700}
+.aut-t{font-size:15px;font-weight:800;letter-spacing:.08em;background:linear-gradient(110deg,#00e5ff,#bf5fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.aut-sub{font-size:10px;color:var(--dim);line-height:1.6;margin-top:3px}
+.aut-x{margin-left:auto;align-self:flex-start;cursor:pointer;color:var(--dim);font-size:18px;padding:0 4px}
+.aut-x:hover{color:var(--red)}
+.aut-lay{display:flex;gap:6px;margin:8px 0 12px;flex-wrap:wrap}
+.aut-l{flex:1;min-width:78px;background:#030408;border:1px solid var(--brd);border-radius:6px;padding:6px 8px;font-size:9px;color:var(--dim)}
+.aut-l i{display:block;height:5px;border-radius:3px;background:#12182e;margin:5px 0 3px;overflow:hidden}
+.aut-l i s{display:block;height:100%;border-radius:3px;transition:width .7s cubic-bezier(.22,1,.36,1)}
+.aut-f{display:flex;gap:9px;padding:9px 10px;margin-bottom:6px;border-radius:6px;border:1px solid var(--brd);border-left:3px solid var(--c);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 9%,transparent),transparent);animation:autUp .35s both}
+@keyframes autUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.aut-f .ic{font-size:16px;line-height:1.3}
+.aut-f h4{margin:0 0 2px;font-size:11px;color:var(--c);letter-spacing:.04em}
+.aut-f p{margin:0;font-size:10px;line-height:1.6;color:var(--text)}
+.aut-f p em{color:var(--dim);font-style:normal}
+.aut-bar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.aut-bar .btn{flex:1}
+#aut-box .aut-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+#aut-box .aut-bar .btn{white-space:normal;line-height:1.3;min-height:42px;height:auto;width:auto;padding:9px 10px;font-size:12px;text-align:center}
+#aut-box .aut-bar .btn.ok{grid-column:1/-1}
+@media(max-width:600px){
+#aut-ov{padding:6px;align-items:flex-end}
+#aut-box{max-height:94vh;padding:14px 12px calc(14px + env(safe-area-inset-bottom,0px))}
+#aut-box .aut-bar{grid-template-columns:1fr 1fr}
+#aut-box .aut-bar .btn{font-size:12.5px;min-height:46px}
+.aut-h{gap:10px}.aut-ring{width:80px;height:80px}.aut-ring svg{width:80px;height:80px}
+.aut-t{font-size:13px}.aut-sub{font-size:11px}
+.aut-l{font-size:10px;min-width:calc(50% - 6px)}
+.aut-f p{font-size:12px}.aut-f h4{font-size:12.5px}
+.aut-d>summary{font-size:11px;padding:11px 10px}.aut-d>div{font-size:11px}
+.aut-n{width:22px;height:22px}.aut-row{gap:6px}.aut-rl{width:44px;font-size:9px}
+.aut-hr{flex-wrap:wrap}.aut-hr svg{width:100%;max-width:190px}
+.aut-toast{font-size:11.5px}
+#aut-hud{font-size:13px;padding:8px 14px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+}
+</style>
+<div id="aut-ov" onclick="if(event.target===this)autClose()"><div id="aut-box"></div></div>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+let LAST=null;
+function mean(a){return a.length?a.reduce((s,v)=>s+v,0)/a.length:0}
+function scan(){
+  if(typeof NET==="undefined"||!NET||!NET.W||!DS.inputs.length)return null;
+  const nL=NET.W.length,N=DS.inputs.length,F=[],lay=[];
+  const dead=[],sat=[],gAbs=Array(nL).fill(0);let nan=false,ok=0;
+  const cnt=NET.L.slice(1).map((n,l)=>({mx:Array(n).fill(0),sat:Array(n).fill(0),pos:Array(n).fill(0)}));
+  const step=Math.max(1,Math.floor(N/200));let used=0;
+  for(let s=0;s<N;s+=step){
+    used++;
+    const {activations,zs}=forward(DS.inputs[s]);
+    const dl=backward(activations,zs,DS.outputs[s]);
+    for(let l=0;l<nL;l++){
+      gAbs[l]+=mean(dl[l].map(Math.abs));
+      for(let j=0;j<NET.W[l].length;j++){
+        const a=activations[l+1][j];if(!isFinite(a))nan=true;
+        const c=cnt[l];c.mx[j]=Math.max(c.mx[j],Math.abs(a));
+        if(l<nL-1){const f=getActForLayer(l);
+          if((f==="tanh"&&Math.abs(a)>.97)||(f==="sigmoid"&&(a<.03||a>.97)))c.sat[j]++}
+      }}
+    const o=activations[nL];
+    const t=DS.outputs[s];
+    const g=o.length>1?o.indexOf(Math.max(...o))===t.indexOf(Math.max(...t)):(o[0]>.5)===(t[0]>.5);
+    if(g)ok++;
+  }
+  gAbs.forEach((v,i)=>gAbs[i]=v/used);
+  for(let l=0;l<nL-1;l++){
+    const f=getActForLayer(l),d=[],s=[];
+    cnt[l].mx.forEach((m,j)=>{ if(m<1e-7&&(f==="relu"||f==="leakyrelu"||f==="elu"||f==="relu6"||f==="gelu"||f==="swish"||f==="softplus"||f==="sigmoid"||f==="tanh"))d.push(j);
+      if(cnt[l].sat[j]>used*.9)s.push(j)});
+    // pour sigmoid/tanh, "mort" n'a pas de sens : on ne garde que ReLU-like
+    const reluLike=["relu","leakyrelu","elu","relu6"].includes(f);
+    const dd=reluLike?d:[];
+    dd.forEach(j=>dead.push([l,j]));s.forEach(j=>sat.push([l,j]));
+    const n=NET.W[l].length;
+    lay.push({l,n,f,dead:dd.length,sat:s.length,alive:1-(dd.length+s.length)/n});
+  }
+  const acc=ok/used;
+  // baseline = classe majoritaire
+  let base=0;
+  if(DS.outputs[0].length>1){const c={};DS.outputs.forEach(t=>{const k=t.indexOf(Math.max(...t));c[k]=(c[k]||0)+1});base=Math.max(...Object.values(c))/N}
+  else{const p=DS.outputs.filter(t=>t[0]>.5).length/N;base=Math.max(p,1-p)}
+  let wMax=0,nW=0;
+  NET.W.forEach(lw=>lw.forEach(r=>r.forEach(w=>{wMax=Math.max(wMax,Math.abs(w));nW++})));
+  const H=LOSS_H.filter(isFinite),n=H.length;
+  const last=n>=40?mean(H.slice(-20)):null,prev=n>=40?mean(H.slice(-40,-20)):null;
+  return {nL,N,dead,sat,gAbs,nan,acc,base,wMax,nW,cnt,used,lay,H,n,last,prev,epoch:EPOCH,lossNaN:LOSS_H.some(v=>!isFinite(v))};
+}
+function diagnose(r){
+  const F=[];let score=100;
+  const add=(sev,ic,t,msg,pen)=>{F.push({sev,ic,t,msg});score-=pen};
+  const tot=NET.L.slice(1,-1).reduce((a,b)=>a+b,0);
+  if(r.nan||r.lossNaN)add("c","💥","Valeurs NaN / ∞ détectées","Le réseau a divergé. Baisse fortement le taux d'apprentissage, vérifie la normalisation des entrées, puis réinitialise.",40);
+  if(r.dead.length){const p=r.dead.length/Math.max(1,tot);
+    add(p>.3?"c":"w","💀",`${r.dead.length} neurone(s) mort(s) (${Math.round(p*100)} %)`,"Ces neurones sortent 0 sur tout le dataset : ils n'apprennent plus. <em>Cause typique : LR trop haut ou biais très négatif. Le bouton ci-dessous les réveille.</em>",Math.min(35,10+p*60))}
+  if(r.sat.length){const p=r.sat.length/Math.max(1,tot);
+    add("w","🌫",`${r.sat.length} neurone(s) saturé(s)`,"Collés à leurs bornes (sigmoïde/tanh), leur dérivée est quasi nulle : ils bloquent le gradient. <em>Essaie ReLU/Leaky ReLU ou des entrées centrées-réduites.</em>",Math.min(20,6+p*30))}
+  if(r.gAbs.length>1){const a=r.gAbs[0],b=r.gAbs[r.nL-1];
+    if(a>0&&b>0&&a/b<.02)add("w","📉","Gradient qui s'évanouit",`La 1re couche reçoit ${(b/a).toFixed(0)}× moins de signal que la dernière. <em>Réduis la profondeur, change d'activation ou active la Batch Norm.</em>`,14);
+    if(b>0&&a/b>50)add("w","📈","Gradient qui explose",`La 1re couche reçoit ${(a/b).toFixed(0)}× plus de signal que la dernière. <em>Baisse le LR ou active le clipping.</em>`,14)}
+  if(r.wMax>10)add("w","⚖",`Poids extrême (|w| = ${r.wMax.toFixed(1)})`,"Un poids très grand rend le réseau instable et sur-confiant. <em>Essaie la régularisation L2 ou un LR plus faible.</em>",8);
+  if(r.last!==null){
+    const d=(r.prev-r.last)/Math.max(1e-9,r.prev);
+    if(d<-.05)add("c","🌋","La perte remonte",`Elle a augmenté de ${Math.round(-d*100)} % sur les dernières epochs. <em>LR trop élevé ou oscillation : divise-le par 3.</em>`,18);
+    else if(Math.abs(d)<.002&&r.last>.05)add("w","🧊","Plateau d'apprentissage",`La perte est figée à ${r.last.toFixed(4)}. <em>Capacité insuffisante, LR trop petit, ou minimum local : ajoute des neurones ou mute les poids.</em>`,12)}
+  else if(r.n<10)add("i","⏳","Pas encore assez d'historique","Lance quelques dizaines d'epochs pour un diagnostic de convergence.",0);
+  if(r.acc<=r.base+.02&&r.n>=40&&r.base>.55)add("w","⚠",`Ne bat pas le hasard informé`,`Précision ${Math.round(r.acc*100)} % ≈ classe majoritaire (${Math.round(r.base*100)} %). <em>Le réseau prédit presque toujours la même classe : dataset déséquilibré ?</em>`,14);
+  if(r.nW>r.N*4&&r.N<200)add("i","🧬","Beaucoup de paramètres pour peu de données",`${r.nW} poids pour ${r.N} exemples : risque de surapprentissage. <em>Voir le Labo Généralisation.</em>`,5);
+  if(!F.some(f=>f.sev!=="i"))F.unshift({sev:"g",ic:"✅",t:"Réseau en bonne santé",msg:`Précision ${Math.round(r.acc*100)} %, aucun neurone mort, gradients équilibrés. Continue l'entraînement ou teste sur de nouveaux points.`});
+  return {F,score:Math.max(0,Math.min(100,Math.round(score)))};
+}
+const COL={c:"var(--red)",w:"var(--org)",i:"var(--a1)",g:"var(--grn)"};
+window.autOpen=function(){
+  const r=scan(),box=$("aut-box");
+  if(!r){alert("Crée d'abord un réseau et un dataset.");return}
+  const {F,score}=diagnose(r);LAST=r;
+  const col=score>=75?"var(--grn)":score>=45?"var(--ylw)":"var(--red)";
+  const verdict=score>=75?"Bonne santé":score>=45?"À surveiller":"État critique";
+  const C=2*Math.PI*42;
+  box.innerHTML=`<div class="aut-h"><div class="aut-ring"><svg width="96" height="96" viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" fill="none" stroke="#12182e" stroke-width="7"/><circle id="aut-arc" cx="48" cy="48" r="42" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" style="filter:drop-shadow(0 0 6px ${col});transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)"/></svg><b style="color:${col}">${score}<small>/ 100</small></b></div>
+  <div><div class="aut-t">🩺 AUTOPSIE DU RÉSEAU</div><div class="aut-sub"><b style="color:${col}">${verdict}</b> · ${NET.L.join("→")} · epoch ${r.epoch}<br>Précision ${Math.round(r.acc*100)} % · ${r.N} exemples · ${r.nW} poids</div></div><span class="aut-x" onclick="autClose()">✕</span></div>
+  <div class="aut-lay">${r.lay.map(L=>{const c=L.alive>.8?"var(--grn)":L.alive>.5?"var(--ylw)":"var(--red)";return`<div class="aut-l">Couche ${L.l+1} · ${L.f}<i><s style="width:${Math.round(L.alive*100)}%;background:${c}"></s></i>${L.n-L.dead-L.sat}/${L.n} actifs</div>`}).join("")}</div>
+  ${F.map((f,i)=>`<div class="aut-f" style="--c:${COL[f.sev]};animation-delay:${i*70}ms"><span class="ic">${f.ic}</span><div><h4>${f.t}</h4><p>${f.msg}</p></div></div>`).join("")}
+  <div class="aut-bar">${r.dead.length?`<button class="btn ok" onclick="autRevive()">⚡ Réveiller ${r.dead.length} neurone(s)</button>`:""}<button class="btn" onclick="autOpen()">↻ Rescanner</button><button class="btn" onclick="autCopy()">📋 Copier</button></div>`;
+  $("aut-ov").classList.add("on");
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=$("aut-arc");if(a)a.style.strokeDashoffset=C*(1-score/100)}));
+};
+window.autClose=()=>$("aut-ov").classList.remove("on");
+window.autRevive=function(){
+  if(!LAST)return;
+  LAST.dead.forEach(([l,j])=>{
+    const fin=NET.W[l][j].length,s=Math.sqrt(2/fin);
+    for(let k=0;k<fin;k++)NET.W[l][j][k]=(Math.random()*2-1)*s*1.7;
+    NET.B[l][j]=0.1;
+  });
+  try{redraw()}catch(e){}
+  autOpen();
+};
+window.autCopy=function(){
+  if(!LAST)return;const {F,score}=diagnose(LAST);
+  const t=`Autopsie Neural Lab — score ${score}/100 — ${NET.L.join("→")} — epoch ${LAST.epoch}\n`+F.map(f=>`${f.ic} ${f.t}: ${f.msg.replace(/<[^>]+>/g,"")}`).join("\n");
+  navigator.clipboard&&navigator.clipboard.writeText(t);
+};
+window.__aut={scan,diagnose,last:()=>LAST};document.addEventListener("keydown",e=>{if(e.key==="Escape")autClose()});
+})();
+</script>
+<style>
+.aut-d{margin:8px 0;border:1px solid var(--brd);border-radius:6px;background:#030408}
+.aut-d>summary{cursor:pointer;padding:7px 10px;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--a1);list-style:none;display:flex;justify-content:space-between}
+.aut-d>summary::after{content:"▾";color:var(--dim)}.aut-d[open]>summary::after{content:"▴"}
+.aut-d>div{padding:4px 10px 10px;font-size:9px;color:var(--dim);line-height:1.6}
+.aut-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:5px 0}
+.aut-rl{width:38px;font-size:8px;color:var(--dim)}
+.aut-n{width:15px;height:15px;border-radius:4px;background:rgba(0,229,255,var(--o));box-shadow:0 0 6px rgba(0,229,255,calc(var(--o)*.5));transition:transform .15s}
+.aut-n.d{background:transparent;border:1px dashed var(--red);box-shadow:none;cursor:pointer}
+.aut-n.s{background:rgba(255,140,42,.7);box-shadow:0 0 6px var(--org);cursor:pointer}
+.aut-n:hover{transform:scale(1.35)}
+.aut-hr{display:flex;align-items:center;gap:8px;margin:4px 0}.aut-hr svg{flex:none}
+.aut-chip{display:inline-block;padding:1px 7px;border-radius:9px;font-size:9px;font-weight:700;margin-left:6px;border:1px solid currentColor}
+.aut-toast{padding:7px 10px;margin-bottom:8px;border-radius:6px;font-size:10px;border:1px solid var(--grn);color:var(--grn);background:rgba(0,255,157,.07);animation:autUp .3s}
+.aut-toast.bad{border-color:var(--org);color:var(--org);background:rgba(255,140,42,.07)}
+.aut-bar .btn.on{background:rgba(0,255,157,.18);border-color:var(--grn);color:var(--grn)}
+#aut-hud{position:fixed;left:12px;bottom:12px;z-index:99980;display:none;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;background:#05060ce8;border:1px solid var(--c,var(--a1));color:var(--c,var(--a1));font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 0 16px color-mix(in srgb,var(--c,#00e5ff) 35%,transparent);backdrop-filter:blur(6px)}
+#aut-hud.on{display:flex}#aut-hud.alert{animation:autPulse .8s 4}
+#aut-hud small{font-weight:500;color:var(--dim);font-size:9px}
+@keyframes autPulse{50%{transform:scale(1.12);box-shadow:0 0 28px var(--red)}}
+</style>
+<div id="aut-hud" onclick="autOpen()"></div>
+<script>
+(function(){
+const A=window.__aut,$=id=>document.getElementById(id),HIST=[],LOG=[];
+let timer=null,heal=false,lastEp=-1,lastT=0;
+const col=s=>s>=75?"var(--grn)":s>=45?"var(--ylw)":"var(--red)";
+const redo=()=>{try{redraw()}catch(e){}};
+const log=m=>{LOG.unshift(`ep ${EPOCH} · ${m}`);LOG.length=12};
+function push(r,d){const h=HIST[HIST.length-1];if(!h||h.e!==r.epoch||h.s!==d.score)HIST.push({e:r.epoch,s:d.score});if(HIST.length>80)HIST.shift()}
+function reviveNeuron(l,j){const s=Math.sqrt(2/NET.W[l][j].length);NET.W[l][j]=NET.W[l][j].map(()=>(Math.random()*2-1)*s*1.7);NET.B[l][j]=.1}
+function desat(l,j){NET.W[l][j]=NET.W[l][j].map(w=>w*.5);NET.B[l][j]*=.5}
+function fix(label,fn){
+  const before=A.diagnose(A.scan()).score;fn();redo();window.autOpen();
+  const after=A.diagnose(A.scan()).score,d=after-before,b=$("aut-box");
+  log(label+` (${before}→${after})`);
+  b.insertAdjacentHTML("afterbegin",`<div class="aut-toast ${d<0?"bad":""}">${label} — score ${before} → <b>${after}</b> ${d>0?"▲ +"+d:d<0?"▼ "+d:"="}</div>`);
+}
+window.autNeu=(l,j,st)=>fix(st==="d"?`Neurone C${l+1}·N${j+1} réveillé`:`Neurone C${l+1}·N${j+1} désaturé`,()=>st==="d"?reviveNeuron(l,j):desat(l,j));
+window.autLR=()=>fix("LR ÷ 3",()=>{const e=$("lrN");e.value=(parseFloat(e.value)/3).toPrecision(2);["input","change"].forEach(t=>e.dispatchEvent(new Event(t,{bubbles:true})))});
+window.autDesat=()=>fix("Neurones saturés atténués",()=>A.last().sat.forEach(([l,j])=>desat(l,j)));
+window.autClip=()=>fix("Poids écrêtés à ±5",()=>NET.W.forEach(lw=>lw.forEach(r=>{for(let k=0;k<r.length;k++)r[k]=Math.max(-5,Math.min(5,r[k]))})));
+function hist(l){
+  let m=1e-6,n=0,s=0,z=0;NET.W[l].forEach(r=>r.forEach(v=>{m=Math.max(m,Math.abs(v));n++;s+=v*v;if(Math.abs(v)<.01)z++}));
+  const B=18,b=Array(B).fill(0);NET.W[l].forEach(r=>r.forEach(v=>b[Math.min(B-1,Math.floor((v+m)/(2*m)*B))]++));
+  let mx=1;b.forEach(v=>mx=Math.max(mx,v));
+  const bars=b.map((v,i)=>`<rect x="${i*10}" y="${34-v/mx*32}" width="8" height="${v/mx*32}" rx="2" fill="${i===B>>1||i===(B>>1)-1?"#bf5fff":"#00e5ff"}" opacity=".8"/>`).join("");
+  return `<div class="aut-hr"><span class="aut-rl">C${l+1}</span><svg width="180" height="36">${bars}</svg><span>σ ${Math.sqrt(s/n).toFixed(2)} · max ${m.toFixed(2)} · ${Math.round(z/n*100)} % ≈ 0</span></div>`}
+function spark(){
+  if(HIST.length<2)return "Lance plusieurs scans (ou la surveillance) pour tracer la courbe.";
+  const W=260,H=44,p=HIST.map((h,i)=>`${(i/(HIST.length-1)*W).toFixed(1)},${(H-h.s/100*H).toFixed(1)}`).join(" ");
+  const c=col(HIST[HIST.length-1].s);
+  return `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="max-height:60px"><polyline points="${p}" fill="none" stroke="${c.replace("var(--grn)","#00ff9d").replace("var(--ylw)","#ffd600").replace("var(--red)","#ff3d5a")}" stroke-width="2" stroke-linejoin="round"/></svg>`}
+const orig=window.autOpen;
+window.autOpen=function(){
+  orig();const r=A.last();if(!r||!$("aut-ov").classList.contains("on"))return;
+  const d=A.diagnose(r),prev=HIST[HIST.length-1];push(r,d);
+  const D=new Set(r.dead.map(x=>x.join(","))),box=$("aut-box");
+  if(prev&&prev.s!==d.score){const dl=d.score-prev.s;box.querySelector(".aut-sub").insertAdjacentHTML("beforeend",`<span class="aut-chip" style="color:${dl>0?"var(--grn)":"var(--red)"}">${dl>0?"▲ +":"▼ "}${dl}</span>`)}
+  const map=r.cnt.map((c,l)=>`<div class="aut-row"><span class="aut-rl">${l<r.nL-1?"C"+(l+1):"Sortie"}</span>${c.mx.map((m,j)=>{const hid=l<r.nL-1,dd=D.has(l+","+j),ss=hid&&c.sat[j]>r.used*.9,st=dd?"d":ss?"s":"a";return `<i class="aut-n ${st}" style="--o:${(.25+.75*Math.min(1,m)).toFixed(2)}" title="C${l+1}·N${j+1} — max|a| ${m.toFixed(3)}${dd?" — mort (clic : réveiller)":ss?" — saturé (clic : atténuer)":""}" ${st!=="a"?`onclick="autNeu(${l},${j},'${st}')"`:""}></i>`}).join("")}</div>`).join("");
+  const hw=NET.W.map((_,l)=>hist(l)).join("");
+  const sec=(t,b,o)=>`<details class="aut-d" ${o?"open":""}><summary>${t}</summary><div>${b}</div></details>`;
+  const html=sec("🧠 CARTE DES NEURONES",`${map}<div style="margin-top:6px">Intensité = activation max · <span style="color:var(--red)">▢ mort</span> · <span style="color:var(--org)">■ saturé</span> · clique un neurone en difficulté pour le soigner.</div>`,r.dead.length+r.sat.length>0)
+   +sec("📊 DISTRIBUTION DES POIDS",hw+"<div>Barre violette = zéro. Une cloche centrée et étroite est saine ; des pics aux bords signalent saturation ou explosion.</div>")
+   +sec("🕰 HISTORIQUE DE SANTÉ",spark()+(LOG.length?`<div style="margin-top:6px">${LOG.map(x=>"· "+x).join("<br>")}</div>`:""));
+  box.querySelector(".aut-bar").insertAdjacentHTML("beforebegin",html);
+  const bar=box.querySelector(".aut-bar");
+  bar.insertAdjacentHTML("afterbegin",`<button class="btn" onclick="autLR()">🐢 LR ÷ 3</button>${r.sat.length?`<button class="btn" onclick="autDesat()">🌫 Désaturer ${r.sat.length}</button>`:""}${r.wMax>5?`<button class="btn" onclick="autClip()">✂ Écrêter poids</button>`:""}`);
+  bar.insertAdjacentHTML("beforeend",`<button class="btn ${timer?"on":""}" onclick="autMon()">🛰 Surveillance ${timer?"ON":"OFF"}</button><button class="btn ${heal?"on":""}" onclick="autHeal()">🚑 Auto-soin ${heal?"ON":"OFF"}</button>`);
+};
+function tick(){
+  const r=A.scan();if(!r)return;
+  if(r.epoch===lastEp&&Date.now()-lastT<10000)return;
+  lastEp=r.epoch;lastT=Date.now();
+  const d=A.diagnose(r),prev=HIST[HIST.length-1];push(r,d);
+  if(heal&&r.dead.length&&r.dead.length/Math.max(1,r.dead.length+r.lay.reduce((a,L)=>a+L.n-L.dead,0))>.05){r.dead.forEach(([l,j])=>reviveNeuron(l,j));log(`auto-soin : ${r.dead.length} neurone(s) réveillé(s)`);redo()}
+  const h=$("aut-hud");h.style.setProperty("--c",col(d.score).replace("var(--grn)","#00ff9d").replace("var(--ylw)","#ffd600").replace("var(--red)","#ff3d5a"));
+  h.innerHTML=`🩺 ${d.score}<small>ep ${r.epoch}</small>`;h.classList.add("on");
+  if(prev&&(d.score-prev.s<=-10||(d.score<45&&prev.s>=45))){h.classList.remove("alert");void h.offsetWidth;h.classList.add("alert");log(`⚠ chute de santé ${prev.s}→${d.score}`)}
+}
+window.autMon=function(){
+  if(timer){clearInterval(timer);timer=null;$("aut-hud").classList.remove("on")}
+  else{timer=setInterval(tick,2000);tick()}
+  window.autOpen();
+};
+window.autHeal=function(){heal=!heal;if(heal&&!timer)autMon();else window.autOpen()};
+})();
+</script>
+<script>
+(function(){
+// Place la bulle de surveillance au-dessus des barres fixes mobiles (entraînement + navigation).
+function place(){
+  const h=document.getElementById("aut-hud");if(!h||!h.classList.contains("on"))return;
+  let top=window.innerHeight;
+  ["mobile-trainbar","mobile-nav"].forEach(id=>{
+    const e=document.getElementById(id);if(!e)return;
+    const cs=getComputedStyle(e);if(cs.display==="none"||cs.visibility==="hidden")return;
+    const r=e.getBoundingClientRect();if(r.height>0&&r.top<top)top=r.top;
+  });
+  h.style.bottom=(window.innerHeight-top+10)+"px";
+}
+setInterval(place,500);
+window.addEventListener("resize",place);
+window.addEventListener("orientationchange",()=>setTimeout(place,200));
+})();
+</script>
 </body>
 </html>

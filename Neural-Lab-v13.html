@@ -5490,738 +5490,105 @@
         <!-- ── CUSTOM OPTIONS ── -->
         <div id="tc-cust" class="tc">
           <div id="cust-wrap">
-            <div class="csec">
-              <div class="csech" onclick="togC(this)">
-                <span>🌐</span><span class="csect">Langue / Language</span
-                ><span class="cseca o">▶</span>
-              </div>
-              <div class="csecb o">
-                <div class="crow" data-no-translate>
-                  <label>Traduction FR → EN</label>
-                  <div
-                    class="lang-switch"
-                    id="langSwitch"
-                    onclick="toggleTranslation()"
-                    title="Basculer FR / EN"
-                    data-no-translate
-                  >
-                    <span class="lang-switch-opt lang-fr">FR</span>
-                    <span class="lang-switch-opt lang-en">EN</span>
-                    <div class="lang-switch-thumb"></div>
-                  </div>
-                </div>
-                <div id="langStatus" class="lang-status" data-no-translate>
-                  Interface traduite automatiquement (API gratuite).
-                </div>
-              </div>
-            </div>
-            <div class="csec">
-              <div class="csech" onclick="togC(this)">
-                <span>🎨</span><span class="csect">Thème & Couleurs</span
-                ><span class="cseca">▶</span>
-              </div>
-              <div class="csecb">
-                <div class="crow">
-                  <label>Neurone entrée</label
-                  ><input
-                    type="color"
-                    id="cNI"
-                    value="#ffd600"
-                    oninput="redraw()"
-                  />
-                </div>
-                <div class="crow">
-                  <label>Neurone caché</label
-                  ><input
-                    type="color"
-                    id="cNH"
-                    value="#00e5ff"
-                    oninput="redraw()"
-                  />
-                </div>
-                <div class="crow">
-                  <label>Neurone sortie</label
-                  ><input
-                    type="color"
-                    id="cNO"
-                    value="#bf5fff"
-                    oninput="redraw()"
-                  />
-                </div>
-                <div class="crow">
-                  <label>Poids positif</label
-                  ><input
-                    type="color"
-                    id="cWP"
-                    value="#00ff9d"
-                    oninput="redraw()"
-                  />
-                </div>
-                <div class="crow">
-                  <label>Poids négatif</label
-                  ><input
-                    type="color"
-                    id="cWN"
-                    value="#ff3d5a"
-                    oninput="redraw()"
-                  />
-                </div>
-                <div class="crow">
-                  <label>Fond</label
-                  ><input
-                    type="color"
-                    id="cBG"
-                    value="#05060c"
-                    oninput="redraw()"
-                  />
-                </div>
-                <div class="btn-row" style="margin-top: 6px">
-                  <button class="btn" onclick="applyTheme('dark')">Dark</button>
-                  <button class="btn" onclick="applyTheme('neon')">Neon</button>
-                  <button class="btn" onclick="applyTheme('ocean')">
-                    Ocean
-                  </button>
-                  <button class="btn" onclick="applyTheme('fire')">Fire</button>
-                  <button class="btn" onclick="applyTheme('matrix')">
-                    Matrix
-                  </button>
-                  <button class="btn" onclick="applyTheme('pastel')">
-                    Pastel
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="csec">
-              <div class="csech" onclick="togC(this)">
-                <span>📐</span><span class="csect">Géométrie</span
-                ><span class="cseca">▶</span>
-              </div>
-              <div class="csecb">
-                <div class="crow">
-                  <label>Rayon neurones</label
-                  ><input
-                    type="range"
-                    id="cR"
-                    min="6"
-                    max="40"
-                    value="18"
-                    oninput="
-                      this.nextElementSibling.textContent = this.value + 'px';
-                      redraw();
-                    "
-                  /><span class="cval">18px</span>
-                </div>
-                <div class="crow">
-                  <label>Épaisseur connexions</label
-                  ><input
-                    type="range"
-                    id="cLW"
-                    min="0.2"
-                    max="8"
-                    step="0.1"
-                    value="1.5"
-                    oninput="
-                      this.nextElementSibling.textContent = this.value;
-                      redraw();
-                    "
-                  /><span class="cval">1.5</span>
-                </div>
-                <div class="crow">
-                  <label>Police labels</label
-                  ><input
-                    type="range"
-                    id="cFS"
-                    min="6"
-                    max="18"
-                    value="10"
-                    oninput="
-                      this.nextElementSibling.textContent = this.value + 'px';
-                      redraw();
-                    "
-                  /><span class="cval">10px</span>
-                </div>
-                <div class="crow">
-                  <label>Espacement H</label
-                  ><input
-                    type="range"
-                    id="cSH"
-                    min="0.4"
-                    max="2.5"
-                    step="0.05"
-                    value="1"
-                    oninput="
-                      this.nextElementSibling.textContent = this.value + '×';
-                      redraw();
-                    "
-                  /><span class="cval">1×</span>
-                </div>
-                <div class="crow">
-                  <label>Espacement V</label
-                  ><input
-                    type="range"
-                    id="cSV"
-                    min="0.4"
-                    max="2.5"
-                    step="0.05"
-                    value="1"
-                    oninput="
-                      this.nextElementSibling.textContent = this.value + '×';
-                      redraw();
-                    "
-                  /><span class="cval">1×</span>
-                </div>
-              </div>
-            </div>
-            <div class="csec">
-              <div class="csech" onclick="togC(this)">
-                <span>✨</span><span class="csect">Effets visuels</span
-                ><span class="cseca">▶</span>
-              </div>
-              <div class="csecb">
-<div class="uit-grid" id="uiThemeGrid"><button type="button" class="uit" data-t="neon" aria-pressed="false" onclick="setUITheme('neon')"><i style="--b:#05060c;--p:#0a0c18;--x:#00e5ff;--y:#bf5fff"></i>Néon</button><button type="button" class="uit" data-t="pro" aria-pressed="false" onclick="setUITheme('pro')"><i style="--b:#15171b;--p:#1b1e23;--x:#7fa6cc;--y:#a6adb8"></i>Pro mat</button><button type="button" class="uit" data-t="aurore" aria-pressed="false" onclick="setUITheme('aurore')"><i style="--b:#061110;--p:#0a1a18;--x:#4fd8c4;--y:#a4ec6b"></i>Aurore</button><button type="button" class="uit" data-t="ambre" aria-pressed="false" onclick="setUITheme('ambre')"><i style="--b:#0c0905;--p:#130f09;--x:#ffb454;--y:#ff7a45"></i>Ambre</button><button type="button" class="uit" data-t="clair" aria-pressed="false" onclick="setUITheme('clair')"><i style="--b:#e9edf2;--p:#ffffff;--x:#2c5bcc;--y:#7a4fd0"></i>Clair</button></div><div class="crow"><label>Finition</label><select id="uiFinish" onchange="setUIFinish(this.value)" style="flex:2;font-size:9px;padding:3px 5px"><option value="glossy">Brillant (lueurs)</option><option value="matte">Mat (aplats, sans lueur)</option></select></div>
-                <div class="crow">
-                  <label>Intensité glow</label
-                  ><input
-                    type="range"
-                    id="cGI"
-                    min="0"
-                    max="1.5"
-                    step="0.05"
-                    value="0.5"
-                    oninput="
-                      this.nextElementSibling.textContent =
-                        Math.round(this.value * 100) + '%';
-                      redraw();
-                    "
-                  /><span class="cval">50%</span>
-                </div>
-                <div class="crow">
-                  <label>Opacité connexions</label
-                  ><input
-                    type="range"
-                    id="cLA"
-                    min="0.05"
-                    max="1"
-                    step="0.05"
-                    value="0.7"
-                    oninput="
-                      this.nextElementSibling.textContent =
-                        Math.round(this.value * 100) + '%';
-                      redraw();
-                    "
-                  /><span class="cval">70%</span>
-                </div>
-                <div class="crow">
-                  <label>Courbes Bézier</label
-                  ><input
-                    type="checkbox"
-                    id="cCurve"
-                    onchange="redraw()"
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div class="crow">
-                  <label>Flèches direction</label
-                  ><input
-                    type="checkbox"
-                    id="cArrow"
-                    onchange="redraw()"
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div class="crow">
-                  <label>Neurones colorés par val.</label
-                  ><input
-                    type="checkbox"
-                    id="cColorNode"
-                    checked
-                    onchange="redraw()"
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div class="crow">
-                  <label>Grille fond</label
-                  ><select
-                    id="cGridMode"
-                    onchange="redraw()"
-                    style="flex: 2; font-size: 9px; padding: 3px 5px"
-                  >
-                    <option value="cross">Croisillons</option>
-                    <option value="dot">Points</option>
-                    <option value="none">Aucun</option>
-                  </select>
-                </div>
-                <div class="crow">
-                  <label>Légende canvas</label
-                  ><input
-                    type="checkbox"
-                    id="cShowLeg"
-                    checked
-                    onchange="
-                      document.getElementById('canvasLegend').style.display =
-                        this.checked ? 'block' : 'none'
-                    "
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Afficher</span
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="csec">
-              <div class="csech" onclick="togC(this)">
-                <span>🖥</span
-                ><span class="csect">Performance & Accélération matérielle</span
-                ><span class="cseca">▶</span>
-              </div>
-              <div class="csecb">
-                <div
-                  id="gpuInfoBox"
-                  style="
-                    background: #030408;
-                    border: 1px solid var(--brd);
-                    border-radius: 3px;
-                    padding: 6px 8px;
-                    font-size: 8px;
-                    color: var(--dim);
-                    line-height: 1.7;
-                    margin-bottom: 8px;
-                  "
-                >
-                  Détection du GPU…
-                </div>
-                <div class="crow">
-                  <label
-                    title="Active des optimisations de rendu GPU (compositing matériel du canevas) et privilégie un contexte 2D accéléré côté navigateur."
-                    >Accélération matérielle (GPU)</label
-                  ><input
-                    type="checkbox"
-                    id="cGPUAccel"
-                    checked
-                    onchange="setGPUAccel(this.checked)"
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div class="crow">
-                  <label
-                    title="Attribut du contexte canvas 2D : Auto laisse le navigateur choisir, Forcer GPU demande un rendu accéléré à faible latence (desynchronized), Forcer CPU force un rendu logiciel (utile en cas de pilote GPU instable ou de rendu buggé)."
-                    >Rendu du canevas</label
-                  ><select
-                    id="cCanvasRender"
-                    onchange="setCanvasRenderMode(this.value)"
-                    style="flex: 2; font-size: 9px; padding: 3px 5px"
-                  >
-                    <option value="auto">Auto (recommandé)</option>
-                    <option value="gpu">Forcer GPU</option>
-                    <option value="cpu">Forcer CPU (compatibilité)</option>
-                  </select>
-                </div>
-                <div class="crow">
-                  <label
-                    title="Pendant l'auto-entraînement (⚡ Auto), réduit temporairement les effets de glow pour accélérer le rendu du canevas. Votre préférence Glow (panneau Affichage) est restaurée à l'arrêt."
-                    >Effets réduits pendant l'entraînement rapide</label
-                  ><input
-                    type="checkbox"
-                    id="cFastTrainLite"
-                    checked
-                    onchange="setFastTrainLite(this.checked)"
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div
-                  id="gpuApplyNote"
-                  style="
-                    font-size: 8px;
-                    color: var(--org);
-                    margin-top: 4px;
-                    display: none;
-                    line-height: 1.6;
-                  "
-                >
-                  ⟳ Rechargez la page pour appliquer entièrement le changement
-                  de rendu du canevas.
-                </div>
-                <div
-                  style="
-                    border-top: 1px solid var(--brd);
-                    margin: 10px 0 8px;
-                    padding-top: 8px;
-                    font-size: 8px;
-                    color: var(--dim);
-                    line-height: 1.6;
-                  "
-                >
-                  <b style="color: var(--text)">Calcul d'entraînement (GPU)</b
-                  ><br />
-                  Un navigateur n'a pas accès à CUDA/cuDNN/TensorRT (API
-                  propriétaires NVIDIA) — c'est une limite du bac à sable web.
-                  <b>WebGPU</b> est la seule API de calcul GPU accessible depuis
-                  une page, neutre vis-à-vis du fabricant : elle utilise bien
-                  votre GPU (NVIDIA compris) via le pilote du navigateur, mais
-                  pas les briques logicielles NVIDIA elles-mêmes.
-                </div>
-                <div class="crow">
-                  <label
-                    title="Exécute le forward/backward/optimiseur sur GPU via WebGPU au lieu du CPU, pour Step/+Epoch/×N/Auto. Le GPU peut être plus lent que le CPU sur les petits réseaux, mais reste activable. Repasse automatiquement sur CPU si Batch Norm, Dropout, motifs de neurones ou poids gelés sont actifs. Chaque activation est vérifiée numériquement contre le calcul CPU avant d'être utilisée."
-                    >Calcul d'entraînement sur GPU (WebGPU)</label
-                  ><input
-                    type="checkbox"
-                    id="cGPUTrain"
-                    onchange="setGPUTrain(this.checked)"
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div class="crow">
-                  <button
-                    class="btn"
-                    style="flex: 1; font-size: 9px"
-                    onclick="manualVerifyGPU()"
-                  >
-                    🔍 Vérifier GPU vs CPU
-                  </button>
-                </div>
-                <div
-                  id="gpuTrainStatus"
-                  style="font-size: 8px; line-height: 1.7; margin-top: 4px"
-                ></div>
-                <div
-                  style="
-                    font-size: 9px;
-                    color: var(--ylw);
-                    background: color-mix(in srgb, var(--ylw) 7%, transparent);
-                    border-left: 2px solid var(--ylw);
-                    padding: 5px 7px;
-                    margin-top: 6px;
-                    line-height: 1.5;
-                  "
-                >
-                  ⚠ Le GPU n’est pas toujours plus rapide : sur les petits réseaux, le CPU peut rester plus performant. Vous pouvez tout de même activer le GPU ; comparez les temps selon votre modèle.
-                </div>
-                <div
-                  style="
-                    font-size: 8px;
-                    color: var(--dim);
-                    margin-top: 4px;
-                    line-height: 1.6;
-                  "
-                >
-                  ⚠ En mode GPU, le calcul se fait par lots : les logs détaillés
-                  pas-à-pas (formules, Δ, etc.) ne sont pas générés pendant
-                  Step/+Epoch/×N/Auto. L'onglet
-                  <b style="color: var(--ylw)">✎ Manuel</b> reste sur CPU (il
-                  sert justement à vérifier vos calculs à la main).
-                </div>
-              </div>
-            </div>
-            <div class="csec">
-              <div class="csech" onclick="togC(this)">
-                <span>⚙</span><span class="csect">Algorithme avancé</span
-                ><span class="cseca">▶</span>
-              </div>
-              <div class="csecb">
-                <div class="crow">
-                  <label>Init. poids</label
-                  ><select
-                    id="cInit"
-                    style="flex: 2; font-size: 9px; padding: 3px 5px"
-                  >
-                    <option value="xavier">Xavier/Glorot</option>
-                    <option value="he">He/Kaiming</option>
-                    <option value="uniform">Uniforme [-1,1]</option>
-                    <option value="normal">Normal σ=0.1</option>
-                    <option value="small">Petit (-0.1,0.1)</option>
-                    <option value="zero">Zéros (debug)</option>
-                  </select>
-                </div>
-                <div class="crow">
-                  <label>Momentum β</label
-                  ><input
-                    type="range"
-                    id="cMom"
-                    min="0"
-                    max="0.999"
-                    step="0.001"
-                    value="0.9"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">0.90</span>
-                </div>
-                <div class="crow">
-                  <label>Adam β₁</label
-                  ><input
-                    type="range"
-                    id="cB1"
-                    min="0.5"
-                    max="0.999"
-                    step="0.001"
-                    value="0.9"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">0.90</span>
-                </div>
-                <div class="crow">
-                  <label>Adam β₂</label
-                  ><input
-                    type="range"
-                    id="cB2"
-                    min="0.5"
-                    max="0.9999"
-                    step="0.0001"
-                    value="0.999"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">0.999</span>
-                </div>
-                <div class="crow">
-                  <label>Epsilon ε</label
-                  ><input
-                    type="range"
-                    id="cEps"
-                    min="-12"
-                    max="-4"
-                    step="0.1"
-                    value="-8"
-                    oninput="
-                      this.nextElementSibling.textContent =
-                        '1e' + Math.round(this.value)
-                    "
-                  /><span class="cval">1e-8</span>
-                </div>
-                <div class="crow">
-                  <label>L2 λ</label
-                  ><input
-                    type="range"
-                    id="cL2"
-                    min="0"
-                    max="0.5"
-                    step="0.001"
-                    value="0"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">0</span>
-                </div>
-                <div class="crow">
-                  <label>Dropout</label
-                  ><input
-                    type="range"
-                    id="cDrop"
-                    min="0"
-                    max="0.9"
-                    step="0.05"
-                    value="0"
-                    oninput="
-                      this.nextElementSibling.textContent =
-                        Math.round(this.value * 100) + '%'
-                    "
-                  /><span class="cval">0%</span>
-                </div>
-                <div class="crow">
-                  <label>Huber δ</label
-                  ><input
-                    type="range"
-                    id="cHD"
-                    min="0.1"
-                    max="5"
-                    step="0.1"
-                    value="1"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">1.0</span>
-                </div>
-                <div class="crow">
-                  <label>Grad clipping</label
-                  ><input
-                    type="range"
-                    id="cGC"
-                    min="0"
-                    max="10"
-                    step="0.1"
-                    value="0"
-                    oninput="
-                      this.nextElementSibling.textContent =
-                        this.value == 0 ? 'OFF' : this.value
-                    "
-                  /><span class="cval">OFF</span>
-                </div>
-                <div class="crow">
-                  <label>LR decay (×/100 ep.)</label
-                  ><input
-                    type="range"
-                    id="cLRD"
-                    min="0.5"
-                    max="1"
-                    step="0.01"
-                    value="1"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">1.0</span>
-                </div>
-              </div>
-            </div>
-            <div class="csec">
-              <div class="csech" onclick="togC(this)">
-                <span>🧪</span
-                ><span class="csect">Techniques d'entraînement</span
-                ><span class="cseca">▶</span>
-              </div>
-              <div class="csecb">
-                <div class="crow">
-                  <label
-                    title="Normalise la pré-activation de chaque neurone caché avec des statistiques glissantes (moyenne/variance), puis applique un gain γ et un biais β appris."
-                    >Batch Normalization</label
-                  ><input
-                    type="checkbox"
-                    id="cBN"
-                    onchange="
-                      log(
-                        this.checked
-                          ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Batch Norm activée&lt;/span&gt; — normalisation des couches cachées (γ,β appris + stats glissantes)'
-                          : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Batch Norm désactivée&lt;/span&gt;',
-                      )
-                    "
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div class="crow">
-                  <label
-                    title="Vitesse de mise à jour des statistiques glissantes (moyenne/variance) de la Batch Norm."
-                    >BN momentum</label
-                  ><input
-                    type="range"
-                    id="cBNMom"
-                    min="0.5"
-                    max="0.999"
-                    step="0.001"
-                    value="0.9"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">0.90</span>
-                </div>
-                <div class="crow">
-                  <label
-                    title="Ajoute un bruit gaussien aléatoire aux entrées à chaque exemple d'entraînement (les entrées affichées/testées restent inchangées)."
-                    >Data augmentation</label
-                  ><input
-                    type="checkbox"
-                    id="cAug"
-                    onchange="
-                      log(
-                        this.checked
-                          ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Augmentation activée&lt;/span&gt; — bruit gaussien ajouté aux entrées d\'entraînement'
-                          : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Augmentation désactivée&lt;/span&gt;',
-                      )
-                    "
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div class="crow">
-                  <label
-                    title="Écart-type du bruit gaussien ajouté à chaque valeur d'entrée pendant l'entraînement."
-                    >Bruit (σ)</label
-                  ><input
-                    type="range"
-                    id="cAugNoise"
-                    min="0"
-                    max="0.3"
-                    step="0.01"
-                    value="0.05"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">0.05</span>
-                </div>
-                <div class="crow">
-                  <label
-                    title="Arrête automatiquement l'entraînement (Auto / ×N époques) quand la loss cesse de s'améliorer."
-                    >Early stopping</label
-                  ><input
-                    type="checkbox"
-                    id="cES"
-                    onchange="
-                      EARLY.bestLoss = Infinity;
-                      EARLY.badEpochs = 0;
-                      log(
-                        this.checked
-                          ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Early stopping activé&lt;/span&gt;'
-                          : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Early stopping désactivé&lt;/span&gt;',
-                      );
-                    "
-                  /><span style="color: var(--text); font-size: 9px"
-                    >Activer</span
-                  >
-                </div>
-                <div class="crow">
-                  <label
-                    title="Nombre d'époques sans amélioration significative avant l'arrêt."
-                    >Patience (époques)</label
-                  ><input
-                    type="range"
-                    id="cESPat"
-                    min="5"
-                    max="300"
-                    step="5"
-                    value="30"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">30</span>
-                </div>
-                <div class="crow">
-                  <label
-                    title="Amélioration minimale de la loss moyenne pour compter comme un progrès."
-                    >Δ min. loss</label
-                  ><input
-                    type="range"
-                    id="cESDelta"
-                    min="0"
-                    max="0.01"
-                    step="0.0001"
-                    value="0.0005"
-                    oninput="this.nextElementSibling.textContent = this.value"
-                  /><span class="cval">0.0005</span>
-                </div>
-              </div>
-            </div>
-            <div class="csec">
-              <div class="csech" onclick="togC(this)">
-                <span>💾</span><span class="csect">Sauvegarde / Export</span
-                ><span class="cseca">▶</span>
-              </div>
-              <div class="csecb">
-                <div class="btn-row">
-                  <button class="btn ok" onclick="exportNet()" style="flex: 1">
-                    📤 Export JSON
-                  </button>
-                  <button
-                    class="btn"
-                    onclick="document.getElementById('importF').click()"
-                    style="flex: 1"
-                  >
-                    📥 Import
-                  </button>
-                </div>
-                <input
-                  type="file"
-                  id="importF"
-                  accept=".json"
-                  onchange="importNet(event)"
-                  style="display: none"
-                />
-                <div class="btn-row" style="margin-top: 4px">
-                  <button
-                    class="btn"
-                    onclick="exportCode('py')"
-                    style="flex: 1"
-                  >
-                    🐍 Code Python
-                  </button>
-                  <button
-                    class="btn"
-                    onclick="exportCode('js')"
-                    style="flex: 1"
-                  >
-                    JS
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div id="opt-top">
+    <input type="search" id="optSearch" placeholder="🔎 Chercher une option (ex : dropout, glow, GPU…)" oninput="optFilter(this.value)" />
+    <div class="opt-seg" id="optSeg" role="tablist"></div>
+  </div>
+  <div id="opt-body"></div>
+  <div id="opt-hidden" style="display:none"></div>
+</div>
+<style>
+#opt-top{position:sticky;top:0;z-index:5;background:var(--p1);padding:2px 0 8px}
+#optSearch{width:100%;box-sizing:border-box;font-size:10px;padding:7px 9px;margin-bottom:7px}
+.opt-seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.opt-seg button{background:var(--p2);border:1px solid var(--brd);color:var(--dim);border-radius:4px;padding:7px 2px;font:600 9.5px "Syne",sans-serif;cursor:pointer;min-height:34px}
+.opt-seg button.on{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 10%,transparent)}
+.opt-pane{display:none}.opt-pane.on{display:block}
+.opt-grp{margin:0 0 9px;border:1px solid var(--brd);border-radius:4px;padding:6px 10px 8px}
+.opt-grp>h4{margin:0 0 3px;font:700 8.5px "Syne",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--a1)}
+.opt-grp>p{margin:0 0 4px;font-size:8.5px;color:var(--dim);line-height:1.5}
+.crow.off{opacity:.38}.crow.off label::after{content:" (inactif)";font-size:8px;white-space:nowrap}
+.crow.hide,.opt-grp.hide{display:none}
+.opt-tip{font-size:8.5px;color:var(--dim);line-height:1.6;margin-top:5px}
+.opt-warn{font-size:9px;color:var(--ylw);border-left:2px solid var(--ylw);padding:4px 7px;margin-top:6px;line-height:1.5;background:color-mix(in srgb,var(--ylw) 7%,transparent)}
+.opt-act{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}.opt-act .btn{flex:1 1 30%;min-width:0;min-height:32px;padding-left:4px;padding-right:4px}
+@media(max-width:900px){#optSearch{font-size:12px;padding:9px}.opt-seg button{font-size:11px;min-height:40px}.opt-grp>h4{font-size:10px}.opt-grp>p,.opt-tip{font-size:10.5px}.opt-act .btn{min-height:38px;font-size:11px}}
+</style>
+<script>
+(function(){
+const PCT=v=>Math.round(v*100)+'%',RAW=v=>v,
+ SL=(id,l,min,max,step,val,fmt,o={})=>({t:'r',id,l,min,max,step,val,fmt:fmt||RAW,...o}),
+ CK=(id,l,val,o={})=>({t:'c',id,l,val,...o}),
+ SE=(id,l,opts,o={})=>({t:'s',id,l,opts,...o}),
+ CO=(id,l)=>({t:'k',id,l}),
+ logCk=(on,off)=>`optLog(this,'${on}','${off}')`;
+const OPT_ACT=function(){const o=(id)=>{const e=document.getElementById(id);return e?e.value:''};return{opt:o('iOpt'),loss:o('iLoss')}};
+const PANES=[
+{k:'look',ic:'🎨',n:'Apparence',g:[
+ {h:'Thème de l’interface',p:'Un clic change toute l’app et la palette du réseau.',x:[{t:'html',h:'<div class="uit-grid" id="uiThemeGrid">'+[['neon','Néon','#05060c','#0a0c18','#00e5ff','#bf5fff'],['pro','Pro mat','#15171b','#1b1e23','#7fa6cc','#a6adb8'],['aurore','Aurore','#061110','#0a1a18','#4fd8c4','#a4ec6b'],['ambre','Ambre','#0c0905','#130f09','#ffb454','#ff7a45'],['clair','Clair','#e9edf2','#ffffff','#2c5bcc','#7a4fd0']].map(a=>`<button type="button" class="uit" data-t="${a[0]}" aria-pressed="false" onclick="setUITheme('${a[0]}')"><i style="--b:${a[2]};--p:${a[3]};--x:${a[4]};--y:${a[5]}"></i>${a[1]}</button>`).join('')+'</div>'},
+  SE('uiFinish','Finition',[['glossy','Brillant (lueurs)'],['matte','Mat (sans lueur)']],{on:'setUIFinish(this.value)'})]},
+ {h:'Couleurs du réseau',p:'Personnalisation fine : le thème ci-dessus les règle déjà. Presets rapides en bas.',x:[CO('cNI','Neurone entrée'),CO('cNH','Neurone caché'),CO('cNO','Neurone sortie'),CO('cWP','Poids positif'),CO('cWN','Poids négatif'),CO('cBG','Fond'),
+  {t:'html',h:'<div class="opt-act">'+['dark','neon','ocean','fire','matrix','pastel'].map(n=>`<button class="btn" onclick="applyTheme('${n}')">${n[0].toUpperCase()+n.slice(1)}</button>`).join('')+'</div>'}]},
+ {h:'Dessin du réseau',x:[SL('cR','Rayon neurones',6,40,1,18,v=>v+'px',{red:1}),SL('cLW','Épaisseur connexions',0.2,8,0.1,1.5,RAW,{red:1}),SL('cLA','Opacité connexions',0.05,1,0.05,0.7,PCT,{red:1}),SL('cFS','Police labels',6,18,1,10,v=>v+'px',{red:1}),SL('cSH','Espacement horizontal',0.4,2.5,0.05,1,v=>v+'×',{red:1}),SL('cSV','Espacement vertical',0.4,2.5,0.05,1,v=>v+'×',{red:1}),SL('cGI','Intensité des lueurs (glow)',0,1.5,0.05,0.5,PCT,{red:1}),
+  SE('cGridMode','Grille de fond',[['cross','Croisillons'],['dot','Points'],['none','Aucune']],{on:'redraw()'}),
+  CK('cColorNode','Neurones colorés par valeur',true,{on:'redraw()'}),CK('cCurve','Courbes de Bézier',false,{on:'redraw()'}),CK('cArrow','Flèches de direction',false,{on:'redraw()'}),
+  CK('cShowLeg','Légende du canevas',true,{on:"document.getElementById('canvasLegend').style.display=this.checked?'block':'none'"})]}]},
+{k:'train',ic:'🧠',n:'Entraînement',g:[
+ {h:'Départ',p:'Appliqué à la prochaine construction du réseau.',x:[SE('cInit','Initialisation des poids',[['xavier','Xavier/Glorot'],['he','He/Kaiming'],['uniform','Uniforme [-1,1]'],['normal','Normal σ=0.1'],['small','Petit (-0.1, 0.1)'],['zero','Zéros (debug)']])]},
+ {h:'Optimiseur',p:'Les réglages grisés ne servent pas avec l’optimiseur choisi à gauche.',x:[SL('cMom','Momentum β',0,0.999,0.001,0.9,v=>(+v).toFixed(2),{use:'momentum,nag'}),SL('cB1','Adam β₁',0.5,0.999,0.001,0.9,v=>(+v).toFixed(2),{use:'adam,adamw'}),SL('cB2','Adam β₂',0.5,0.9999,0.0001,0.999,RAW,{use:'adam,adamw,rmsprop'}),SL('cEps','Epsilon ε',-12,-4,0.1,-8,v=>'1e'+Math.round(v),{use:'adam,adamw,rmsprop'}),
+  SL('cLRD','Décroissance du LR (×/100 ép.)',0.5,1,0.01,1,RAW),{t:'note',h:'Pour un planning plus fin (cosine, warmup…), utilise le « LR Scheduler » du panneau de gauche.'}]},
+ {h:'Perte & stabilité',x:[SL('cHD','Huber δ',0.1,5,0.1,1,v=>(+v).toFixed(1),{usel:'huber'}),SL('cGC','Gradient clipping',0,10,0.1,0,v=>v==0?'OFF':v)]},
+ {h:'Régularisation',p:'Limite le sur-apprentissage.',x:[SL('cL2','L2 λ',0,0.5,0.001,0,RAW),SL('cDrop','Dropout',0,0.9,0.05,0,PCT),
+  CK('cBN','Batch Normalization',false,{tip:'Normalise chaque couche cachée (γ, β appris + stats glissantes).',on:logCk('Batch Norm activée','Batch Norm désactivée')}),SL('cBNMom','↳ Momentum BN',0.5,0.999,0.001,0.9,v=>(+v).toFixed(2),{dep:'cBN'}),
+  CK('cAug','Augmentation (bruit sur les entrées)',false,{tip:'Bruit gaussien sur les entrées d’entraînement uniquement.',on:logCk('Augmentation activée','Augmentation désactivée')}),SL('cAugNoise','↳ Bruit σ',0,0.3,0.01,0.05,RAW,{dep:'cAug'})]},
+ {h:'Arrêt automatique',x:[CK('cES','Early stopping',false,{tip:'Stoppe Auto / ×N quand la loss ne s’améliore plus.',on:"EARLY.bestLoss=Infinity;EARLY.badEpochs=0;"+logCk('Early stopping activé','Early stopping désactivé')}),SL('cESPat','↳ Patience (époques)',5,300,5,30,RAW,{dep:'cES'}),SL('cESDelta','↳ Δ min. de loss',0,0.01,0.0001,0.0005,RAW,{dep:'cES'})]}]},
+{k:'perf',ic:'⚡',n:'Performance',g:[
+ {h:'Affichage',x:[{t:'html',h:'<div id="gpuInfoBox" style="background:#030408;border:1px solid var(--brd);border-radius:3px;padding:6px 8px;font-size:8px;color:var(--dim);line-height:1.7;margin-bottom:6px">Détection du GPU…</div>'},
+  CK('cGPUAccel','Accélération matérielle du rendu',true,{on:'setGPUAccel(this.checked)',tip:'Compositing GPU du canevas.'}),
+  SE('cCanvasRender','Moteur du canevas',[['auto','Auto (recommandé)'],['gpu','Forcer GPU'],['cpu','Forcer CPU (compat.)']],{on:'setCanvasRenderMode(this.value)'}),
+  CK('cFastTrainLite','Lueurs réduites en mode Auto ⚡',true,{on:'setFastTrainLite(this.checked)',tip:'Allège le rendu pendant l’entraînement rapide ; ton réglage est restauré ensuite.'}),
+  {t:'html',h:'<div id="gpuApplyNote" class="opt-tip" style="color:var(--org);display:none">⟳ Recharge la page pour appliquer le changement de rendu.</div>'}]},
+ {h:'Calcul d’entraînement (WebGPU)',x:[CK('cGPUTrain','Entraîner sur le GPU',false,{on:'setGPUTrain(this.checked)',tip:'Forward / backward / optimiseur sur GPU via WebGPU (Step, +Epoch, ×N, Auto).'}),
+  {t:'html',h:'<div class="opt-act"><button class="btn" onclick="manualVerifyGPU()">🔍 Vérifier GPU vs CPU</button></div><div id="gpuTrainStatus" style="font-size:8px;line-height:1.7;margin-top:4px"></div>'},
+  {t:'warn',h:'⚠ Sur les petits réseaux le CPU est souvent plus rapide : compare les temps. En mode GPU, les logs détaillés pas-à-pas ne sont pas générés ; l’onglet ✎ Manuel reste sur CPU.'},
+  {t:'note',h:'Un navigateur n’a pas accès à CUDA/cuDNN : WebGPU est la seule API de calcul GPU disponible, et elle utilise bien ta carte (NVIDIA comprise).'}]}]},
+{k:'gen',ic:'⚙',n:'Général',g:[
+ {h:'Langue / Language',x:[{t:'html',h:'<div class="crow" data-no-translate><label>Traduction FR → EN</label><div class="lang-switch" id="langSwitch" onclick="toggleTranslation()" title="Basculer FR / EN" data-no-translate><span class="lang-switch-opt lang-fr">FR</span><span class="lang-switch-opt lang-en">EN</span><div class="lang-switch-thumb"></div></div></div><div id="langStatus" class="lang-status" data-no-translate>Interface traduite automatiquement (API gratuite).</div>'}]},
+ {h:'Sauvegarde & export',p:'Le JSON contient l’architecture, les poids et les paramètres.',x:[{t:'html',h:'<div class="opt-act"><button class="btn ok" onclick="exportNet()">📤 Export JSON</button><button class="btn" onclick="document.getElementById(\'importF\').click()">📥 Import</button></div><div class="opt-act"><button class="btn" onclick="exportCode(\'py\')">🐍 Code Python</button><button class="btn" onclick="exportCode(\'js\')">JS</button></div><input type="file" id="importF" accept=".json" onchange="importNet(event)" style="display:none" />'}]},
+ {h:'Réinitialiser',x:[{t:'html',h:'<div class="opt-act"><button class="btn" onclick="optReset(\'look\')">↺ Apparence</button><button class="btn" onclick="optReset(\'train\')">↺ Entraînement</button><button class="btn" onclick="optReset(\'perf\')">↺ Performance</button></div>'}]}]}];
+function row(f){const T=f.tip?` title="${f.tip.replace(/"/g,'&quot;')}"`:'',D=f.dep?` data-dep="${f.dep}"`:'',U=(f.use?` data-use="${f.use}"`:'')+(f.usel?` data-usel="${f.usel}"`:'');
+ const tip=f.tip?`<div class="opt-tip" style="margin:-2px 0 4px">${f.tip}</div>`:'';
+ if(f.t==='html')return f.h;
+ if(f.t==='note')return `<div class="opt-tip">${f.h}</div>`;
+ if(f.t==='warn')return `<div class="opt-warn">${f.h}</div>`;
+ if(f.t==='k')return `<div class="crow" data-s="${f.l}"><label>${f.l}</label><input type="color" id="${f.id}" value="#000000" oninput="redraw()" /></div>`;
+ if(f.t==='s')return `<div class="crow" data-s="${f.l}"><label>${f.l}</label><select id="${f.id}" onchange="${f.on||''}" style="flex:2;font-size:9px;padding:3px 5px">${f.opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></div>`;
+ if(f.t==='c')return `<div class="crow" data-s="${f.l}"${T}><label>${f.l}</label><input type="checkbox" id="${f.id}" ${f.val?'checked':''} onchange="${f.on||''}" /></div>`+tip;
+ return `<div class="crow" data-s="${f.l}"${D}${U}><label>${f.l}</label><input type="range" id="${f.id}" min="${f.min}" max="${f.max}" step="${f.step}" value="${f.val}" oninput="optSet(this,${f.red?1:0})" /><span class="cval"></span></div>`}
+const FMT={},DEF={};PANES.forEach(p=>p.g.forEach(g=>g.x.forEach(f=>{if(f.t==='r')FMT[f.id]=f.fmt;if(f.id)DEF[f.id]=[p.k,f.t,f.t==='s'?f.opts[0][0]:f.val]})));
+const seg=document.getElementById('optSeg'),body=document.getElementById('opt-body');
+PANES.forEach((p,i)=>{seg.insertAdjacentHTML('beforeend',`<button type="button" role="tab" data-k="${p.k}" onclick="optPane('${p.k}')">${p.ic} ${p.n}</button>`);
+ body.insertAdjacentHTML('beforeend',`<div class="opt-pane" data-pane="${p.k}">`+p.g.map(g=>`<div class="opt-grp"><h4>${g.h}</h4>${g.p?`<p>${g.p}</p>`:''}${g.x.map(row).join('')}</div>`).join('')+'</div>')});
+window.optSet=function(el,red){const f=FMT[el.id]||RAW;el.nextElementSibling.textContent=f(el.value);if(red)redraw()};
+window.optPane=function(k){document.getElementById('optSearch').value='';optFilter('');document.querySelectorAll('.opt-seg button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));document.querySelectorAll('.opt-pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===k));try{localStorage.setItem('nl_opt_pane',k)}catch(e){}};
+window.optFilter=function(q){q=q.trim().toLowerCase();const seg=document.getElementById('optSeg');
+ if(!q){document.querySelectorAll('#opt-body .crow,#opt-body .opt-grp').forEach(e=>e.classList.remove('hide'));let k='look';try{k=localStorage.getItem('nl_opt_pane')||'look'}catch(e){}const cur=document.querySelector('.opt-seg button.on');document.querySelectorAll('.opt-pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===(cur?cur.dataset.k:k)));return}
+ document.querySelectorAll('.opt-pane').forEach(p=>p.classList.add('on'));
+ document.querySelectorAll('#opt-body .opt-grp').forEach(g=>{const gm=g.querySelector('h4').textContent.toLowerCase().includes(q);let n=0;g.querySelectorAll('.crow').forEach(r=>{const m=gm||(r.dataset.s||r.textContent).toLowerCase().includes(q);r.classList.toggle('hide',!m);if(m)n++});g.classList.toggle('hide',!n&&!gm)})};
+window.optLog=function(el,on,off){try{log('<span style="color:var(--'+(el.checked?'grn':'dim')+')">'+(el.checked?'✓ '+on:off)+'</span>')}catch(e){}};
+window.optReset=function(k){Object.entries(DEF).forEach(([id,[pk,t,v]])=>{if(pk!==k||t==='k')return;const e=document.getElementById(id);if(!e)return;if(t==='c'){if(e.checked!==!!v){e.checked=!!v;e.dispatchEvent(new Event('change'))}}else{e.value=v;e.dispatchEvent(new Event(t==='r'?'input':'change'))}});if(k==='look')setUITheme(document.documentElement.getAttribute('data-ui')||'neon');optSync()};
+function optSync(){const A=OPT_ACT();document.querySelectorAll('#opt-body .crow[data-use]').forEach(r=>r.classList.toggle('off',!r.dataset.use.split(',').includes(A.opt)));
+ document.querySelectorAll('#opt-body .crow[data-usel]').forEach(r=>r.classList.toggle('off',A.loss!==r.dataset.usel));
+ document.querySelectorAll('#opt-body .crow[data-dep]').forEach(r=>{const d=document.getElementById(r.dataset.dep);const i=r.querySelector('input');r.classList.toggle('off',!(d&&d.checked));if(i)i.disabled=!(d&&d.checked)})}
+document.querySelectorAll('#opt-body input[type=range]').forEach(e=>optSet(e,0));
+const defaults={cNI:'#ffd600',cNH:'#00e5ff',cNO:'#bf5fff',cWP:'#00ff9d',cWN:'#ff3d5a',cBG:'#05060c'};Object.entries(defaults).forEach(([k,v])=>{const e=document.getElementById(k);if(e)e.value=v});
+document.getElementById('opt-body').addEventListener('input',optSync);document.getElementById('opt-body').addEventListener('change',optSync);
+['iOpt','iLoss'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',optSync)});
+window.addEventListener('load',()=>{let k='look';try{k=localStorage.getItem('nl_opt_pane')||'look'}catch(e){}optPane(k);optSync()});
+optPane('look');
+})();
+</script>
+
         </div>
 
         <!-- ── MANUEL ── -->

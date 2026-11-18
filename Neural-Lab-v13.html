@@ -5469,7 +5469,7 @@
         <div id="tc-flib" class="tc">
           <div id="flib-wrap">
             <div class="fs-box">
-              <span class="fs-icon">⌕</span>
+              <span class="fs-icon"><svg class="fs-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span>
               <input
                 type="text"
                 id="fsearch"
@@ -5491,7 +5491,7 @@
         <div id="tc-cust" class="tc">
           <div id="cust-wrap">
   <div id="opt-top">
-    <input type="search" id="optSearch" placeholder="🔎 Chercher une option (ex : dropout, glow, GPU…)" oninput="optFilter(this.value)" />
+    <div class="fs-box opt-sbox"><span class="fs-icon"><svg class="fs-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span><input type="search" id="optSearch" placeholder="Chercher une option (ex : dropout, glow, GPU…)" autocomplete="off" oninput="optFilter(this.value)" /></div>
     <div class="opt-seg" id="optSeg" role="tablist"></div>
   </div>
   <div id="opt-body"></div>
@@ -32536,5 +32536,37 @@ window.addEventListener("resize",place);
 window.addEventListener("orientationchange",()=>setTimeout(place,200));
 })();
 </script>
+<style id="nl-searchfix">
+/* ── Barres de recherche (Formules + Options) ── */
+.fs-box{position:relative;margin-bottom:8px}
+.fs-box.opt-sbox{margin-bottom:7px}
+.fs-box input,#optSearch{
+  -webkit-appearance:none;appearance:none;
+  display:block;width:100%;box-sizing:border-box;margin:0 !important;
+  background:#030408;color:var(--text);
+  border:1px solid var(--brd);border-radius:7px;outline:none;
+  font-family:"JetBrains Mono",monospace;font-size:11px;
+  padding:7px 28px 7px 32px !important;   /* place pour la loupe (gauche) et la croix (droite) */
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.fs-box input:focus,#optSearch:focus{
+  background:#050818;color:var(--text);border-color:var(--a1);
+  box-shadow:0 0 0 3px rgba(0,229,255,.1),0 0 16px rgba(0,229,255,.18);
+}
+.fs-box input::placeholder,#optSearch::placeholder{color:var(--dim);opacity:.75}
+.fs-box .fs-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  display:flex;align-items:center;color:var(--dim);pointer-events:none;z-index:1;transition:color .2s}
+.fs-box:focus-within .fs-icon{color:var(--a1)}
+.fs-box .fs-svg{display:block}
+/* croix d'effacement native des input type=search, aux couleurs du thème */
+#optSearch::-webkit-search-decoration,#optSearch::-webkit-search-results-button,#optSearch::-webkit-search-results-decoration{-webkit-appearance:none}
+#optSearch::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;height:14px;width:14px;cursor:pointer;opacity:.7;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a8aa8' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E") center/contain no-repeat}
+#optSearch::-webkit-search-cancel-button:hover{opacity:1}
+@media(max-width:900px){
+  .fs-box input,#optSearch{font-size:13px;padding:9px 30px 9px 34px !important}
+  .fs-box .fs-icon{left:12px}
+}
+</style>
 </body>
 </html>

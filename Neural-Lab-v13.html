@@ -32568,5 +32568,92 @@ window.addEventListener("orientationchange",()=>setTimeout(place,200));
   .fs-box .fs-icon{left:12px}
 }
 </style>
+
+<!-- ═══════════════ PARAMETER INSPECTOR · Neural Lab ═══════════════ -->
+<style id="nl-param-inspector-style">
+#pi-launch{position:fixed;right:14px;bottom:14px;z-index:99970;border:1px solid rgba(0,229,255,.42);border-radius:999px;padding:9px 14px;background:rgba(5,8,18,.94);color:var(--a1);font:700 10px "JetBrains Mono",monospace;letter-spacing:.06em;cursor:pointer;box-shadow:0 0 22px rgba(0,229,255,.13);backdrop-filter:blur(10px);transition:.2s}
+#pi-launch:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(0,229,255,.28)}
+#pi-bg{display:none;position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:16px}
+#pi-bg.open{display:flex}
+#pi-panel{width:min(620px,100%);max-height:min(82vh,760px);overflow:auto;background:linear-gradient(145deg,#0b1020,#05060c 70%);border:1px solid rgba(0,229,255,.35);border-radius:12px;box-shadow:0 0 60px rgba(0,229,255,.12);color:var(--text);font-family:"JetBrains Mono",monospace}
+.pi-head{display:flex;align-items:center;gap:10px;padding:15px 17px;border-bottom:1px solid var(--brd)}
+.pi-head strong{font:800 14px Syne,sans-serif;color:var(--a1);flex:1;letter-spacing:.04em}
+.pi-close{background:transparent;border:1px solid var(--brd);color:var(--dim);border-radius:5px;padding:5px 9px;cursor:pointer}
+.pi-body{padding:15px 17px}
+.pi-hero{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px}
+.pi-stat{background:rgba(0,0,0,.3);border:1px solid var(--brd);border-radius:8px;padding:11px}
+.pi-stat b{display:block;font:800 clamp(17px,4vw,25px) Syne,sans-serif;color:var(--a1);overflow-wrap:anywhere}
+.pi-stat span{display:block;margin-top:4px;font-size:8px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+.pi-section{margin-top:16px}
+.pi-section h4{font:700 10px Syne,sans-serif;color:var(--a2);letter-spacing:.12em;margin-bottom:8px}
+.pi-table{width:100%;border-collapse:collapse;font-size:9px}
+.pi-table th,.pi-table td{padding:7px 8px;border-bottom:1px solid rgba(25,32,64,.8);text-align:right}
+.pi-table th:first-child,.pi-table td:first-child{text-align:left}
+.pi-table th{color:var(--dim);font-size:8px;text-transform:uppercase}
+.pi-track{height:6px;background:#11182b;border-radius:9px;overflow:hidden;margin-top:5px}
+.pi-track i{display:block;height:100%;background:linear-gradient(90deg,var(--a1),var(--a2));border-radius:9px}
+.pi-note{font-size:9px;line-height:1.7;color:var(--dim);margin-top:10px}
+.pi-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+@media(max-width:520px){#pi-launch{bottom:74px;right:10px;padding:8px 11px;font-size:9px}.pi-hero{grid-template-columns:1fr 1fr}.pi-stat:first-child{grid-column:1/-1}#pi-bg{padding:8px}.pi-body{padding:12px}.pi-table{font-size:8px}.pi-table th,.pi-table td{padding:6px 4px}}
+</style>
+<button id="pi-launch" type="button" onclick="NLParam.open()">◈ PARAMÈTRES DU MODÈLE</button>
+<div id="pi-bg" role="dialog" aria-modal="true" aria-label="Analyse de la taille du réseau" onclick="if(event.target===this)NLParam.close()">
+ <section id="pi-panel">
+  <header class="pi-head"><span style="font-size:19px;color:var(--a1)">◈</span><strong>MODEL FOOTPRINT</strong><span id="pi-arch" style="font-size:9px;color:var(--dim)"></span><button class="pi-close" onclick="NLParam.close()" aria-label="Fermer">✕</button></header>
+  <div class="pi-body" id="pi-content"></div>
+ </section>
+</div>
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ const fmt=n=>Number(n).toLocaleString("fr-FR");
+ function inspect(){
+  if(!NET||!Array.isArray(NET.L)||!Array.isArray(NET.W)||!Array.isArray(NET.B))return null;
+  let weights=0,biases=0;
+  const rows=NET.L.slice(1).map((neurons,i)=>{
+   const prev=NET.L[i],w=NET.W[i]||[],b=NET.B[i]||[];
+   const wc=w.reduce((a,r)=>a+(Array.isArray(r)?r.length:0),0),bc=b.length;
+   weights+=wc;biases+=bc;
+   return {name:`${i+1} → ${i+2}`,shape:`${prev} × ${neurons}`,wc,bc,total:wc+bc};
+  });
+  const total=weights+biases;
+  return {layers:NET.L,weights,biases,total,rows};
+ }
+ function open(){
+  const d=inspect(),box=$("pi-content");
+  if(!d){box.innerHTML='<p class="pi-note">Construis d’abord un réseau pour analyser son architecture.</p>';$("pi-bg").classList.add("open");return}
+  $("pi-arch").textContent=d.layers.join(" → ");
+  const fp32=d.total*4,fp16=d.total*2,js=d.total*8;
+  const max=Math.max(1,...d.rows.map(r=>r.total));
+  box.innerHTML=`
+   <div class="pi-hero">
+    <div class="pi-stat"><b>${fmt(d.total)}</b><span>Paramètres entraînables</span></div>
+    <div class="pi-stat"><b>${fmt(d.weights)}</b><span>Poids</span></div>
+    <div class="pi-stat"><b>${fmt(d.biases)}</b><span>Biais</span></div>
+   </div>
+   <div class="pi-section"><h4>RÉPARTITION PAR COUCHE</h4>
+    <table class="pi-table"><thead><tr><th>Connexion</th><th>Matrice W</th><th>Biais</th><th>Total</th></tr></thead>
+    <tbody>${d.rows.map(r=>`<tr><td>${r.name}<br><span style="color:var(--dim)">${r.shape}</span><div class="pi-track"><i style="width:${r.total/max*100}%"></i></div></td><td>${fmt(r.wc)}</td><td>${fmt(r.bc)}</td><td style="color:var(--a1);font-weight:700">${fmt(r.total)}</td></tr>`).join("")}</tbody></table>
+   </div>
+   <div class="pi-section"><h4>EMPREINTE MÉMOIRE · POIDS SEULS</h4>
+    <table class="pi-table"><tbody>
+     <tr><td>Float16</td><td style="color:var(--grn)">${human(fp16)}</td></tr>
+     <tr><td>Float32</td><td style="color:var(--a1)">${human(fp32)}</td></tr>
+     <tr><td>Float64 / nombre JS</td><td>${human(js)}</td></tr>
+    </tbody></table>
+    <p class="pi-note">Estimation du stockage des paramètres uniquement. L'entraînement consomme davantage de mémoire (gradients, activations, états de l’optimiseur et buffers). Les valeurs réelles dépendent du moteur d’exécution.</p>
+   </div>
+   <div class="pi-actions"><button class="btn ok" onclick="NLParam.copy()">⧉ Copier le rapport</button><button class="btn" onclick="NLParam.refresh()">↻ Actualiser</button></div>`;
+  $("pi-bg").classList.add("open");
+ }
+ function human(n){if(n<1024)return n+" o";const u=["Ko","Mo","Go","To"];let i=-1;do{n/=1024;i++}while(n>=1024&&i<u.length-1);return n.toFixed(n<10?2:1)+" "+u[i]}
+ function copy(){const d=inspect();if(!d)return;const t=`Neural Lab — Model footprint\nArchitecture: ${d.layers.join(" → ")}\nParamètres: ${d.total}\nPoids: ${d.weights}\nBiais: ${d.biases}\nMémoire FP16: ${human(d.total*2)}\nMémoire FP32: ${human(d.total*4)}\n`+d.rows.map(r=>`${r.name} (${r.shape}): ${r.total} paramètres`).join("\n");if(navigator.clipboard?.writeText)navigator.clipboard.writeText(t).then(()=>{const b=$("pi-content").querySelector(".pi-actions button");if(b)b.textContent="✓ Rapport copié"}).catch(()=>fallback(t));else fallback(t)}
+ function fallback(t){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(e){}a.remove()}
+ function close(){$("pi-bg").classList.remove("open")}
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+ window.NLParam={open,close,refresh:open,copy};
+})();
+</script>
+
 </body>
 </html>

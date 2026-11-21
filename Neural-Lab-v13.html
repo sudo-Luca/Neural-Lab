@@ -5997,6 +5997,10 @@ optPane('look');
 <div style="font-size:8px;color:var(--a2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:7px;font-weight:700">🩺 Autopsie du réseau</div>
 <div style="font-size:9px;color:var(--dim);margin-bottom:6px;line-height:1.6">Diagnostic automatique : neurones morts ou saturés, gradients, poids, stagnation de la perte, déséquilibre du dataset. Score de santé, explications claires et correctif en un clic.</div>
 <button class="btn ok" onclick="autOpen()" style="width:100%">🩺 Lancer le diagnostic</button></div>
+<div style="margin-bottom:8px;background:#030408;border:1px solid var(--brd);border-radius:4px;padding:10px 12px">
+<div style="font-size:8px;color:var(--a1);text-transform:uppercase;letter-spacing:.12em;margin-bottom:7px;font-weight:700">◈ Paramètres du modèle</div>
+<div style="font-size:9px;color:var(--dim);margin-bottom:6px;line-height:1.6">Nombre de paramètres entraînables, répartition par couche et empreinte mémoire du réseau.</div>
+<button class="btn" onclick="NLParam.open()" style="width:100%">◈ Ouvrir l'analyse</button></div>
             <div
               style="
                 margin-bottom: 8px;
@@ -32447,6 +32451,7 @@ window.__aut={scan,diagnose,last:()=>LAST};document.addEventListener("keydown",e
 .aut-toast.bad{border-color:var(--org);color:var(--org);background:rgba(255,140,42,.07)}
 .aut-bar .btn.on{background:rgba(0,255,157,.18);border-color:var(--grn);color:var(--grn)}
 #aut-hud{position:fixed;left:12px;bottom:12px;z-index:99980;display:none;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;background:#05060ce8;border:1px solid var(--c,var(--a1));color:var(--c,var(--a1));font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 0 16px color-mix(in srgb,var(--c,#00e5ff) 35%,transparent);backdrop-filter:blur(6px)}
+#aut-hud.aut-hide{display:none!important}
 #aut-hud.on{display:flex}#aut-hud.alert{animation:autPulse .8s 4}
 #aut-hud small{font-weight:500;color:var(--dim);font-size:9px}
 @keyframes autPulse{50%{transform:scale(1.12);box-shadow:0 0 28px var(--red)}}
@@ -32522,7 +32527,10 @@ window.autHeal=function(){heal=!heal;if(heal&&!timer)autMon();else window.autOpe
 (function(){
 // Place la bulle de surveillance au-dessus des barres fixes mobiles (entraînement + navigation).
 function place(){
-  const h=document.getElementById("aut-hud");if(!h||!h.classList.contains("on"))return;
+  const h=document.getElementById("aut-hud");if(!h)return;
+  // Masquée dès qu'un labo / une fenêtre est ouverte (tous les overlays utilisent .show, .on ou .open)
+  h.classList.toggle("aut-hide",!!document.querySelector('[id$="-bg"].show,[id$="-bg"].open,#aut-ov.on'));
+  if(!h.classList.contains("on"))return;
   let top=window.innerHeight;
   ["mobile-trainbar","mobile-nav"].forEach(id=>{
     const e=document.getElementById(id);if(!e)return;
@@ -32532,6 +32540,7 @@ function place(){
   h.style.bottom=(window.innerHeight-top+10)+"px";
 }
 setInterval(place,500);
+try{new MutationObserver(place).observe(document.body,{attributes:true,attributeFilter:["class"],subtree:true})}catch(e){}
 window.addEventListener("resize",place);
 window.addEventListener("orientationchange",()=>setTimeout(place,200));
 })();
@@ -32571,8 +32580,6 @@ window.addEventListener("orientationchange",()=>setTimeout(place,200));
 
 <!-- ═══════════════ PARAMETER INSPECTOR · Neural Lab ═══════════════ -->
 <style id="nl-param-inspector-style">
-#pi-launch{position:fixed;right:14px;bottom:14px;z-index:99970;border:1px solid rgba(0,229,255,.42);border-radius:999px;padding:9px 14px;background:rgba(5,8,18,.94);color:var(--a1);font:700 10px "JetBrains Mono",monospace;letter-spacing:.06em;cursor:pointer;box-shadow:0 0 22px rgba(0,229,255,.13);backdrop-filter:blur(10px);transition:.2s}
-#pi-launch:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(0,229,255,.28)}
 #pi-bg{display:none;position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:16px}
 #pi-bg.open{display:flex}
 #pi-panel{width:min(620px,100%);max-height:min(82vh,760px);overflow:auto;background:linear-gradient(145deg,#0b1020,#05060c 70%);border:1px solid rgba(0,229,255,.35);border-radius:12px;box-shadow:0 0 60px rgba(0,229,255,.12);color:var(--text);font-family:"JetBrains Mono",monospace}
@@ -32594,9 +32601,8 @@ window.addEventListener("orientationchange",()=>setTimeout(place,200));
 .pi-track i{display:block;height:100%;background:linear-gradient(90deg,var(--a1),var(--a2));border-radius:9px}
 .pi-note{font-size:9px;line-height:1.7;color:var(--dim);margin-top:10px}
 .pi-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
-@media(max-width:520px){#pi-launch{bottom:74px;right:10px;padding:8px 11px;font-size:9px}.pi-hero{grid-template-columns:1fr 1fr}.pi-stat:first-child{grid-column:1/-1}#pi-bg{padding:8px}.pi-body{padding:12px}.pi-table{font-size:8px}.pi-table th,.pi-table td{padding:6px 4px}}
+@media(max-width:520px){.pi-hero{grid-template-columns:1fr 1fr}.pi-stat:first-child{grid-column:1/-1}#pi-bg{padding:8px}.pi-body{padding:12px}.pi-table{font-size:8px}.pi-table th,.pi-table td{padding:6px 4px}}
 </style>
-<button id="pi-launch" type="button" onclick="NLParam.open()">◈ PARAMÈTRES DU MODÈLE</button>
 <div id="pi-bg" role="dialog" aria-modal="true" aria-label="Analyse de la taille du réseau" onclick="if(event.target===this)NLParam.close()">
  <section id="pi-panel">
   <header class="pi-head"><span style="font-size:19px;color:var(--a1)">◈</span><strong>MODEL FOOTPRINT</strong><span id="pi-arch" style="font-size:9px;color:var(--dim)"></span><button class="pi-close" onclick="NLParam.close()" aria-label="Fermer">✕</button></header>

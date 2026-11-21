@@ -5988,6 +5988,11 @@ optPane('look');
                 🩺 Ouvrir le labo Diagnostic
               </button>
             </div>
+<div style="margin-bottom: 8px; background: #030408; border: 1px solid var(--red); border-radius: 4px; padding: 10px 12px; box-shadow: inset 0 0 22px rgba(255,61,90,.06)">
+  <div style="font-size: 8px; color: var(--red); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 7px; font-weight: 700">⚔ Labo Robustesse</div>
+  <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px; line-height: 1.6">Trompe ton réseau avec des exemples adverses (FGSM, PGD) : place un point sur la carte, vois le gradient d'entrée et le pas qui le fait basculer. Courbe de robustesse, carte de fragilité, puis défense par entraînement adverse.</div>
+  <button class="btn ok" onclick="openRBLab()" style="width: 100%; border-color: var(--red); color: var(--red)">⚔ Ouvrir le labo Robustesse</button>
+</div>
           </div>
         </div>
 
@@ -31973,6 +31978,349 @@ function setUITheme(t,silent){
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && isOpen()) closeDGLab(); });
   window.addEventListener("resize", () => { if (!isOpen()) return; if (S.tab === "sante" && S.scan) renderScan(); else if (S.tab === "lr") drawLR(); else if (S.curve) drawCurve(+$("dgSp").value); });
   setInterval(() => { if (isOpen() && S.live && S.tab === "sante" && !S.lrRun && ready() && typeof autoRunning !== "undefined" && autoRunning) dgScan(); }, 900);
+})();
+</script>
+
+
+<!-- ══════════════ LABO ROBUSTESSE (exemples adverses · courbe de robustesse · défense) ══════════════ -->
+<style>
+#rb-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:1500;display:none;align-items:center;justify-content:center}
+#rb-modal-bg.show{display:flex}
+#rb-modal{background:var(--p1);border:1px solid var(--red);border-radius:8px;max-width:1120px;width:98%;max-height:94vh;overflow-y:auto;box-shadow:0 0 44px rgba(255,61,90,.14)}
+#rb-header{padding:11px 18px 0;border-bottom:1px solid var(--brd);background:linear-gradient(135deg,var(--p1),var(--p2));position:sticky;top:0;z-index:3}
+.rb-hr{display:flex;align-items:center;gap:10px}
+#rb-header h2{font-family:"Syne",sans-serif;color:var(--red);font-size:14px;letter-spacing:.02em}
+.rb-sub{font-size:8px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--brd);border-radius:9px;padding:2px 8px}
+.rb-tabs{display:flex;gap:2px;margin-top:9px;overflow-x:auto;scrollbar-width:none}
+.rb-tabs::-webkit-scrollbar{display:none}
+.rb-tab{flex:0 0 auto;padding:9px 15px;font:600 11px "JetBrains Mono",monospace;color:var(--dim);background:none;border:0;border-bottom:2px solid transparent;cursor:pointer;letter-spacing:.04em;text-transform:uppercase;transition:.15s}
+.rb-tab:hover{color:var(--text)}
+.rb-tab.on{color:var(--red);border-bottom-color:var(--red);background:linear-gradient(180deg,transparent,rgba(255,61,90,.08))}
+#rb-body{padding:14px 18px 18px}
+.rb-pane{display:none}.rb-pane.on{display:block;animation:rbIn .25s ease}
+@keyframes rbIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.rb-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media(min-width:901px){.rb-grid{grid-template-columns:minmax(0,470px) minmax(0,1fr)}}
+.rb-cv{display:block;width:100%;border:1px solid var(--brd);border-radius:4px;background:#02030a}
+#rbCv{cursor:crosshair;touch-action:none}
+.rb-calc{display:flex;flex-direction:column;gap:6px;font-size:10.5px;line-height:1.6;color:var(--dim)}
+.rb-calc>div{padding:6px 10px;border-left:3px solid var(--c,var(--brd));background:rgba(255,255,255,.02);border-radius:0 3px 3px 0}
+.rb-calc b{color:var(--text)}.rb-calc code{color:var(--ylw);font-family:inherit}
+.rb-chip{display:inline-block;font-style:normal;font-size:9px;font-weight:700;padding:2px 9px;border-radius:9px;color:var(--c);border:1px solid var(--c);text-transform:uppercase;letter-spacing:.06em;box-shadow:0 0 10px -2px var(--c)}
+.rb-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.rb-kpi div{background:#020307;border:1px solid var(--brd);border-radius:4px;padding:8px 6px;text-align:center}
+.rb-kpi b{display:block;font-size:15px;color:var(--text)}
+.rb-kpi span{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.07em}
+.rb-leg{display:flex;gap:12px;flex-wrap:wrap;font-size:9px;color:var(--dim);margin:6px 0}
+.rb-leg s{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px;text-decoration:none;border-radius:2px}
+.rb-stat{font-size:9px;color:var(--ylw);margin-left:6px}
+@media(max-width:900px){#rb-modal{width:100%;max-width:none;height:100%;max-height:100vh;border-radius:0}#rb-body{padding:10px 12px 18px}#rb-modal .btn{font-size:11.5px;padding:9px 10px;min-height:36px}.rb-kpi{grid-template-columns:repeat(2,1fr)}}
+@media(prefers-reduced-motion:reduce){.rb-pane.on{animation:none}}
+</style>
+
+<div id="rb-modal-bg">
+  <div id="rb-modal" role="dialog" aria-label="Labo Robustesse">
+    <div id="rb-header">
+      <div class="rb-hr">
+        <h2>⚔ Labo Robustesse</h2><span class="rb-sub">exemples adverses</span>
+        <span style="flex:1"></span>
+        <button class="btn" onclick="closeRBLab()">✕</button>
+      </div>
+      <div class="rb-tabs" role="tablist">
+        <button class="rb-tab on" data-t="atk" onclick="rbTab('atk')">① Attaquer</button>
+        <button class="rb-tab" data-t="rob" onclick="rbTab('rob')">② Robustesse</button>
+        <button class="rb-tab" data-t="adv" onclick="rbTab('adv')">③ Défense</button>
+      </div>
+    </div>
+    <div id="rb-body">
+      <div id="rb-msg" class="rl-p" style="display:none;text-align:center;padding:30px 10px;line-height:2">Ce labo a besoin d'un dataset de <b>classification</b> avec <b>au moins 2 entrées</b> et d'un réseau construit. Choisis un dataset (onglet Dataset), entraîne un peu, puis reviens.</div>
+
+      <!-- ① ATTAQUER -->
+      <div class="rb-pane on" id="rb-p-atk">
+        <div class="rl-p">Un réseau peut être <b>sûr de lui… et se tromper</b> pour une toute petite modification de l'entrée. L'attaque <em>FGSM</em> calcule dans quelle direction l'erreur augmente le plus vite (le gradient par rapport à l'<b>entrée</b>, pas aux poids) et fait un pas de taille ε : <code style="color:var(--ylw)">x' = x − ε · signe(∇ₓ marge)</code>. <em>PGD</em> répète ce pas 10 fois en restant dans la boîte ±ε. <b>Clique ou glisse sur la carte</b> pour placer un point.</div>
+        <div class="rb-grid">
+          <div>
+            <canvas class="rb-cv" id="rbCv"></canvas>
+            <div class="rb-leg"><span><s style="background:var(--ylw)"></s>boîte ±ε</span><span><s style="background:var(--red)"></s>trajet de l'attaque</span><span>◯ point · ◆ point attaqué</span></div>
+          </div>
+          <div>
+            <div class="rl-card y">
+              <div class="rl-row">
+                <div class="rl-ctl"><span class="rl-cl">ε</span><input type="range" id="rbEps" min="0" max="0.5" step="0.005" value="0.1" oninput="rbAtk()"><b id="rbEpsV">0.100</b></div>
+                <div class="rl-ctl"><span class="rl-cl">Méthode</span><select id="rbM" onchange="rbAtk()"><option value="fgsm">FGSM (1 pas)</option><option value="pgd">PGD (10 pas)</option></select></div>
+              </div>
+              <div class="btn-row"><button class="btn go" onclick="rbPick()" style="flex:1">🎲 Point du dataset</button><button class="btn" onclick="rbMapRefresh()">↻ Carte</button></div>
+            </div>
+            <div class="rb-calc" id="rbCalc"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ② ROBUSTESSE -->
+      <div class="rb-pane" id="rb-p-rob">
+        <div class="rl-p">Quelle <b>précision</b> garde le réseau quand l'entrée est attaquée avec une force ε croissante ? Plus la courbe reste haute longtemps, plus le modèle est <b>robuste</b>. La carte colore chaque point selon l'ε <em>qui suffit à le faire basculer</em> : les points proches de la frontière sont les plus fragiles.</div>
+        <div class="btn-row" style="margin:0 0 6px"><button class="btn go" onclick="rbCompute()">↻ Recalculer</button><span class="rb-stat" id="rbStat"></span></div>
+        <div class="rb-kpi" id="rbK2"></div>
+        <canvas class="rb-cv" id="rbCv3"></canvas>
+        <div class="rb-leg"><span><s style="background:var(--a1)"></s>précision sous FGSM</span><span><s style="background:var(--red)"></s>précision sous PGD</span></div>
+        <div class="rl-h" style="margin-top:12px">Carte de fragilité</div>
+        <canvas class="rb-cv" id="rbCv2" style="max-width:470px"></canvas>
+        <div class="rb-leg"><span><s style="background:#00ff9d"></s>robuste (résiste à ε = 0.5)</span><span><s style="background:#ff3d5a"></s>fragile (bascule dès ε ≈ 0.05)</span><span><s style="background:#000;border:1px solid #fff;height:6px"></s>déjà mal classé</span></div>
+      </div>
+
+      <!-- ③ DÉFENSE -->
+      <div class="rb-pane" id="rb-p-adv">
+        <div class="rl-p">La défense classique, c'est l'<b>entraînement adverse</b> : à chaque pas, une partie des exemples est remplacée par sa version attaquée (FGSM) avec le <em>vrai</em> label. Le réseau apprend à garder la bonne réponse malgré la perturbation. Contrepartie fréquente : un léger recul de la précision « propre ». La courbe en pointillés est la <b>référence avant entraînement adverse</b>. Le dropout est coupé pendant ce test.</div>
+        <div class="rl-card p">
+          <div class="rl-row">
+            <div class="rl-ctl"><span class="rl-cl">ε adverse</span><input type="range" id="rbTe" min="0.02" max="0.3" step="0.01" value="0.1" oninput="this.nextElementSibling.textContent=(+this.value).toFixed(2)"><b>0.10</b></div>
+            <div class="rl-ctl"><span class="rl-cl">Part adverse</span><input type="range" id="rbTm" min="0.1" max="1" step="0.1" value="0.5" oninput="this.nextElementSibling.textContent=Math.round(this.value*100)+'%'"><b>50%</b></div>
+            <div class="rl-ctl"><span class="rl-cl">LR</span><input type="number" id="rbTl" value="0.1" step="any" min="0.0001"></div>
+          </div>
+          <div class="btn-row"><button class="btn go" onclick="rbTrain(200)">+200 pas</button><button class="btn go" onclick="rbTrain(1000)">+1000 pas</button><button class="btn warn" onclick="rbStop()">■ Stop</button><button class="btn" id="rbUndo" onclick="rbUndo()" disabled>↩ Annuler</button><span class="rb-stat" id="rbTS"></span></div>
+        </div>
+        <div class="rb-kpi" id="rbK3"></div>
+        <canvas class="rb-cv" id="rbCv4"></canvas>
+        <div class="rb-leg"><span><s style="background:var(--a1)"></s>FGSM maintenant</span><span><s style="background:var(--red)"></s>PGD maintenant</span><span><s style="background:#3a4770"></s>FGSM avant</span><span><s style="background:#6b3a46"></s>PGD avant</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || "#888";
+  const FONT = '9px "JetBrains Mono",monospace', LO = -0.2, HI = 1.2;
+  const PAL = [[0, 229, 255], [191, 95, 255], [0, 255, 157], [255, 214, 0], [255, 61, 90], [255, 140, 0]];
+  const S = { tab: "atk", pt: null, y: 0, img: null, fixed: null, curve: null, base: null, undo: null, busy: false, stop: false, down: false };
+  const ready = () => typeof NET !== "undefined" && NET && NET.W && NET.W.length > 0 && DS.inputs.length > 0;
+  const isCls = () => DS.outputs.every((r) => r.every((v) => v === 0 || v === 1));
+  const ok = () => ready() && isCls() && DS.inputs[0].length >= 2;
+  const isOpen = () => $("rb-modal-bg").classList.contains("show");
+  const am = (a) => a.indexOf(Math.max(...a));
+  const cl = (v) => Math.max(LO, Math.min(HI, v));
+  const pc = (c) => "rgb(" + PAL[c % 6].join(",") + ")";
+  const f = (v) => (v < 0 ? "−" : "") + Math.abs(v).toFixed(3);
+  const vec = (a) => "(" + a.slice(0, 4).map(f).join(", ") + (a.length > 4 ? ", …" : "") + ")";
+  const sgn = (a) => "(" + a.slice(0, 4).map((v) => (v > 0 ? "+" : v < 0 ? "−" : "0")).join(", ") + (a.length > 4 ? ", …" : "") + ")";
+  const out = (x) => forward(x, false).activations.at(-1);
+  const cls = (p) => (p.length === 1 ? (p[0] > 0.5 ? 1 : 0) : am(p));
+  const lab = (y) => (y.length === 1 ? y[0] : am(y));
+  const raf = () => new Promise(requestAnimationFrame);
+  // Le forward de l'app applique le dropout même hors entraînement : on le coupe pour mesurer.
+  function noDrop(fn) { const el = $("cDrop"), v = el.value; el.value = 0; try { return fn(); } finally { el.value = v; } }
+  const snap = () => ({ W: NET.W.map((a) => a.map((r) => r.slice())), B: NET.B.map((r) => r.slice()) });
+  function restore(s) { s.W.forEach((a, l) => a.forEach((r, j) => r.forEach((v, k) => (NET.W[l][j][k] = v)))); s.B.forEach((r, l) => r.forEach((v, j) => (NET.B[l][j] = v))); }
+  function afterChange() { try { if (typeof gpuSyncWeightsToDevice === "function") gpuSyncWeightsToDevice(); } catch (e) {} try { redraw(); } catch (e) {} }
+  function cv(c, h) {
+    const d = window.devicePixelRatio || 1, w = c.clientWidth || 320;
+    c.width = Math.round(w * d); c.height = Math.round(h * d); c.style.height = h + "px";
+    const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.font = FONT; return { g, w, h };
+  }
+
+  /* ─── Maths de l'attaque ─── */
+  // Marge : > 0 = bien classé. Binaire : sortie − 0.5 (signée selon le label) ; multi-classe : p[y] − meilleur autre.
+  function margin(x, y) {
+    const p = out(x);
+    if (p.length === 1) { const s = p[0] - 0.5; return y ? s : -s; }
+    let o = -Infinity; p.forEach((v, c) => { if (c !== y && v > o) o = v; }); return p[y] - o;
+  }
+  // Gradient de la marge par rapport à l'ENTRÉE, par différences finies centrées (indépendant de la loss, sans saturation).
+  function grad(x, y) {
+    const h = 1e-3, g = new Array(x.length);
+    for (let k = 0; k < x.length; k++) { const a = x.slice(), b = x.slice(); a[k] += h; b[k] -= h; g[k] = (margin(a, y) - margin(b, y)) / (2 * h); }
+    return g;
+  }
+  function attack(x0, y, eps, m) {
+    let x = x0.slice(); const path = [x0.slice()];
+    if (m === "fgsm") { const g = grad(x, y); x = x.map((v, k) => cl(v - eps * Math.sign(g[k]))); path.push(x.slice()); return { x, path, g }; }
+    const K = 10, a = (2.5 * eps) / K; let g0 = null;
+    for (let i = 0; i < K; i++) {
+      const g = grad(x, y); if (!g0) g0 = g;
+      x = x.map((v, k) => cl(Math.min(x0[k] + eps, Math.max(x0[k] - eps, v - a * Math.sign(g[k])))));
+      path.push(x.slice());
+    }
+    return { x, path, g: g0 };
+  }
+
+  /* ─── Carte de décision ─── */
+  function buildMap() {
+    const res = 56, c = document.createElement("canvas"); c.width = c.height = res;
+    const g = c.getContext("2d"), im = g.createImageData(res, res), inN = DS.inputs[0].length, mean = new Array(inN).fill(0);
+    DS.inputs.forEach((r) => r.forEach((v, k) => (mean[k] += v / DS.inputs.length))); S.fixed = mean;
+    noDrop(() => {
+      for (let py = 0; py < res; py++) for (let px = 0; px < res; px++) {
+        const x = mean.slice(); x[0] = LO + ((HI - LO) * px) / (res - 1); x[1] = HI - ((HI - LO) * py) / (res - 1);
+        const p = out(x); let c0, t;
+        if (p.length === 1) { const q = Math.max(0, Math.min(1, p[0])); c0 = q > 0.5 ? 1 : 0; t = Math.abs(q - 0.5) * 2; } else { c0 = am(p); t = Math.max(0, Math.min(1, p[c0])); }
+        const i4 = (py * res + px) * 4, k = 0.14 + 0.7 * t;
+        im.data[i4] = PAL[c0 % 6][0] * k; im.data[i4 + 1] = PAL[c0 % 6][1] * k; im.data[i4 + 2] = PAL[c0 % 6][2] * k; im.data[i4 + 3] = 255;
+      }
+    });
+    g.putImageData(im, 0, 0); S.img = c;
+  }
+  function drawMap(c, over) {
+    if (!S.img) buildMap();
+    const { g, w, h } = cv(c, c.clientWidth || 320);
+    g.imageSmoothingEnabled = true; g.drawImage(S.img, 0, 0, w, h);
+    const X = (v) => ((v - LO) / (HI - LO)) * w, Y = (v) => h - ((v - LO) / (HI - LO)) * h;
+    g.strokeStyle = "rgba(255,255,255,.14)"; g.setLineDash([3, 4]); g.lineWidth = 1;
+    [0, 1].forEach((v) => { g.beginPath(); g.moveTo(X(v), 0); g.lineTo(X(v), h); g.moveTo(0, Y(v)); g.lineTo(w, Y(v)); g.stroke(); });
+    g.setLineDash([]); g.fillStyle = css("--dim"); g.fillText("x₁ →", w - 30, h - 6); g.fillText("x₂ ↑", 5, 11);
+    over(g, X, Y);
+  }
+  function dots(g, X, Y, fill, idx, r) {
+    (idx || DS.inputs.map((_, i) => i)).forEach((i, j) => {
+      g.beginPath(); g.arc(X(DS.inputs[i][0]), Y(DS.inputs[i][1]), r || 3, 0, 6.283);
+      g.fillStyle = fill(i, j); g.fill(); g.lineWidth = 1; g.strokeStyle = "rgba(255,255,255,.85)"; g.stroke();
+    });
+  }
+  const subIdx = (cap) => { const n = DS.inputs.length, st = Math.max(1, Math.ceil(n / cap)), r = []; for (let i = 0; i < n; i += st) r.push(i); return r; };
+
+  /* ═════════ ① ATTAQUER ═════════ */
+  window.rbPick = function () {
+    if (!ok()) return; let i = Math.floor(Math.random() * DS.inputs.length);
+    noDrop(() => { for (let t = 0; t < 60; t++) { i = Math.floor(Math.random() * DS.inputs.length); if (cls(out(DS.inputs[i])) === lab(DS.outputs[i])) break; } });
+    S.pt = DS.inputs[i].slice(); S.y = lab(DS.outputs[i]); rbAtk();
+  };
+  window.rbMapRefresh = function () { S.img = null; rbAtk(); };
+  window.rbAtk = function () {
+    if (!ok()) return; if (!S.pt) return rbPick();
+    const eps = +$("rbEps").value, m = $("rbM").value; $("rbEpsV").textContent = eps.toFixed(3);
+    noDrop(() => {
+      const x = S.pt, y = S.y, p = out(x), c = cls(p), mg = margin(x, y), A = attack(x, y, eps, m), p2 = out(A.x), c2 = cls(p2), mg2 = margin(A.x, y);
+      let emin = null;
+      for (let e = 0.01; e <= 0.5001; e += 0.01) { if (cls(out(attack(x, y, e, "fgsm").x)) !== y) { emin = e; break; } }
+      drawMap($("rbCv"), (g, X, Y) => {
+        dots(g, X, Y, (i) => pc(lab(DS.outputs[i])), subIdx(500), 2.5);
+        g.strokeStyle = css("--ylw"); g.setLineDash([5, 4]); g.lineWidth = 1.3;
+        g.strokeRect(X(x[0] - eps), Y(x[1] + eps), X(x[0] + eps) - X(x[0] - eps), Y(x[1] - eps) - Y(x[1] + eps)); g.setLineDash([]);
+        g.save(); g.shadowColor = css("--red"); g.shadowBlur = 8; g.strokeStyle = css("--red"); g.lineWidth = 2; g.beginPath();
+        A.path.forEach((q, i) => (i ? g.lineTo(X(q[0]), Y(q[1])) : g.moveTo(X(q[0]), Y(q[1])))); g.stroke(); g.restore();
+        const ax = X(A.x[0]), ay = Y(A.x[1]); g.beginPath(); g.moveTo(ax, ay - 7); g.lineTo(ax + 7, ay); g.lineTo(ax, ay + 7); g.lineTo(ax - 7, ay); g.closePath();
+        g.fillStyle = pc(c2); g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 2; g.stroke();
+        g.beginPath(); g.arc(X(x[0]), Y(x[1]), 6, 0, 6.283); g.fillStyle = pc(y); g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 2; g.stroke();
+      });
+      const fooled = c2 !== y, was = c === y, pf = (q) => (q.length === 1 ? "sortie = " + q[0].toFixed(3) : "sorties = " + vec(q));
+      const stepTxt = m === "fgsm" ? `<code>x' = x − ε·signe(∇ₓ)</code>` : `10 pas de <code>α = 2.5·ε/10</code>, projetés dans la boîte ±ε`;
+      $("rbCalc").innerHTML =
+        `<div style="--c:${pc(y)}"><b>1 · Point</b> x = ${vec(x)} · vrai label <b>${y}</b><br>${pf(p)} → classe <b>${c}</b> ${was ? "✔" : "✘ (déjà mal classé)"} · marge <b>${f(mg)}</b></div>` +
+        `<div style="--c:var(--ylw)"><b>2 · Gradient</b> ∇ₓ(marge) ≈ ${vec(A.g)}<br>signe = ${sgn(A.g)} <span style="opacity:.7">(différences finies sur chaque entrée)</span></div>` +
+        `<div style="--c:var(--org)"><b>3 · Attaque ${m.toUpperCase()}</b> ε = ${eps.toFixed(3)} · ${stepTxt}<br>x' = ${vec(A.x)}</div>` +
+        `<div style="--c:${fooled ? "var(--red)" : "var(--grn)"}"><b>4 · Résultat</b> ${pf(p2)} → classe <b>${c2}</b> · marge <b>${f(mg2)}</b><br><i class="rb-chip" style="--c:${fooled ? "var(--red)" : "var(--grn)"}">${fooled ? (was ? "✔ réseau trompé" : "mal classé") : "✘ le réseau résiste"}</i></div>` +
+        `<div style="--c:var(--a1)"><b>5 · Fragilité</b> ε minimal (FGSM) : <b>${emin == null ? "&gt; 0.50 (très robuste ici)" : emin.toFixed(2)}</b>` +
+        `${emin != null ? ` — une variation de ${(emin * 100).toFixed(0)} % de l'échelle suffit à changer la réponse` : ""}</div>`;
+    });
+  };
+  function ptr(e) {
+    const c = $("rbCv"), r = c.getBoundingClientRect(), v1 = LO + ((HI - LO) * (e.clientX - r.left)) / r.width, v2 = HI - ((HI - LO) * (e.clientY - r.top)) / r.height;
+    let bi = -1, bd = 0.05; DS.inputs.forEach((x, i) => { const d = Math.hypot(x[0] - v1, x[1] - v2); if (d < bd) { bd = d; bi = i; } });
+    if (bi >= 0) { S.pt = DS.inputs[bi].slice(); S.y = lab(DS.outputs[bi]); }
+    else { const x = (S.fixed || new Array(DS.inputs[0].length).fill(0.5)).slice(); x[0] = v1; x[1] = v2; S.pt = x; S.y = noDrop(() => cls(out(x))); }
+    rbAtk();
+  }
+  $("rbCv").addEventListener("pointerdown", (e) => { if (!ok()) return; S.down = true; try { e.target.setPointerCapture(e.pointerId); } catch (x) {} ptr(e); });
+  $("rbCv").addEventListener("pointermove", (e) => { if (S.down && ok()) ptr(e); });
+  ["pointerup", "pointercancel"].forEach((n) => $("rbCv").addEventListener(n, () => (S.down = false)));
+
+  /* ═════════ ② ROBUSTESSE ═════════ */
+  async function compute() {
+    const inN = DS.inputs[0].length, idx = subIdx(Math.max(30, Math.min(150, Math.round(3000 / inN))));
+    const E = []; for (let k = 0; k <= 20; k++) E.push(+(k * 0.025).toFixed(3));
+    const fg = [], pg = [], fl = new Array(idx.length).fill(Infinity), el = $("cDrop"), dv = el.value; el.value = 0;
+    try {
+      for (let k = 0; k < E.length; k++) {
+        let a = 0, b = 0;
+        idx.forEach((i, j) => {
+          const x = DS.inputs[i], y = lab(DS.outputs[i]);
+          if (cls(out(attack(x, y, E[k], "fgsm").x)) === y) a++; else if (fl[j] === Infinity) fl[j] = E[k];
+          if (cls(out(attack(x, y, E[k], "pgd").x)) === y) b++;
+        });
+        fg.push((100 * a) / idx.length); pg.push((100 * b) / idx.length);
+        const s = Math.round((100 * (k + 1)) / E.length) + " %"; $("rbStat").textContent = s; $("rbTS").textContent = S.busyTrain ? $("rbTS").textContent : "analyse " + s;
+        await raf();
+      }
+    } finally { el.value = dv; $("rbStat").textContent = ""; }
+    return { E, fg, pg, idx, fl };
+  }
+  window.rbCompute = async function () {
+    if (!ok() || S.busy) return; S.busy = true;
+    try { S.curve = await compute(); } finally { S.busy = false; $("rbTS").textContent = ""; }
+    rbRefresh();
+  };
+  function kpis(C, B) {
+    const e50 = (c) => { const i = c.pg.findIndex((v) => v < 50); return i < 0 ? "> 0.50" : c.E[i].toFixed(3); };
+    const mean = (c) => c.pg.reduce((s, v) => s + v, 0) / c.pg.length;
+    const it = [["Précision propre", C.fg[0].toFixed(0) + "%", B && B.fg[0].toFixed(0) + "%"], ["Sous PGD ε=0.1", C.pg[4].toFixed(0) + "%", B && B.pg[4].toFixed(0) + "%"], ["ε où PGD < 50 %", e50(C), B && e50(B)], ["Précision moyenne", mean(C).toFixed(0) + "%", B && mean(B).toFixed(0) + "%"]];
+    return it.map((q) => `<div><b>${q[1]}</b><span>${q[0]}${q[2] ? " · avant " + q[2] : ""}</span></div>`).join("");
+  }
+  function curves(id, withBase) {
+    const C = S.curve; if (!C) return;
+    const { g, w, h } = cv($(id), 210), pl = 34, pb = 20, pt = 8, pr = 10, X = (e) => pl + (e / 0.5) * (w - pl - pr), Y = (v) => pt + (1 - v / 100) * (h - pt - pb);
+    g.fillStyle = "#02030a"; g.fillRect(0, 0, w, h); g.strokeStyle = "#141a34"; g.fillStyle = css("--dim"); g.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) { const y = Y(i * 25); g.beginPath(); g.moveTo(pl, y); g.lineTo(w - pr, y); g.stroke(); g.textAlign = "right"; g.fillText(i * 25 + "%", pl - 4, y + 3); }
+    g.textAlign = "center"; for (let e = 0; e <= 0.5001; e += 0.1) g.fillText(e.toFixed(1), X(e), h - 6); g.textAlign = "left"; g.fillText("ε", w - pr - 6, h - 6);
+    const ln = (arr, col, lw, dash) => { g.beginPath(); C.E.forEach((e, i) => (i ? g.lineTo(X(e), Y(arr[i])) : g.moveTo(X(e), Y(arr[i])))); g.strokeStyle = col; g.lineWidth = lw; g.setLineDash(dash || []); g.stroke(); g.setLineDash([]); };
+    if (withBase && S.base) { ln(S.base.fg, "#3a4770", 1.6, [4, 4]); ln(S.base.pg, "#6b3a46", 1.6, [4, 4]); }
+    g.save(); g.shadowColor = css("--a1"); g.shadowBlur = 6; ln(C.fg, css("--a1"), 2); g.restore();
+    g.save(); g.shadowColor = css("--red"); g.shadowBlur = 6; ln(C.pg, css("--red"), 2); g.restore();
+  }
+  function rbRefresh() {
+    if (!isOpen() || !ok()) return;
+    if (S.tab === "rob" && S.curve) {
+      $("rbK2").innerHTML = kpis(S.curve); curves("rbCv3", false);
+      const C = S.curve;
+      drawMap($("rbCv2"), (g, X, Y) => dots(g, X, Y, (i, j) => { const e = C.fl[j]; return e === 0 ? "#000" : e === Infinity ? "#00ff9d" : `hsl(${Math.round(120 * (1 - Math.min(1, e / 0.3)))},95%,55%)`; }, C.idx, 4));
+    } else if (S.tab === "adv" && S.curve) { $("rbK3").innerHTML = kpis(S.curve, S.base); curves("rbCv4", true); }
+  }
+
+  /* ═════════ ③ DÉFENSE (entraînement adverse) ═════════ */
+  window.rbStop = function () { S.stop = true; };
+  window.rbTrain = async function (n) {
+    if (!ok() || S.busy) return; S.busy = true; S.stop = false; S.busyTrain = true;
+    const eps = +$("rbTe").value, mix = +$("rbTm").value, lr = +$("rbTl").value || 0.1, B = 16, nL = NET.W.length, N = DS.inputs.length, el = $("cDrop"), dv = el.value;
+    try {
+      if (!S.curve) S.curve = await compute();
+      if (!S.undo) { S.undo = snap(); S.base = S.curve; $("rbUndo").disabled = false; }
+      el.value = 0; let bl = 0, done = 0;
+      for (let i = 0; i < n && !S.stop; i++) {
+        const gW = NET.W.map((a) => a.map((r) => r.map(() => 0))), gB = NET.B.map((r) => r.map(() => 0)); bl = 0;
+        for (let b = 0; b < B; b++) {
+          const s = Math.floor(Math.random() * N), y = DS.outputs[s]; let x = DS.inputs[s];
+          if (Math.random() < mix) x = attack(x, lab(y), eps, "fgsm").x;
+          const { activations: A, zs } = forward(x, false), D = backward(A, zs, y); bl += computeLoss(A[nL], y);
+          for (let l = 0; l < nL; l++) for (let j = 0; j < NET.W[l].length; j++) { gB[l][j] += D[l][j]; for (let k = 0; k < NET.W[l][j].length; k++) gW[l][j][k] += D[l][j] * A[l][k]; }
+        }
+        bl /= B; if (!isFinite(bl)) { $("rbTS").textContent = "divergence : réduis le LR"; break; }
+        for (let l = 0; l < nL; l++) for (let j = 0; j < NET.W[l].length; j++) { NET.B[l][j] -= (lr * gB[l][j]) / B; for (let k = 0; k < NET.W[l][j].length; k++) NET.W[l][j][k] -= (lr * gW[l][j][k]) / B; }
+        done++; if (i % 20 === 19) { $("rbTS").textContent = `pas ${i + 1}/${n} · loss ${bl.toFixed(4)}`; await raf(); }
+      }
+      el.value = dv; afterChange(); S.img = null; S.busyTrain = false;
+      S.curve = await compute();
+      try { log(`<span class="ls">⚔ ENTRAÎNEMENT ADVERSE</span> — ${done} pas, ε=${eps.toFixed(2)}, ${Math.round(mix * 100)}% d'exemples attaqués`); } catch (e) {}
+    } finally { el.value = dv; S.busy = false; S.busyTrain = false; $("rbTS").textContent = ""; }
+    rbRefresh();
+  };
+  window.rbUndo = async function () {
+    if (!S.undo || S.busy) return; restore(S.undo); S.undo = null; S.base = null; $("rbUndo").disabled = true; afterChange(); S.img = null; S.curve = null; await rbCompute();
+  };
+
+  /* ═════════ Navigation / cycle de vie ═════════ */
+  window.rbTab = function (t) {
+    S.tab = t; const good = ok();
+    document.querySelectorAll(".rb-tab").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
+    $("rb-msg").style.display = good ? "none" : "block";
+    document.querySelectorAll(".rb-pane").forEach((p) => p.classList.toggle("on", good && p.id === "rb-p-" + t));
+    if (!good) return;
+    if (t === "atk") rbAtk(); else if (S.curve) rbRefresh(); else rbCompute();
+  };
+  window.openRBLab = function () { S.img = null; S.curve = null; S.base = null; S.undo = null; S.pt = null; $("rbUndo").disabled = true; $("rb-modal-bg").classList.add("show"); rbTab(S.tab); };
+  window.closeRBLab = function () { S.stop = true; $("rb-modal-bg").classList.remove("show"); };
+  $("rb-modal-bg").addEventListener("click", (e) => { if (e.target === $("rb-modal-bg")) closeRBLab(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && isOpen()) closeRBLab(); });
+  window.addEventListener("resize", () => { if (!isOpen() || !ok()) return; if (S.tab === "atk") rbAtk(); else rbRefresh(); });
 })();
 </script>
 

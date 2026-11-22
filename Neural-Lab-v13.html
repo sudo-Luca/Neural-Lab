@@ -5993,6 +5993,11 @@ optPane('look');
   <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px; line-height: 1.6">Trompe ton réseau avec des exemples adverses (FGSM, PGD) : place un point sur la carte, vois le gradient d'entrée et le pas qui le fait basculer. Courbe de robustesse, carte de fragilité, puis défense par entraînement adverse.</div>
   <button class="btn ok" onclick="openRBLab()" style="width: 100%; border-color: var(--red); color: var(--red)">⚔ Ouvrir le labo Robustesse</button>
 </div>
+<div style="margin-bottom: 8px; background: #030408; border: 1px solid var(--ylw); border-radius: 4px; padding: 10px 12px">
+  <div style="font-size: 8px; color: var(--ylw); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 7px; font-weight: 700">🎟 Labo Billet de loterie</div>
+  <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px; line-height: 1.6">Un petit sous-réseau caché dans ton réseau peut-il apprendre aussi bien que lui ? Élague en boucle, <b style="color: var(--ylw)">rembobine</b> les poids survivants à leur valeur initiale et compare à un tirage aléatoire.</div>
+  <button class="btn ok" onclick="openLTLab()" style="width: 100%; border-color: var(--ylw); color: var(--ylw)">🎟 Ouvrir le labo Billet de loterie</button>
+</div>
           </div>
         </div>
 
@@ -32321,6 +32326,152 @@ function setUITheme(t,silent){
   $("rb-modal-bg").addEventListener("click", (e) => { if (e.target === $("rb-modal-bg")) closeRBLab(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && isOpen()) closeRBLab(); });
   window.addEventListener("resize", () => { if (!isOpen() || !ok()) return; if (S.tab === "atk") rbAtk(); else rbRefresh(); });
+})();
+</script>
+
+<!-- ══════════════ LABO BILLET DE LOTERIE (élagage itératif · rembobinage · contrôle aléatoire) ══════════════ -->
+<style>
+#lt-bg{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:1500;display:none;align-items:center;justify-content:center}
+#lt-bg.show{display:flex}
+#lt-m{background:var(--p1);border:1px solid var(--ylw);border-radius:8px;max-width:1100px;width:98%;max-height:94vh;overflow-y:auto;box-shadow:0 0 44px rgba(255,214,0,.12)}
+#lt-h{padding:11px 18px 0;border-bottom:1px solid var(--brd);background:linear-gradient(135deg,var(--p1),var(--p2));position:sticky;top:0;z-index:3}
+#lt-h h2{font-family:"Syne",sans-serif;color:var(--ylw);font-size:14px;flex:1}
+.lt-tabs{display:flex;gap:2px;margin-top:9px}
+.lt-tab{padding:9px 15px;font:600 11px "JetBrains Mono",monospace;color:var(--dim);background:none;border:0;border-bottom:2px solid transparent;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
+.lt-tab.on{color:var(--ylw);border-bottom-color:var(--ylw);background:linear-gradient(180deg,transparent,rgba(255,214,0,.07))}
+#lt-b{padding:14px 18px 18px}
+.lt-p{display:none}.lt-p.on{display:block}
+.lt-cv{display:block;width:100%}
+.lt-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:6px;margin:8px 0}
+.lt-kpi div{background:#020307;border:1px solid var(--brd);border-radius:4px;padding:8px 6px;text-align:center}
+.lt-kpi b{display:block;font-size:14px;color:var(--text)}
+.lt-kpi span{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.lt-leg{display:flex;gap:12px;flex-wrap:wrap;font-size:9px;color:var(--dim);margin:6px 0}
+.lt-leg s{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px;border-radius:2px;text-decoration:none}
+.lt-v{padding:10px 12px;margin-top:8px;border:1px dashed var(--ylw);border-radius:4px;background:rgba(255,214,0,.04);font-size:10.5px;line-height:1.7;color:var(--dim)}
+.lt-v b{color:var(--text)}
+.lt-pb{height:4px;background:#10152b;border-radius:3px;overflow:hidden;margin-top:6px}.lt-pb u{display:block;height:100%;width:0;background:var(--ylw);transition:width .2s}
+@media(max-width:900px){#lt-m{width:100%;max-width:none;height:100%;max-height:100vh;border-radius:0}#lt-b{padding:10px 12px 18px}}
+</style>
+<div id="lt-bg"><div id="lt-m" role="dialog" aria-label="Labo Billet de loterie">
+ <div id="lt-h"><div style="display:flex;align-items:center;gap:10px"><h2>🎟 Labo Billet de loterie</h2><button class="btn" onclick="closeLTLab()">✕</button></div>
+  <div class="lt-tabs"><button class="lt-tab on" data-t="run" onclick="ltTab('run')">① Expérience</button><button class="lt-tab" data-t="win" onclick="ltTab('win')">② Billet gagnant</button></div></div>
+ <div id="lt-b">
+  <div class="lt-p on" id="lt-p-run">
+   <div class="rl-p">Hypothèse du <b>billet de loterie</b> (Frankle &amp; Carbin, 2019) : dans un réseau dense se cache un petit sous-réseau capable d’apprendre aussi bien, <em>à condition de repartir de ses poids initiaux</em>. Ici : on entraîne, on élague les plus petits poids, on <b>rembobine</b> les survivants à leur valeur de départ θ₀, on ré-entraîne, et on recommence. Contrôle : le même masque, mais avec des poids tirés au hasard.</div>
+   <div class="rl-card y">
+    <div class="rl-row">
+     <div class="rl-ctl"><span class="rl-cl">Tours</span><input type="range" id="ltR" min="1" max="10" value="6" oninput="this.nextElementSibling.textContent=this.value"><b>6</b></div>
+     <div class="rl-ctl"><span class="rl-cl">Élagage/tour %</span><input type="range" id="ltP" min="10" max="60" value="30" oninput="this.nextElementSibling.textContent=this.value"><b>30</b></div>
+     <div class="rl-ctl"><span class="rl-cl">Epochs</span><input type="range" id="ltE" min="20" max="400" step="10" value="120" oninput="this.nextElementSibling.textContent=this.value"><b>120</b></div>
+     <div class="rl-ctl"><span class="rl-cl">Batch</span><input type="range" id="ltB" min="1" max="32" value="8" oninput="this.nextElementSibling.textContent=this.value"><b>8</b></div>
+     <div class="rl-ctl"><span class="rl-cl">Optimiseur</span><select id="ltO"><option value="adam">Adam</option><option value="sgd">SGD</option></select></div>
+     <div class="rl-ctl"><span class="rl-cl">LR</span><input type="number" id="ltLR" value="0.03" step="any" min="0.0001"></div>
+    </div>
+    <div class="btn-row"><button class="btn go" id="ltGo" onclick="ltRun()" style="flex:1">▶ Lancer l’expérience</button></div>
+    <div class="lt-pb"><u id="ltPb"></u></div><div id="ltSt" style="font-size:9px;color:var(--dim);margin-top:4px"></div>
+   </div>
+   <canvas class="lt-cv" id="ltCh"></canvas>
+   <div class="lt-leg"><span><s style="background:var(--ylw)"></s>billet (rembobiné à θ₀)</span><span><s style="background:var(--red)"></s>même masque, poids aléatoires</span><span><s style="background:#3a4770"></s>réseau dense (référence)</span></div>
+   <div class="lt-v" id="ltV">Lance l’expérience : le graphique montre la performance en fonction du pourcentage de poids supprimés.</div>
+   <div class="dg-note" style="font-size:9px;color:var(--dim);line-height:1.7;margin-top:8px">Le labo entraîne ses propres copies du réseau (architecture, activations, perte et initialisation de l’app) : ton réseau principal n’est pas modifié tant que tu n’appuies pas sur « Adopter ». Dropout, BatchNorm et L2 sont ignorés. Sur de très petits réseaux l’écart avec le contrôle aléatoire est souvent faible : essaie 2,16,16,1.</div>
+  </div>
+  <div class="lt-p" id="lt-p-win">
+   <div class="rl-card p"><div class="rl-row"><div class="rl-ctl" style="flex:1 1 100%"><span class="rl-cl">Tour d’élagage</span><input type="range" id="ltSel" min="0" max="0" value="0" oninput="ltSelect(+this.value)"><b id="ltSelV">0</b></div></div></div>
+   <div class="lt-kpi" id="ltK"></div>
+   <canvas class="lt-cv" id="ltNet"></canvas>
+   <div class="lt-leg"><span><s style="background:var(--grn)"></s>poids + conservé</span><span><s style="background:var(--red)"></s>poids − conservé</span><span style="color:var(--red)">◯ neurone isolé (plus utilisable)</span></div>
+   <canvas class="lt-cv" id="ltCu"></canvas>
+   <div class="lt-leg"><span><s style="background:var(--ylw)"></s>billet</span><span><s style="background:var(--red)"></s>poids aléatoires</span><span><s style="background:#6b7aa8"></s>dense</span><span>loss d’entraînement par epoch</span></div>
+   <div class="btn-row"><button class="btn go" onclick="ltAdopt(false)">🎟 Adopter le billet (θ₀ + masque verrouillé)</button><button class="btn" onclick="ltAdopt(true)">Adopter les poids entraînés</button><button class="btn warn" onclick="ltUnfreeze()">🔓 Retirer le masque</button></div>
+  </div>
+ </div></div></div>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id),css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";
+const ready=()=>typeof NET!=="undefined"&&NET&&NET.W&&NET.W.length>0&&DS.inputs.length>0;
+const isOpen=()=>$("lt-bg").classList.contains("show");
+const S={tab:"run",res:null,run:false,stop:false,sel:0,fk:[],prog:0};
+const FONT='9px "JetBrains Mono",monospace',isCls=()=>DS.outputs.every(r=>r.every(v=>v===0||v===1)),am=a=>a.indexOf(Math.max(...a));
+function cv(c,h){const d=window.devicePixelRatio||1,w=c.clientWidth||320;c.width=Math.round(w*d);c.height=Math.round(h*d);c.style.height=h+"px";const g=c.getContext("2d");g.setTransform(d,0,0,d,0,0);g.font=FONT;return{g,w,h};}
+/* ── mini-moteur privé (même maths que l'app, sans toucher à NET) ── */
+const zl=m=>({W:m.W.map(a=>a.map(r=>r.map(()=>0))),B:m.B.map(r=>r.map(()=>0))});
+function mk(L,method){const W=[],B=[];for(let l=0;l<L.length-1;l++){W.push(Array.from({length:L[l+1]},()=>Array.from({length:L[l]},()=>initW(L[l],L[l+1],method))));B.push(Array.from({length:L[l+1]},()=>Math.random()*.4-.2));}return{W,B};}
+const masked=(t,M)=>({W:t.W.map((a,l)=>a.map((r,j)=>r.map((v,k)=>v*M[l][j][k]))),B:t.B.map(r=>r.slice()),M});
+function fwd(m,x){const A=[x.slice()],Z=[],n=m.W.length;let a=x;for(let l=0;l<n;l++){const f=getActForLayer(l),z=[],o=[];for(let j=0;j<m.W[l].length;j++){let s=m.B[l][j];const w=m.W[l][j];for(let k=0;k<a.length;k++)s+=w[k]*a[k];z.push(s);o.push(act(s,f));}a=(l===n-1&&f==="softmax")?softmax(o):o;Z.push(z);A.push(a);}return{A,Z};}
+function bwd(m,A,Z,y){const n=m.W.length,D=Array.from({length:n},()=>[]),g=computeLossGrad(A[n],y),f=getActForLayer(n-1);for(let j=0;j<m.W[n-1].length;j++)D[n-1].push(g[j]*(f==="softmax"?A[n][j]*(1-A[n][j]):actD(A[n][j],Z[n-1][j],f)));for(let l=n-2;l>=0;l--){const fl=getActForLayer(l);for(let k=0;k<m.W[l].length;k++){let e=0;for(let j=0;j<m.W[l+1].length;j++)e+=D[l+1][j]*m.W[l+1][j][k];D[l].push(e*actD(A[l+1][k],Z[l][k],fl));}}return D;}
+function ev(m,X,Y){let L=0,ok=0;const cls=isCls();X.forEach((x,i)=>{const p=fwd(m,x).A.at(-1);L+=computeLoss(p,Y[i]);if(cls&&(p.length===1?Math.round(p[0])===Y[i][0]:am(p)===am(Y[i])))ok++;});return{loss:L/X.length,acc:cls?100*ok/X.length:null};}
+function step(m,G,st,P,nb){st.t++;const c1=1-.9**st.t,c2=1-.999**st.t,U=(a,ma,va,i,g)=>{if(P.opt==="adam"){ma[i]=.9*ma[i]+.1*g;va[i]=.999*va[i]+.001*g*g;a[i]-=P.lr*(ma[i]/c1)/(Math.sqrt(va[i]/c2)+1e-8);}else a[i]-=P.lr*g;};
+ m.W.forEach((Wl,l)=>Wl.forEach((row,j)=>{row.forEach((_,k)=>{if(m.M[l][j][k])U(row,st.m.W[l][j],st.v.W[l][j],k,G.W[l][j][k]/nb);});U(m.B[l],st.m.B[l],st.v.B[l],j,G.B[l][j]/nb);}));}
+function* fit(m,P,X,Y,tick){const st={t:0,m:zl(m),v:zl(m)},curve=[],n=X.length,ord=X.map((_,i)=>i);
+ for(let e=0;e<P.E;e++){for(let i=n-1;i>0;i--){const r=Math.floor(Math.random()*(i+1));[ord[i],ord[r]]=[ord[r],ord[i]];}let tot=0;
+  for(let s=0;s<n;s+=P.bs){const G=zl(m),b=ord.slice(s,s+P.bs);
+   for(const i of b){const{A,Z}=fwd(m,X[i]),D=bwd(m,A,Z,Y[i]);tot+=computeLoss(A.at(-1),Y[i]);D.forEach((Dl,l)=>Dl.forEach((d,j)=>{G.B[l][j]+=d;const g=G.W[l][j],a=A[l];for(let k=0;k<a.length;k++)g[k]+=d*a[k];}));}
+   step(m,G,st,P,b.length);}
+  curve.push(tot/n);tick();yield;}
+ return Object.assign({m,curve},ev(m,X,Y));}
+function prune(M,T,p){const v=[];M.forEach((a,l)=>a.forEach((r,j)=>r.forEach((x,k)=>{if(x)v.push(Math.abs(T.W[l][j][k]));})));if(v.length<2)return null;v.sort((a,b)=>a-b);const cut=v[Math.max(0,Math.floor(v.length*p)-1)];
+ const N=M.map((a,l)=>a.map((r,j)=>r.map((x,k)=>x&&Math.abs(T.W[l][j][k])>cut?1:0)));return N.flat(2).some(Boolean)?N:null;}
+const cnt=M=>M.flat(2).reduce((a,b)=>a+b,0);
+function* experiment(P){
+ const L=NET.L.slice(),cls=isCls(),n=DS.inputs.length,st=Math.max(1,Math.ceil(n/400)),X=[],Y=[];for(let i=0;i<n;i+=st){X.push(DS.inputs[i]);Y.push(DS.outputs[i]);}
+ const me=$("cInit")?$("cInit").value:undefined,t0=mk(L,me),t1=mk(L,me);let M=t0.W.map(a=>a.map(r=>r.map(()=>1)));
+ const R=S.res={cls,L,N:cnt(M),rounds:[],th0:t0,P},tot=(2*P.R+1)*P.E;let done=0,prev=null;const tick=()=>{done++;S.prog=done/tot;};
+ for(let r=0;r<=P.R;r++){
+  if(r>0){M=prune(M,prev.m,P.p);if(!M)break;}
+  const t=yield*fit(masked(t0,M),P,X,Y,tick);prev=t;let c=t;if(r>0)c=yield*fit(masked(t1,M),P,X,Y,tick);
+  const k=cnt(M);R.rounds.push({sp:100*(1-k/R.N),kept:k,mask:M,t,c});}
+ S.prog=1;}
+const fm=(q,cls)=>cls?q.acc.toFixed(0)+"%":q.loss.toFixed(4),tt=(cv,th)=>{const i=cv.findIndex(v=>v<=th);return i<0?"—":i+1;};
+const deadN=(r,L)=>{let d=0;L.forEach((n,l)=>{for(let j=0;j<n;j++)if((l>0&&!r.mask[l-1][j].some(Boolean))||(l<L.length-1&&!r.mask[l].some(row=>row[j])))d++;});return d;};
+function verdict(){const R=S.res;if(!R||R.rounds.length<2){$("ltV").innerHTML="Calcul en cours…";return;}const d=R.rounds[0].t,ok=q=>R.cls?q.acc>=d.acc-2:q.loss<=d.loss*1.2+1e-3;let b=null;R.rounds.forEach(r=>{if(r.sp>0&&ok(r.t))b=r;});
+ if(!b){$("ltV").innerHTML=`<b>Pas de billet gagnant</b> : dès le premier élagage (${R.rounds[1].sp.toFixed(0)}%) le sous-réseau décroche. Essaie un réseau plus large (ex. 2,16,16,1), moins d’élagage par tour ou plus d’epochs.`;return;}
+ const gap=R.cls?b.t.acc-b.c.acc:b.c.loss-b.t.loss,big=R.cls?gap>=5:gap>b.t.loss*.3+1e-3;
+ $("ltV").innerHTML=`🎟 <b>Billet gagnant trouvé à ${b.sp.toFixed(0)}% d’élagage</b> (${b.kept}/${R.N} poids gardés) : rembobiné, il atteint <b>${fm(b.t,R.cls)}</b> contre ${fm(d,R.cls)} pour le réseau dense. Avec le même masque mais des poids aléatoires : <b>${fm(b.c,R.cls)}</b> — ${big?"le masque seul ne suffit pas, ce sont bien les <b>poids initiaux</b> qui font le billet.":"pas d’écart net ici (fréquent sur de petits réseaux ou des problèmes faciles)."}`;}
+function drawChart(){const R=S.res;if(!R||!R.rounds.length)return;const{g,w,h}=cv($("ltCh"),230),pl=38,pr=12,pt=10,pb=22,cls=R.cls,V=q=>cls?q.acc/100:q.loss,all=R.rounds.flatMap(r=>[V(r.t),V(r.c)]);
+ const hi=cls?1:Math.max(...all)*1.08||1,lo=cls?Math.max(0,Math.min(...all)-.05):0,mxS=Math.max(10,...R.rounds.map(r=>r.sp)),X=s=>pl+s/mxS*(w-pl-pr),Y=v=>pt+(1-(v-lo)/(hi-lo||1))*(h-pt-pb);
+ g.fillStyle="#02030a";g.fillRect(0,0,w,h);g.strokeStyle="#141a34";g.fillStyle=css("--dim");
+ for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4,y=Y(v);g.beginPath();g.moveTo(pl,y);g.lineTo(w-pr,y);g.stroke();g.textAlign="right";g.fillText(cls?(v*100).toFixed(0)+"%":v.toFixed(3),pl-4,y+3);}
+ g.textAlign="center";for(let s=0;s<=mxS;s+=Math.max(10,Math.round(mxS/6/10)*10))g.fillText(s+"%",X(s),h-6);g.textAlign="left";
+ g.setLineDash([4,4]);g.strokeStyle="#3a4770";g.beginPath();g.moveTo(pl,Y(V(R.rounds[0].t)));g.lineTo(w-pr,Y(V(R.rounds[0].t)));g.stroke();g.setLineDash([]);
+ const ln=(f,c)=>{g.strokeStyle=c;g.fillStyle=c;g.lineWidth=2;g.beginPath();R.rounds.forEach((r,i)=>i?g.lineTo(X(r.sp),Y(V(f(r)))):g.moveTo(X(r.sp),Y(V(f(r)))));g.stroke();R.rounds.forEach(r=>{g.beginPath();g.arc(X(r.sp),Y(V(f(r))),3,0,7);g.fill();});};
+ ln(r=>r.c,css("--red"));ln(r=>r.t,css("--ylw"));g.fillStyle=css("--dim");g.textAlign="right";g.fillText("% de poids supprimés →",w-pr,h-6);}
+function drawNet(){const R=S.res,r=R&&R.rounds[S.sel];if(!r)return;const{g,w,h}=cv($("ltNet"),230),L=R.L,nl=L.length,px=30;g.fillStyle="#02030a";g.fillRect(0,0,w,h);
+ const X=l=>px+l*(w-2*px)/Math.max(1,nl-1),Y=(l,j)=>12+(j+.5)*(h-24)/L[l],rad=Math.max(2,Math.min(8,(h-24)/Math.max(...L)/2.3)),T=r.t.m,mx=T.W.flat(2).reduce((a,v)=>Math.max(a,Math.abs(v)),1e-9);g.lineWidth=1;
+ T.W.forEach((Wl,l)=>Wl.forEach((row,j)=>row.forEach((v,k)=>{if(!r.mask[l][j][k])return;const a=(.15+.6*Math.abs(v)/mx).toFixed(2);g.strokeStyle=v>0?`rgba(0,255,157,${a})`:`rgba(255,61,90,${a})`;g.beginPath();g.moveTo(X(l),Y(l,k));g.lineTo(X(l+1),Y(l+1,j));g.stroke();})));
+ L.forEach((n,l)=>{for(let j=0;j<n;j++){const dead=(l>0&&!r.mask[l-1][j].some(Boolean))||(l<nl-1&&!r.mask[l].some(row=>row[j]));g.beginPath();g.arc(X(l),Y(l,j),rad,0,7);g.fillStyle=dead?"#2a0a12":"#0a0c18";g.fill();g.strokeStyle=dead?css("--red"):css("--a1");g.lineWidth=1.4;g.stroke();}});}
+function drawCurves(){const R=S.res,r=R&&R.rounds[S.sel];if(!r)return;const{g,w,h}=cv($("ltCu"),170),pl=38,pr=10,pt=8,pb=8,d=R.rounds[0].t.curve,C=[[d,"#6b7aa8"],[r.c.curve,css("--red")],[r.t.curve,css("--ylw")]],mx=Math.max(...C.flatMap(c=>c[0]))||1,E=d.length;
+ g.fillStyle="#02030a";g.fillRect(0,0,w,h);g.fillStyle=css("--dim");g.fillText(mx.toFixed(3),2,pt+8);g.fillText("0",2,h-pb);
+ C.forEach(([c,col])=>{g.strokeStyle=col;g.lineWidth=1.8;g.beginPath();c.forEach((v,i)=>{const x=pl+i/Math.max(1,E-1)*(w-pl-pr),y=pt+(1-v/mx)*(h-pt-pb);i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();});}
+function renderWin(){const R=S.res;if(!R||!R.rounds.length){$("ltK").innerHTML=`<div style="grid-column:1/-1;font-size:10px;color:var(--dim)">Lance d’abord l’expérience.</div>`;return;}
+ const r=R.rounds[S.sel],th=R.rounds[0].t.curve.at(-1)*1.25+1e-3;$("ltSel").max=R.rounds.length-1;$("ltSelV").textContent=r.sp.toFixed(0)+"% élagué";
+ $("ltK").innerHTML=`<div><b>${r.kept}/${R.N}</b><span>poids gardés</span></div><div><b style="color:var(--ylw)">${fm(r.t,R.cls)}</b><span>billet</span></div><div><b style="color:var(--red)">${fm(r.c,R.cls)}</b><span>poids aléatoires</span></div><div><b>${tt(r.t.curve,th)} / ${tt(r.c.curve,th)}</b><span>epochs au seuil (billet / alé.)</span></div><div><b>${deadN(r,R.L)}</b><span>neurones isolés</span></div>`;drawNet();drawCurves();}
+window.ltSelect=v=>{S.sel=v;renderWin();};
+window.ltTab=t=>{S.tab=t;document.querySelectorAll(".lt-tab").forEach(b=>b.classList.toggle("on",b.dataset.t===t));document.querySelectorAll(".lt-p").forEach(p=>p.classList.toggle("on",p.id==="lt-p-"+t));t==="run"?drawChart():renderWin();};
+window.ltRun=async function(){
+ if(S.run){S.stop=true;return;}if(!ready()){$("ltSt").textContent="Crée d’abord un réseau et un dataset.";return;}
+ const P={R:+$("ltR").value,p:+$("ltP").value/100,E:+$("ltE").value,bs:+$("ltB").value,opt:$("ltO").value,lr:+$("ltLR").value||.03};
+ S.run=true;S.stop=false;S.sel=0;$("ltGo").textContent="■ Arrêter";$("ltGo").className="btn danger";
+ const gen=experiment(P);let nr=-1;
+ try{for(;;){const t0=performance.now();let r;do{r=gen.next();}while(!r.done&&performance.now()-t0<14&&!S.stop);
+  $("ltPb").style.width=(100*S.prog).toFixed(0)+"%";const k=S.res?S.res.rounds.length:0;$("ltSt").textContent=`Tour ${Math.min(k+1,P.R+1)}/${P.R+1} · ${(100*S.prog).toFixed(0)}%`;
+  if(k!==nr){nr=k;drawChart();}if(r.done||S.stop)break;await new Promise(requestAnimationFrame);}}
+ catch(e){$("ltSt").textContent="Erreur : "+e.message;}
+ S.run=false;$("ltGo").textContent="▶ Relancer l’expérience";$("ltGo").className="btn go";drawChart();verdict();if(S.res)$("ltSt").textContent=S.stop?"Arrêté.":"Terminé.";};
+function afterChange(){try{if(typeof gpuSyncWeightsToDevice==="function")gpuSyncWeightsToDevice();}catch(e){}try{redraw();}catch(e){}}
+window.ltUnfreeze=function(){if(NET&&NET.frozenWeights)S.fk.forEach(k=>delete NET.frozenWeights[k]);S.fk=[];afterChange();};
+window.ltAdopt=function(trained){const R=S.res,r=R&&R.rounds[S.sel];if(!r)return;
+ if(!ready()||NET.L.join()!==R.L.join()){alert("L’architecture du réseau a changé : relance l’expérience.");return;}
+ ltUnfreeze();NET.frozenWeights=NET.frozenWeights||{};const m=trained?r.t.m:masked(R.th0,r.mask);
+ m.W.forEach((Wl,l)=>Wl.forEach((row,j)=>{row.forEach((v,k)=>{NET.W[l][j][k]=v;if(!r.mask[l][j][k]){const key=`${l}-${j}-${k}`;NET.frozenWeights[key]=true;S.fk.push(key);}});NET.B[l][j]=m.B[l][j];}));
+ try{[VEL.w,MA.w,MV.w].forEach(a=>a.forEach(x=>x.forEach(r=>r.fill(0))));[VEL.b,MA.b,MV.b].forEach(a=>a.forEach(r=>r.fill(0)));ADAM_T=0;EPOCH=0;LOSS_H=[];}catch(e){}
+ afterChange();try{log(`<span class="ls">🎟 BILLET ADOPTÉ</span> — ${r.kept}/${R.N} poids gardés (${r.sp.toFixed(0)}% élagués, masque verrouillé), ${trained?"poids entraînés":"poids initiaux θ₀"}`);}catch(e){}};
+window.openLTLab=function(){$("lt-bg").classList.add("show");if(ready()){const sg=getOpt()==="sgd";$("ltO").value=sg?"sgd":"adam";if(sg)$("ltLR").value=getLR();}ltTab(S.tab);};
+window.closeLTLab=function(){S.stop=true;$("lt-bg").classList.remove("show");};
+$("lt-bg").addEventListener("click",e=>{if(e.target===$("lt-bg"))closeLTLab();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&isOpen())closeLTLab();});
+window.addEventListener("resize",()=>{if(isOpen())S.tab==="run"?drawChart():renderWin();});
 })();
 </script>
 

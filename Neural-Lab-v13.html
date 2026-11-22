@@ -5980,8 +5980,10 @@ optPane('look');
               <div style="font-size: 9px; color: var(--dim); margin-bottom: 6px">
                 <b style="color: var(--ylw)">Radiographie</b> du réseau (neurones
                 morts, saturation, flux de gradient, score de santé avec
-                conseils), <b style="color: var(--ylw)">trouveur de learning rate</b>
-                en un clic et <b style="color: var(--ylw)">élagage</b> des poids
+                conseils), <b style="color: var(--ylw)">soins</b> en un clic
+                (réveil des neurones, LR ÷ 3, écrêtage) avec surveillance et
+                auto-soin, <b style="color: var(--ylw)">trouveur de learning rate</b>
+                et <b style="color: var(--ylw)">élagage</b> des poids
                 avec courbe de robustesse
               </div>
               <button class="btn ok" onclick="openDGLab()" style="width: 100%; border-color: var(--flashy); color: var(--flashy)">
@@ -6003,10 +6005,6 @@ optPane('look');
 
         <div id="tc-tools" class="tc">
           <div style="padding: 10px 11px 16px">
-<div style="margin-bottom:8px;background:linear-gradient(135deg,rgba(0,229,255,.07),rgba(191,95,255,.07)),#030408;border:1px solid var(--a2);border-radius:4px;padding:10px 12px;box-shadow:inset 0 0 22px rgba(191,95,255,.06)">
-<div style="font-size:8px;color:var(--a2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:7px;font-weight:700">🩺 Autopsie du réseau</div>
-<div style="font-size:9px;color:var(--dim);margin-bottom:6px;line-height:1.6">Diagnostic automatique : neurones morts ou saturés, gradients, poids, stagnation de la perte, déséquilibre du dataset. Score de santé, explications claires et correctif en un clic.</div>
-<button class="btn ok" onclick="autOpen()" style="width:100%">🩺 Lancer le diagnostic</button></div>
 <div style="margin-bottom:8px;background:#030408;border:1px solid var(--brd);border-radius:4px;padding:10px 12px">
 <div style="font-size:8px;color:var(--a1);text-transform:uppercase;letter-spacing:.12em;margin-bottom:7px;font-weight:700">◈ Paramètres du modèle</div>
 <div style="font-size:9px;color:var(--dim);margin-bottom:6px;line-height:1.6">Nombre de paramètres entraînables, répartition par couche et empreinte mémoire du réseau.</div>
@@ -31586,7 +31584,7 @@ function setUITheme(t,silent){
 
 </script>
 
-<!-- ══════════════ LABO DIAGNOSTIC (radiographie · trouveur de LR · élagage) ══════════════ -->
+<!-- ══════════════ LABO DIAGNOSTIC (radiographie · soins/autopsie · trouveur de LR · élagage) ══════════════ -->
 <style>
 #dg-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:1500;display:none;align-items:center;justify-content:center}
 #dg-modal-bg.show{display:flex}
@@ -31645,6 +31643,45 @@ function setUITheme(t,silent){
 .dg-leg s{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px;text-decoration:none;border-radius:2px}
 @media(max-width:900px){#dg-modal{width:100%;max-width:none;height:100%;max-height:100vh;border-radius:0}#dg-body{padding:10px 12px 18px}#dg-modal .btn{font-size:11.5px;padding:9px 10px;min-height:36px}.dg-verdict{flex-direction:column;align-items:flex-start}.dg-met{grid-template-columns:88px 1fr 50px}.dg-ecg{display:none}}
 @media(prefers-reduced-motion:reduce){.dg-ecg polyline{animation:none;stroke-dashoffset:0}.dg-pane.on{animation:none}}
+/* ── Soins (ex-Autopsie) : bandeau de santé par couche, soins, carte des neurones, surveillance ── */
+.dg-delta{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:9px;font:700 9px "JetBrains Mono",monospace;border:1px solid currentColor;letter-spacing:0;text-transform:none;vertical-align:middle}
+.dg-sub{font-size:10px;color:var(--dim);line-height:1.6;margin:2px 0 8px}
+.dg-wst{font-size:9px;color:var(--dim);margin-top:6px}
+.dg-alive{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.dg-al{flex:1;min-width:96px;background:#030408;border:1px solid var(--brd);border-radius:6px;padding:6px 8px;font-size:9px;color:var(--dim)}
+.dg-al i{display:block;height:5px;border-radius:3px;background:#12182e;margin:5px 0 3px;overflow:hidden}
+.dg-al i s{display:block;height:100%;border-radius:3px;transition:width .7s cubic-bezier(.22,1,.36,1)}
+.dg-bar2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 10px}
+#dg-modal .dg-bar2 .btn{white-space:normal;line-height:1.3;min-height:42px;height:auto;width:auto;padding:9px 10px;font-size:12px;text-align:center}
+#dg-modal .dg-bar2 .btn.ok{grid-column:1/-1}
+#dg-modal .dg-bar2 .btn.on{background:rgba(0,255,157,.18);border-color:var(--grn);color:var(--grn)}
+.dg-d{margin:8px 0;border:1px solid var(--brd);border-radius:6px;background:#030408}
+.dg-d>summary{cursor:pointer;padding:9px 12px;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--a1);list-style:none;display:flex;justify-content:space-between}
+.dg-d>summary::-webkit-details-marker{display:none}
+.dg-d>summary::after{content:"▾";color:var(--dim)}.dg-d[open]>summary::after{content:"▴"}
+.dg-d>div{padding:4px 12px 12px;font-size:9px;color:var(--dim);line-height:1.6}
+.dg-nrow{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:5px 0}
+.dg-nrl{width:44px;font-size:8px;color:var(--dim)}
+.dg-n{width:15px;height:15px;border-radius:4px;background:rgba(0,229,255,var(--o));box-shadow:0 0 6px rgba(0,229,255,calc(var(--o)*.5));transition:transform .15s}
+.dg-n.d{background:transparent;border:1px dashed var(--red);box-shadow:none;cursor:pointer}
+.dg-n.s{background:rgba(255,140,42,.7);box-shadow:0 0 6px var(--org);cursor:pointer}
+.dg-n:hover{transform:scale(1.35)}
+.dg-toast{padding:7px 10px;margin-bottom:8px;border-radius:6px;font-size:10px;border:1px solid var(--grn);color:var(--grn);background:rgba(0,255,157,.07);animation:dgIn .3s}
+.dg-toast.bad{border-color:var(--org);color:var(--org);background:rgba(255,140,42,.07)}
+#dg-hud{position:fixed;left:12px;bottom:12px;z-index:99980;display:none;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;background:#05060ce8;border:1px solid var(--c,var(--a1));color:var(--c,var(--a1));font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 0 16px color-mix(in srgb,var(--c,#00e5ff) 35%,transparent);backdrop-filter:blur(6px)}
+#dg-hud.dg-hide{display:none!important}
+#dg-hud.on{display:flex}#dg-hud.alert{animation:dgPulse .8s 4}
+#dg-hud small{font-weight:500;color:var(--dim);font-size:9px}
+@keyframes dgPulse{50%{transform:scale(1.12);box-shadow:0 0 28px var(--red)}}
+@media(max-width:600px){
+#dg-modal .dg-bar2{grid-template-columns:1fr 1fr}
+#dg-modal .dg-bar2 .btn{font-size:12.5px;min-height:46px}
+.dg-d>summary{font-size:11px;padding:11px 10px}.dg-d>div{font-size:11px}
+.dg-n{width:22px;height:22px}.dg-nrow{gap:6px}.dg-nrl{width:52px;font-size:9px}
+.dg-al{font-size:10px;min-width:calc(50% - 6px)}
+.dg-toast{font-size:11.5px}.dg-sub{font-size:11px}
+#dg-hud{font-size:13px;padding:8px 14px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+}
 </style>
 
 <div id="dg-modal-bg">
@@ -31658,8 +31695,9 @@ function setUITheme(t,silent){
       </div>
       <div class="dg-tabs" role="tablist">
         <button class="dg-tab on" data-t="sante" onclick="dgTab('sante')">① Radiographie</button>
-        <button class="dg-tab" data-t="lr" onclick="dgTab('lr')">② Trouveur de LR</button>
-        <button class="dg-tab" data-t="prune" onclick="dgTab('prune')">③ Élagage</button>
+        <button class="dg-tab" data-t="soins" onclick="dgTab('soins')">② Soins</button>
+        <button class="dg-tab" data-t="lr" onclick="dgTab('lr')">③ Trouveur de LR</button>
+        <button class="dg-tab" data-t="prune" onclick="dgTab('prune')">④ Élagage</button>
       </div>
     </div>
     <div id="dg-body">
@@ -31668,13 +31706,22 @@ function setUITheme(t,silent){
         <div class="rl-p">Un réseau qui n'apprend pas a presque toujours une <b>cause visible</b> : neurones morts, activations saturées, gradients qui s'évanouissent ou explosent, pas d'apprentissage trop timide ou trop violent. Ici, on l'ausculte <em>sans le modifier</em> et on obtient un diagnostic.</div>
         <div class="btn-row" style="margin:0 0 10px">
           <button class="btn go" onclick="dgScan()">↻ Réanalyser</button>
-          <button class="btn on" id="dgLive" onclick="dgToggleLive()">● Live</button>
+          <button class="btn on dg-live" onclick="dgToggleLive()">● Live</button>
           <button class="btn" onclick="dgTrain(1)">+1 Epoch</button>
           <button class="btn" onclick="dgTrain(100)">×100</button>
         </div>
         <div id="dgSante"></div>
       </div>
-      <!-- ② TROUVEUR DE LR -->
+      <!-- ② SOINS (ex-Autopsie du réseau) -->
+      <div class="dg-pane" id="dg-p-soins">
+        <div class="rl-p">Ici, on <b>soigne</b>. Chaque soin est mesuré : le score de santé <em>avant → après</em> s'affiche. Clique un neurone <em>mort</em> ou <em>saturé</em> de la carte pour le soigner seul. La <b>surveillance</b> garde un œil sur le réseau pendant l'entraînement (bulle 🩺 en bas à gauche, même labo fermé) et l'<b>auto-soin</b> réveille seul les neurones morts.</div>
+        <div class="btn-row" style="margin:0 0 10px">
+          <button class="btn go" onclick="dgScan()">↻ Rescanner</button>
+          <button class="btn on dg-live" onclick="dgToggleLive()">● Live</button>
+        </div>
+        <div id="dgSoins"></div>
+      </div>
+      <!-- ③ TROUVEUR DE LR -->
       <div class="dg-pane" id="dg-p-lr">
         <div class="rl-p">Quel <b>learning rate</b> choisir ? On le fait croître de façon exponentielle pendant quelques pas d'entraînement et on observe la loss : elle <em>descend</em> tant que le LR est raisonnable, puis <em>explose</em>. Le meilleur LR se trouve dans la zone de descente nette, un peu avant le minimum et bien avant l'explosion. Le réseau est <b>restauré</b> après le test.</div>
         <div class="rl-card y">
@@ -31690,13 +31737,17 @@ function setUITheme(t,silent){
         <div class="dg-leg"><span><s style="background:var(--a1)"></s>loss lissée</span><span><s style="background:#3a4770"></s>loss brute</span><span><s style="background:var(--flashy)"></s>LR suggéré</span><span><s style="background:var(--ylw)"></s>LR actuel</span></div>
         <div id="dgLRout"></div>
       </div>
-      <!-- ③ ÉLAGAGE -->
+      <!-- ④ ÉLAGAGE -->
       <div class="dg-pane" id="dg-p-prune">
         <div class="rl-p">Combien de connexions ton réseau utilise-t-il <b>vraiment</b> ? L'<em>élagage par magnitude</em> met à zéro les poids les plus petits. Si la précision tient, ces poids étaient superflus : le réseau est <b>compressible</b>. Aperçu en direct, sans rien casser tant que tu n'as pas cliqué sur « Appliquer ».</div>
         <div class="rl-card p">
           <div class="rl-row"><div class="rl-ctl" style="flex:1 1 100%"><span class="rl-cl">Élagage</span><input type="range" id="dgSp" min="0" max="98" value="0" oninput="dgPreview()"><b id="dgSpV">0%</b></div></div>
           <div class="dg-kpi" style="grid-template-columns:repeat(4,1fr)" id="dgPK"></div>
           <div class="btn-row"><button class="btn" onclick="dgCurve()">📈 Tracer la courbe de robustesse</button><button class="btn warn" onclick="dgApplyPrune()">✂ Appliquer</button><button class="btn" id="dgUndo" onclick="dgUndoPrune()" disabled>↩ Annuler</button></div>
+          <div class="rl-h" style="margin-top:12px">Neurones inutiles</div>
+          <div class="rl-p" style="margin:4px 0 8px">Un neurone caché est <b>inutile</b> quand <b>tous ses poids d'entrée et de sortie valent 0</b> : il ne reçoit rien et ne transmet rien. On peut le supprimer sans changer la sortie du réseau — l'architecture rétrécit réellement.</div>
+          <div id="dgNeuInfo" style="font-size:10px;line-height:1.6;margin-bottom:8px;color:var(--dim)"></div>
+          <div class="btn-row"><button class="btn warn" id="dgNeuBtn" onclick="dgRemoveDead()" disabled>🧹 Supprimer les neurones inutiles (0)</button><button class="btn" id="dgNeuUndo" onclick="dgUndoDead()" disabled>↩ Annuler</button></div>
         </div>
         <canvas class="dg-cv" id="dgPCv" style="display:none"></canvas>
         <div class="dg-leg" id="dgPLeg" style="display:none"><span><s style="background:var(--grn)"></s>précision</span><span><s style="background:var(--org)"></s>loss (relative)</span><span><s style="background:var(--red)"></s>seuil actuel</span></div>
@@ -31719,7 +31770,9 @@ function setUITheme(t,silent){
   const nz = (v) => (isFinite(v) ? v : 0);
   const ex = (v) => (v === 0 ? "0" : v.toExponential(1).replace("e", "e").replace("+", ""));
   const pc = (v) => (100 * v).toFixed(v < 0.1 && v > 0 ? 1 : 0) + "%";
-  const S = { tab: "sante", live: true, snap: null, lr: [], lrRun: false, lrStop: false, curve: null, undo: null, scan: null };
+  const S = { tab: "sante", live: true, snap: null, lr: [], lrRun: false, lrStop: false, curve: null, undo: null, scan: null, prev: null, open: {} };
+  const HIST = [], LOG = [];
+  let timer = null, heal = false, lastEp = -1, lastT = 0;
 
   // Le forward de l'app applique le dropout même hors entraînement : on le coupe pour mesurer.
   function noDrop(f) { const el = $("cDrop"), v = el.value; el.value = 0; try { return f(); } finally { el.value = v; } }
@@ -31743,27 +31796,37 @@ function setUITheme(t,silent){
     c.width = Math.round(w * d); c.height = Math.round(h * d); c.style.height = h + "px";
     const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.font = FONT; return { g, w, h };
   }
-  const col = (s) => (s === 2 ? css("--red") : s === 1 ? css("--org") : css("--grn"));
+  const col = (s) => (s === 2 ? css("--red") : s === 1 ? css("--org") : s === -1 ? css("--a1") : css("--grn"));
 
   /* ═════════ ① RADIOGRAPHIE ═════════ */
   function scan() {
-    const nL = NET.W.length, idx = sub(160), lr = getLR(), opt = getOpt();
+    const nL = NET.W.length, idx = sub(200), lr = getLR(), opt = getOpt();
     const adaptive = ["adam", "adamw", "rmsprop"].includes(opt);
-    const Ls = NET.W.map((W, l) => ({ l, n: W.length, nin: W[0].length, fn: getActForLayer(l), dead: new Array(W.length).fill(0), g: W.map((r) => new Array(r.length).fill(0)) }));
-    let loss = 0;
+    const Ls = NET.W.map((W, l) => ({ l, n: W.length, nin: W[0].length, fn: getActForLayer(l), dead: new Array(W.length).fill(0), g: W.map((r) => new Array(r.length).fill(0)), mx: new Array(W.length).fill(0), satc: new Array(W.length).fill(0), dAbs: 0 }));
+    let loss = 0, nanAct = false;
     noDrop(() => idx.forEach((i) => {
       const { activations: A, zs } = forward(DS.inputs[i], false), D = backward(A, zs, DS.outputs[i]);
       loss += computeLoss(A[nL], DS.outputs[i]);
       Ls.forEach((o) => {
+        const hid = o.l < nL - 1;
+        let sd = 0;
         for (let j = 0; j < o.n; j++) {
-          if (o.l < nL - 1 && Math.abs(actD(A[o.l + 1][j], zs[o.l][j], o.fn)) < 0.005) o.dead[j]++;
+          const a = A[o.l + 1][j];
+          if (!isFinite(a)) nanAct = true; else if (Math.abs(a) > o.mx[j]) o.mx[j] = Math.abs(a);
+          if (hid) {
+            if (Math.abs(actD(a, zs[o.l][j], o.fn)) < 0.005) o.dead[j]++;
+            if ((o.fn === "tanh" && Math.abs(a) > 0.97) || (o.fn === "sigmoid" && (a < 0.03 || a > 0.97))) o.satc[j]++;
+          }
           const gr = o.g[j], d = D[o.l][j];
+          sd += Math.abs(d);
           for (let k = 0; k < o.nin; k++) gr[k] += d * A[o.l][k];
         }
+        o.dAbs += sd / o.n;
       });
     }));
-    const N = idx.length, finds = [];
-    let pen = 0, params = 0, bad = false;
+    const N = idx.length, total = DS.inputs.length, finds = [], deadN = [], satN = [];
+    const hidTot = NET.L.slice(1, -1).reduce((a, b) => a + b, 0);
+    let pen = 0, params = 0, bad = false, nW = 0, wMax = 0, deadFlag = false, satFlag = false, flowFlag = false;
     Ls.forEach((o) => {
       const W = NET.W[o.l], all = W.flat(), m = all.reduce((a, v) => Math.max(a, Math.abs(nz(v))), 1e-12);
       o.finite = all.every(isFinite) && NET.B[o.l].every(isFinite);
@@ -31772,31 +31835,74 @@ function setUITheme(t,silent){
       o.grms = Math.sqrt(o.g.flat().reduce((s, v) => s + (v / N) * (v / N), 0) / all.length);
       o.hist = new Array(21).fill(0); o.m = m;
       all.forEach((v) => { o.hist[clamp(Math.floor(((nz(v) + m) / (2 * m)) * 21), 0, 20)]++; });
+      o.zeroPct = all.filter((v) => Math.abs(nz(v)) < 0.01).length / all.length;
+      nW += all.length; wMax = Math.max(wMax, m);
       params += all.length + o.n;
       const hid = o.l < nL - 1;
       o.deadPct = hid ? o.dead.filter((c) => c / N > 0.98).length / o.n : null;
       o.sat = hid ? o.dead.reduce((s, c) => s + c / N, 0) / o.n : null;
+      if (hid) {
+        // Classement neurone par neurone (carte des neurones + soins ciblés)
+        const reluLike = ["relu", "leakyrelu", "elu", "relu6"].includes(o.fn);
+        o.mx.forEach((mm, j) => { if (reluLike && mm < 1e-7) deadN.push([o.l, j]); if (o.satc[j] > N * 0.9) satN.push([o.l, j]); });
+        o.nDeadS = deadN.filter((x) => x[0] === o.l).length; o.nSatS = satN.filter((x) => x[0] === o.l).length;
+        o.alive = 1 - (o.nDeadS + o.nSatS) / o.n;
+      }
       o.ratio = (adaptive ? lr : lr * o.grms) / (o.rmsW || 1e-9);
       let st = 0; const nm = `Couche ${o.l + 1}`;
-      const flag = (s, p, msg) => { st = Math.max(st, s); pen += p; finds.push({ s, msg }); };
-      if (!o.finite) { st = 2; bad = true; finds.push({ s: 2, msg: `<b>${nm}</b> contient des valeurs <b>NaN/∞</b> : l'entraînement a divergé. Réduis le LR puis ↺ Réinit.` }); }
-      if (hid && o.deadPct > 0.5) flag(2, 25, `<b>${nm}</b> : ${pc(o.deadPct)} de neurones <b>morts</b> (gradient ≈ 0 sur tout le dataset). Essaie Leaky ReLU/ELU, une init He ou un LR plus petit.`);
-      else if (hid && o.deadPct > 0.2) flag(1, 12, `<b>${nm}</b> : ${pc(o.deadPct)} de neurones morts. Un LR plus faible ou Leaky ReLU les gardera en vie.`);
+      const flag = (s, p, ic, msg) => { st = Math.max(st, s); pen += p; finds.push({ s, ic, msg }); };
+      if (!o.finite) { st = 2; bad = true; finds.push({ s: 2, ic: "💥", msg: `<b>${nm}</b> contient des valeurs <b>NaN/∞</b> : l'entraînement a divergé. Réduis le LR puis ↺ Réinit.` }); }
+      if (hid && o.deadPct > 0.5) { deadFlag = true; flag(2, 25, "💀", `<b>${nm}</b> : ${pc(o.deadPct)} de neurones <b>morts</b> (gradient ≈ 0 sur tout le dataset). Essaie Leaky ReLU/ELU, une init He ou un LR plus petit.`); }
+      else if (hid && o.deadPct > 0.2) { deadFlag = true; flag(1, 12, "💀", `<b>${nm}</b> : ${pc(o.deadPct)} de neurones morts. Un LR plus faible ou Leaky ReLU les gardera en vie.`); }
       else if (hid && o.deadPct > 0.05) { pen += 4; }
-      if (hid && o.sat > 0.6 && o.deadPct <= 0.2) flag(o.sat > 0.8 ? 2 : 1, o.sat > 0.8 ? 12 : 6, `<b>${nm}</b> : activations <b>saturées</b> (${pc(o.sat)} des pas ont une dérivée ≈ 0). Init Xavier, entrées normalisées, ou ReLU/GELU.`);
+      if (hid && o.sat > 0.6 && o.deadPct <= 0.2) { satFlag = true; flag(o.sat > 0.8 ? 2 : 1, o.sat > 0.8 ? 12 : 6, "🌫", `<b>${nm}</b> : activations <b>saturées</b> (${pc(o.sat)} des pas ont une dérivée ≈ 0). Init Xavier, entrées normalisées, ou ReLU/GELU.`); }
       const dead = hid && o.deadPct > 0.5;
-      if (dead) { /* déjà signalé : pas d'alerte redondante */ } else if (o.ratio < 1e-5) flag(1, o.ratio < 1e-6 ? 10 : 5, `<b>${nm}</b> : mises à jour minuscules (ratio ${ex(o.ratio)}). LR trop petit… ou réseau déjà convergé.`);
-      else if (o.ratio > 0.1) flag(o.ratio > 0.3 ? 2 : 1, o.ratio > 0.3 ? 15 : 8, `<b>${nm}</b> : mises à jour <b>violentes</b> (ratio ${ex(o.ratio)}, idéal ≈ 1e-3). Diminue le LR.`);
+      if (dead) { /* déjà signalé : pas d'alerte redondante */ } else if (o.ratio < 1e-5) flag(1, o.ratio < 1e-6 ? 10 : 5, "🐢", `<b>${nm}</b> : mises à jour minuscules (ratio ${ex(o.ratio)}). LR trop petit… ou réseau déjà convergé.`);
+      else if (o.ratio > 0.1) flag(o.ratio > 0.3 ? 2 : 1, o.ratio > 0.3 ? 15 : 8, "⚡", `<b>${nm}</b> : mises à jour <b>violentes</b> (ratio ${ex(o.ratio)}, idéal ≈ 1e-3). Diminue le LR.`);
       o.st = st;
     });
     const ratioF = nL > 1 ? (Ls[0].grms + 1e-30) / (Ls[nL - 1].grms + 1e-30) : 1;
     if (nL > 1 && Ls[nL - 1].grms > 1e-9) {
-      if (ratioF < 0.01) { pen += ratioF < 0.001 ? 15 : 8; finds.push({ s: ratioF < 0.001 ? 2 : 1, msg: `<b>Gradient qui s'évanouit</b> : la couche 1 reçoit ${ex(1 / ratioF)}× moins de gradient que la sortie. ReLU/ELU, Batch Norm ou moins de couches.` }); }
-      else if (ratioF > 100) { pen += ratioF > 1000 ? 15 : 8; finds.push({ s: ratioF > 1000 ? 2 : 1, msg: `<b>Gradient qui explose</b> : la couche 1 reçoit ${ex(ratioF)}× plus de gradient que la sortie. LR plus petit, init plus faible.` }); }
+      if (ratioF < 0.01) { flowFlag = true; pen += ratioF < 0.001 ? 15 : 8; finds.push({ s: ratioF < 0.001 ? 2 : 1, ic: "📉", msg: `<b>Gradient qui s'évanouit</b> : la couche 1 reçoit ${ex(1 / ratioF)}× moins de gradient que la sortie. ReLU/ELU, Batch Norm ou moins de couches.` }); }
+      else if (ratioF > 100) { flowFlag = true; pen += ratioF > 1000 ? 15 : 8; finds.push({ s: ratioF > 1000 ? 2 : 1, ic: "📈", msg: `<b>Gradient qui explose</b> : la couche 1 reçoit ${ex(ratioF)}× plus de gradient que la sortie. LR plus petit, init plus faible.` }); }
     }
+
+    /* ── Constats issus de l'ex-Autopsie (hors doublons avec ceux ci-dessus) ── */
+    const H = LOSS_H.filter(isFinite), nH = H.length, mean = (a) => (a.length ? a.reduce((s, v) => s + v, 0) / a.length : 0);
+    const lossNaN = LOSS_H.some((v) => !isFinite(v));
+    if (!bad && (nanAct || lossNaN)) { pen += 40; finds.push({ s: 2, ic: "💥", msg: `<b>Valeurs NaN / ∞ détectées</b> — Le réseau a divergé. Baisse fortement le taux d'apprentissage, vérifie la normalisation des entrées, puis réinitialise.` }); }
+    if (deadN.length && !deadFlag) {
+      const p = deadN.length / Math.max(1, hidTot); pen += Math.min(35, 10 + p * 60);
+      finds.push({ s: p > 0.3 ? 2 : 1, ic: "💀", msg: `<b>${deadN.length} neurone(s) mort(s) (${Math.round(p * 100)} %)</b> — Ces neurones sortent 0 sur tout le dataset : ils n'apprennent plus. <em>Cause typique : LR trop haut ou biais très négatif. Le soin « ⚡ Réveiller » les relance (onglet Soins).</em>` });
+    }
+    if (satN.length && !satFlag) {
+      const p = satN.length / Math.max(1, hidTot); pen += Math.min(20, 6 + p * 30);
+      finds.push({ s: 1, ic: "🌫", msg: `<b>${satN.length} neurone(s) saturé(s)</b> — Collés à leurs bornes (sigmoïde/tanh), leur dérivée est quasi nulle : ils bloquent le gradient. <em>Essaie ReLU/Leaky ReLU ou des entrées centrées-réduites.</em>` });
+    }
+    if (!flowFlag && nL > 1) {
+      const a = Ls[0].dAbs / N, b = Ls[nL - 1].dAbs / N;
+      if (a > 0 && b > 0 && a / b < 0.02) { pen += 14; finds.push({ s: 1, ic: "📉", msg: `<b>Gradient qui s'évanouit</b> — La 1re couche reçoit ${(b / a).toFixed(0)}× moins de signal que la dernière. <em>Réduis la profondeur, change d'activation ou active la Batch Norm.</em>` }); }
+      if (a > 0 && b > 0 && a / b > 50) { pen += 14; finds.push({ s: 1, ic: "📈", msg: `<b>Gradient qui explose</b> — La 1re couche reçoit ${(a / b).toFixed(0)}× plus de signal que la dernière. <em>Baisse le LR ou active le clipping.</em>` }); }
+    }
+    if (wMax > 10) { pen += 8; finds.push({ s: 1, ic: "⚖", msg: `<b>Poids extrême (|w| = ${wMax.toFixed(1)})</b> — Un poids très grand rend le réseau instable et sur-confiant. <em>Essaie la régularisation L2 ou un LR plus faible.</em>` }); }
+    const last = nH >= 40 ? mean(H.slice(-20)) : null, prevL = nH >= 40 ? mean(H.slice(-40, -20)) : null;
+    if (last !== null) {
+      const d = (prevL - last) / Math.max(1e-9, prevL);
+      if (d < -0.05) { pen += 18; finds.push({ s: 2, ic: "🌋", msg: `<b>La perte remonte</b> — Elle a augmenté de ${Math.round(-d * 100)} % sur les dernières epochs. <em>LR trop élevé ou oscillation : divise-le par 3.</em>` }); }
+      else if (Math.abs(d) < 0.002 && last > 0.05) { pen += 12; finds.push({ s: 1, ic: "🧊", msg: `<b>Plateau d'apprentissage</b> — La perte est figée à ${last.toFixed(4)}. <em>Capacité insuffisante, LR trop petit, ou minimum local : ajoute des neurones ou mute les poids.</em>` }); }
+    } else if (nH < 10) finds.push({ s: -1, ic: "⏳", msg: `<b>Pas encore assez d'historique</b> — Lance quelques dizaines d'epochs pour un diagnostic de convergence.` });
+    const cls = isCls(), acc = cls ? evalNet().acc : null;
+    if (cls) {
+      let base = 0;
+      if (DS.outputs[0].length > 1) { const c = {}; DS.outputs.forEach((t) => { const k = t.indexOf(Math.max(...t)); c[k] = (c[k] || 0) + 1; }); base = Math.max(...Object.values(c)) / total; }
+      else { const p = DS.outputs.filter((t) => t[0] > 0.5).length / total; base = Math.max(p, 1 - p); }
+      if (acc / 100 <= base + 0.02 && nH >= 40 && base > 0.55) { pen += 14; finds.push({ s: 1, ic: "⚠", msg: `<b>Ne bat pas le hasard informé</b> — Précision ${Math.round(acc)} % ≈ classe majoritaire (${Math.round(base * 100)} %). <em>Le réseau prédit presque toujours la même classe : dataset déséquilibré ?</em>` }); }
+    }
+    if (nW > total * 4 && total < 200) { pen += 5; finds.push({ s: -1, ic: "🧬", msg: `<b>Beaucoup de paramètres pour peu de données</b> — ${nW} poids pour ${total} exemples : risque de surapprentissage. <em>Voir le Labo Généralisation.</em>` }); }
+
     finds.sort((a, b) => b.s - a.s);
     const score = bad ? 0 : clamp(100 - pen, 0, 100);
-    return { Ls, finds, score, flow: ratioF, params, loss: loss / N, N, acc: isCls() ? evalNet().acc : null };
+    return { Ls, finds, score, flow: ratioF, params, loss: loss / N, N, total, acc, nL, nW, wMax, hidTot, deadN, satN, epoch: EPOCH };
   }
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const meter = (lab, txt, f, c) => `<div class="dg-met" style="--c:${c}"><span>${lab}</span><div class="dg-bar"><u style="width:${clamp(f, 0, 1) * 100}%"></u></div><i>${txt}</i></div>`;
@@ -31829,12 +31935,12 @@ function setUITheme(t,silent){
     if (!ready()) { host.innerHTML = `<div class="rl-card"><div class="rl-p" style="margin:0">Crée d'abord un réseau et un dataset, puis reviens ici.</div></div>`; return; }
     const sc = R.score, c = sc >= 75 ? css("--grn") : sc >= 45 ? css("--org") : css("--red");
     const title = sc >= 75 ? "Réseau en bonne santé" : sc >= 45 ? "À surveiller" : "Réseau en difficulté";
-    const fl = R.finds.length ? R.finds.map((f) => `<li style="--c:${col(f.s)}">${f.msg}</li>`).join("") : `<li style="--c:${css("--grn")}">Rien d'anormal détecté : neurones vivants, gradients et mises à jour dans des plages saines.</li>`;
+    const fl = findsHtml(R);
     const circ = 2 * Math.PI * 40;
     host.innerHTML = `<div class="dg-top">
       <div class="rl-card" style="margin:0;--c:${c}"><div class="dg-verdict">
         <div class="dg-ring" style="--c:${c}"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="40"/><circle class="fg" cx="50" cy="50" r="40" stroke-dasharray="${(sc / 100) * circ} ${circ}"/></svg><b>${Math.round(sc)}<small>santé</small></b></div>
-        <div style="flex:1;min-width:0"><div class="rl-h" style="color:${c}">${title}</div><ul class="dg-find">${fl}</ul></div></div></div>
+        <div style="flex:1;min-width:0"><div class="rl-h" style="color:${c}">${title}${chip(R)}</div><ul class="dg-find">${fl}</ul><div class="btn-row" style="margin-top:8px"><button class="btn" onclick="dgTab('soins')">🩹 Ouvrir les soins</button></div></div></div></div>
       <div class="dg-kpi"><div><b>${R.params}</b><span>Paramètres</span></div><div><b>${R.loss < 1e4 ? R.loss.toFixed(4) : "∞"}</b><span>Loss</span></div><div><b>${R.acc == null ? "—" : R.acc.toFixed(0) + "%"}</b><span>Précision</span></div><div><b>${R.N}</b><span>Exemples scannés</span></div></div>
     </div>
     <div class="rl-card"><div class="rl-h">Flux de gradient par couche <span style="color:var(--dim);text-transform:none;letter-spacing:0">(RMS, échelle log)</span></div><canvas class="dg-cv" id="dgFlow"></canvas>
@@ -31844,17 +31950,137 @@ function setUITheme(t,silent){
       return `<div class="dg-lay" style="--c:${cc}"><div class="dg-lh"><b>Couche ${o.l + 1}</b><span>${o.nin}→${o.n} · ${o.fn}${hid ? "" : " · sortie"}</span><i class="dg-chip">${["sain", "attention", "alerte"][o.st]}</i></div>
         <canvas class="dg-cv" id="dgH${o.l}"></canvas>
         ${hid ? meter("Neurones morts", pc(o.deadPct), o.deadPct * 2, cc) + meter("Saturation", pc(o.sat), o.sat, cc) : ""}
-        ${meter("Gradient RMS", ex(o.grms), (Math.log10(o.grms + 1e-30) + 8) / 8, cc)}${meter("Ratio MAJ/poids", ex(o.ratio), (Math.log10(o.ratio + 1e-30) + 6) / 5, cc)}${meter("|w| moyen", o.absW.toFixed(3), o.absW, cc)}</div>`;
+        ${meter("Gradient RMS", ex(o.grms), (Math.log10(o.grms + 1e-30) + 8) / 8, cc)}${meter("Ratio MAJ/poids", ex(o.ratio), (Math.log10(o.ratio + 1e-30) + 6) / 5, cc)}${meter("|w| moyen", o.absW.toFixed(3), o.absW, cc)}<div class="dg-wst">σ ${o.rmsW.toFixed(2)} · max ${o.m.toFixed(2)} · ${Math.round(o.zeroPct * 100)} % ≈ 0</div></div>`;
     }).join("")}</div>
-    <div class="dg-note"><b>Ratio MAJ/poids</b> = amplitude relative d'un pas de mise à jour (<code>lr·|∇|/|w|</code> en SGD, <code>lr/|w|</code> pour les optimiseurs adaptatifs). Repère classique : ≈ <code>1e-3</code>.</div>`;
+    <div class="dg-note"><b>Ratio MAJ/poids</b> = amplitude relative d'un pas de mise à jour (<code>lr·|∇|/|w|</code> en SGD, <code>lr/|w|</code> pour les optimiseurs adaptatifs). Repère classique : ≈ <code>1e-3</code>. <b>σ</b> = écart quadratique moyen des poids de la couche ; <b>≈ 0</b> = part des poids de valeur absolue &lt; 0,01.</div>`;
     R.Ls.forEach((o) => drawHist($("dgH" + o.l), o));
     drawFlow(R);
   }
-  window.dgScan = function () { if (!ready()) { S.scan = null; renderScan(); return; } S.scan = scan(); renderScan(); };
-  window.dgToggleLive = function () { S.live = !S.live; $("dgLive").classList.toggle("on", S.live); };
+  const renderAll = () => (S.tab === "soins" ? renderSoins() : renderScan());
+  window.dgScan = function () { if (!ready()) { S.scan = null; renderAll(); return; } doScan(); renderAll(); };
+  window.dgToggleLive = function () { S.live = !S.live; document.querySelectorAll(".dg-live").forEach((b) => b.classList.toggle("on", S.live)); };
   window.dgTrain = async function (n) { if (!ready()) return; if (n === 1) await doEpoch(); else await doN(n); dgScan(); };
 
-  /* ═════════ ② TROUVEUR DE LR ═════════ */
+  /* ═════════ ② SOINS (ex-Autopsie : traitements, carte des neurones, surveillance) ═════════ */
+  const hex = (s) => (s >= 75 ? "#00ff9d" : s >= 45 ? "#ffd600" : "#ff3d5a");
+  const scCol = (s) => (s >= 75 ? css("--grn") : s >= 45 ? css("--org") : css("--red"));
+  const scTitle = (s) => (s >= 75 ? "Réseau en bonne santé" : s >= 45 ? "À surveiller" : "Réseau en difficulté");
+  const hlog = (m) => { LOG.unshift(`ep ${EPOCH} · ${m}`); if (LOG.length > 12) LOG.length = 12; };
+  function pushHist(R) {
+    const s = Math.round(R.score), h = HIST[HIST.length - 1];
+    if (!h || h.e !== R.epoch || h.s !== s) HIST.push({ e: R.epoch, s });
+    if (HIST.length > 80) HIST.shift();
+  }
+  // Scan + historique + delta vs score précédent (utilisé par l'UI, les soins et la surveillance)
+  function doScan() {
+    const prev = HIST[HIST.length - 1], R = scan();
+    S.scan = R; S.prev = prev ? prev.s : null; pushHist(R);
+    return R;
+  }
+  function findsList(R) {
+    const ok = !R.finds.some((f) => f.s > 0);
+    return (ok ? [{ s: 0, ic: "✅", msg: `<b>Rien d'anormal détecté</b> — neurones vivants, gradients et mises à jour dans des plages saines${R.acc == null ? "" : ` (précision ${R.acc.toFixed(0)} %)`}. Continue l'entraînement ou teste sur de nouveaux points.` }] : []).concat(R.finds);
+  }
+  const findsHtml = (R) => findsList(R).map((f) => `<li style="--c:${col(f.s)}">${f.ic ? f.ic + " " : ""}${f.msg}</li>`).join("");
+  function chip(R) {
+    const sc = Math.round(R.score);
+    if (S.prev == null || S.prev === sc) return "";
+    const d = sc - S.prev;
+    return `<span class="dg-delta" style="color:${d > 0 ? css("--grn") : css("--red")}">${d > 0 ? "▲ +" : "▼ "}${d}</span>`;
+  }
+  function spark() {
+    if (HIST.length < 2) return "Lance plusieurs scans (ou la surveillance) pour tracer la courbe.";
+    const W = 260, Hh = 44, p = HIST.map((h, i) => `${((i / (HIST.length - 1)) * W).toFixed(1)},${(Hh - (h.s / 100) * Hh).toFixed(1)}`).join(" ");
+    return `<svg width="100%" viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" style="max-height:60px"><polyline points="${p}" fill="none" stroke="${hex(HIST[HIST.length - 1].s)}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+  }
+
+  function renderSoins() {
+    const host = $("dgSoins"), R = S.scan;
+    if (!ready()) { host.innerHTML = `<div class="rl-card"><div class="rl-p" style="margin:0">Crée d'abord un réseau et un dataset, puis reviens ici.</div></div>`; return; }
+    if (!R) { dgScan(); return; }
+    const sc = R.score, c = scCol(sc), circ = 2 * Math.PI * 40;
+    const op = (k, d) => (S.open[k] === undefined ? d : S.open[k]);
+    const D = new Set(R.deadN.map((x) => x.join(","))), SS = new Set(R.satN.map((x) => x.join(",")));
+    const alive = R.Ls.filter((o) => o.deadPct != null).map((o) => {
+      const cc = o.alive > 0.8 ? css("--grn") : o.alive > 0.5 ? css("--ylw") : css("--red");
+      return `<div class="dg-al">Couche ${o.l + 1} · ${o.fn}<i><s style="width:${Math.round(o.alive * 100)}%;background:${cc}"></s></i>${o.n - o.nDeadS - o.nSatS}/${o.n} actifs</div>`;
+    }).join("");
+    const map = R.Ls.map((o) => `<div class="dg-nrow"><span class="dg-nrl">${o.l < R.nL - 1 ? "C" + (o.l + 1) : "Sortie"}</span>${o.mx.map((m, j) => {
+      const dd = D.has(o.l + "," + j), ss = SS.has(o.l + "," + j), st = dd ? "d" : ss ? "s" : "a";
+      return `<i class="dg-n ${st}" style="--o:${(0.25 + 0.75 * Math.min(1, m)).toFixed(2)}" title="C${o.l + 1}·N${j + 1} — max|a| ${m.toFixed(3)}${dd ? " — mort (clic : réveiller)" : ss ? " — saturé (clic : atténuer)" : ""}" ${st !== "a" ? `onclick="dgNeu(${o.l},${j},'${st}')"` : ""}></i>`;
+    }).join("")}</div>`).join("");
+    const sec = (k, t, b, d) => `<details class="dg-d" ${op(k, d) ? "open" : ""}><summary onclick="dgOpen('${k}',this.parentNode)">${t}</summary><div>${b}</div></details>`;
+    host.innerHTML = `<div class="rl-card" style="--c:${c}"><div class="dg-verdict">
+        <div class="dg-ring" style="--c:${c}"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="40"/><circle class="fg" cx="50" cy="50" r="40" stroke-dasharray="${(sc / 100) * circ} ${circ}"/></svg><b>${Math.round(sc)}<small>/ 100</small></b></div>
+        <div style="flex:1;min-width:0"><div class="rl-h" style="color:${c}">${scTitle(sc)}${chip(R)}</div>
+          <div class="dg-sub">${NET.L.join("→")} · epoch ${R.epoch}<br>Précision ${R.acc == null ? "—" : R.acc.toFixed(0) + " %"} · ${R.total} exemples · ${R.nW} poids</div>
+          <ul class="dg-find">${findsHtml(R)}</ul></div></div></div>
+      <div class="dg-alive">${alive}</div>
+      <div class="dg-bar2">
+        ${R.deadN.length ? `<button class="btn ok" onclick="dgRevive()">⚡ Réveiller ${R.deadN.length} neurone(s)</button>` : ""}
+        <button class="btn" onclick="dgLRdiv()">🐢 LR ÷ 3</button>
+        ${R.satN.length ? `<button class="btn" onclick="dgDesat()">🌫 Désaturer ${R.satN.length}</button>` : ""}
+        ${R.wMax > 5 ? `<button class="btn" onclick="dgClip()">✂ Écrêter poids</button>` : ""}
+        <button class="btn" onclick="dgCopy(this)">📋 Copier</button>
+        <button class="btn ${timer ? "on" : ""}" onclick="dgMon()">🛰 Surveillance ${timer ? "ON" : "OFF"}</button>
+        <button class="btn ${heal ? "on" : ""}" onclick="dgHeal()">🚑 Auto-soin ${heal ? "ON" : "OFF"}</button>
+      </div>
+      ${sec("map", "🧠 CARTE DES NEURONES", `${map}<div style="margin-top:6px">Intensité = activation max · <span style="color:var(--red)">▢ mort</span> · <span style="color:var(--org)">■ saturé</span> · clique un neurone en difficulté pour le soigner.</div>`, R.deadN.length + R.satN.length > 0)}
+      ${sec("hist", "🕰 HISTORIQUE DE SANTÉ", spark() + (LOG.length ? `<div style="margin-top:6px">${LOG.map((x) => "· " + x).join("<br>")}</div>` : ""), false)}
+      <div class="dg-note">La distribution des poids de chaque couche (σ, max, part ≈ 0) est dans l'onglet <b>① Radiographie</b>.</div>`;
+  }
+  window.dgOpen = (k, el) => { S.open[k] = !el.open; };
+
+  /* ── Soins : chacun est mesuré (score avant → après) et journalisé ── */
+  function reviveNeuron(l, j) { const s = Math.sqrt(2 / NET.W[l][j].length); NET.W[l][j] = NET.W[l][j].map(() => (Math.random() * 2 - 1) * s * 1.7); NET.B[l][j] = 0.1; }
+  function desat(l, j) { NET.W[l][j] = NET.W[l][j].map((w) => w * 0.5); NET.B[l][j] *= 0.5; }
+  function fix(label, fn) {
+    if (!ready()) return;
+    const B = scan(), before = Math.round(B.score), lab = typeof label === "function" ? label(B) : label;
+    fn(B); afterChange();
+    const R = doScan(), after = Math.round(R.score), d = after - before;
+    hlog(`${lab} (${before}→${after})`);
+    renderAll();
+    if (S.tab === "soins") $("dgSoins").insertAdjacentHTML("afterbegin", `<div class="dg-toast ${d < 0 ? "bad" : ""}">${lab} — score ${before} → <b>${after}</b> ${d > 0 ? "▲ +" + d : d < 0 ? "▼ " + d : "="}</div>`);
+  }
+  window.dgNeu = (l, j, st) => fix(st === "d" ? `Neurone C${l + 1}·N${j + 1} réveillé` : `Neurone C${l + 1}·N${j + 1} désaturé`, () => (st === "d" ? reviveNeuron(l, j) : desat(l, j)));
+  window.dgRevive = () => fix((B) => `${B.deadN.length} neurone(s) réveillé(s)`, (B) => B.deadN.forEach(([l, j]) => reviveNeuron(l, j)));
+  window.dgDesat = () => fix("Neurones saturés atténués", (B) => B.satN.forEach(([l, j]) => desat(l, j)));
+  window.dgClip = () => fix("Poids écrêtés à ±5", () => NET.W.forEach((lw) => lw.forEach((r) => { for (let k = 0; k < r.length; k++) r[k] = Math.max(-5, Math.min(5, r[k])); })));
+  window.dgLRdiv = () => fix("LR ÷ 3", () => { const e = $("lrN"); e.value = (parseFloat(e.value) / 3).toPrecision(2); ["input", "change"].forEach((t) => e.dispatchEvent(new Event(t, { bubbles: true }))); });
+  window.dgCopy = function (btn) {
+    const R = S.scan; if (!R) return;
+    const t = `Diagnostic Neural Lab — score ${Math.round(R.score)}/100 — ${NET.L.join("→")} — epoch ${R.epoch}\n` + findsList(R).map((f) => `${f.ic} ${f.msg.replace(/<[^>]+>/g, "")}`).join("\n");
+    const done = () => { if (btn) { const o = btn.textContent; btn.textContent = "✓ Copié"; setTimeout(() => (btn.textContent = o), 1400); } };
+    const fb = () => { const a = document.createElement("textarea"); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand("copy"); } catch (e) {} a.remove(); done(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done).catch(fb); else fb();
+  };
+
+  /* ── Surveillance (bulle 🩺, active labo fermé) et auto-soin ── */
+  function tick() {
+    if (!ready() || S.lrRun) return;
+    if (EPOCH === lastEp && Date.now() - lastT < 10000) return;
+    lastEp = EPOCH; lastT = Date.now();
+    const prev = HIST[HIST.length - 1], R = doScan(), sc = Math.round(R.score);
+    if (heal && R.deadN.length && R.deadN.length / Math.max(1, R.hidTot) > 0.05) {
+      R.deadN.forEach(([l, j]) => reviveNeuron(l, j)); afterChange();
+      hlog(`auto-soin : ${R.deadN.length} neurone(s) réveillé(s)`);
+    }
+    const h = $("dg-hud");
+    h.style.setProperty("--c", hex(sc)); h.innerHTML = `🩺 ${sc}<small>ep ${R.epoch}</small>`; h.classList.add("on");
+    if (prev && (sc - prev.s <= -10 || (sc < 45 && prev.s >= 45))) { h.classList.remove("alert"); void h.offsetWidth; h.classList.add("alert"); hlog(`⚠ chute de santé ${prev.s}→${sc}`); }
+  }
+  window.dgMon = function () {
+    if (timer) { clearInterval(timer); timer = null; heal = false; $("dg-hud").classList.remove("on"); }
+    else { lastEp = -1; timer = setInterval(tick, 2000); tick(); }
+    if (isOpen() && S.tab === "soins") renderSoins();
+  };
+  window.dgHeal = function () {
+    heal = !heal;
+    if (heal && !timer) dgMon(); else if (isOpen() && S.tab === "soins") renderSoins();
+  };
+
+  /* ═════════ ③ TROUVEUR DE LR ═════════ */
   const snapW = () => ({ W: NET.W.map((a) => a.map((r) => r.slice())), B: NET.B.map((r) => r.slice()) });
   function restore(s) { s.W.forEach((a, l) => a.forEach((r, j) => r.forEach((v, k) => (NET.W[l][j][k] = v)))); s.B.forEach((r, l) => r.forEach((v, j) => (NET.B[l][j] = v))); }
   function suggest(P) {
@@ -31921,7 +32147,7 @@ function setUITheme(t,silent){
   }
   window.dgApplyLR = function (v) { syncLR(v); drawLR(); };
 
-  /* ═════════ ③ ÉLAGAGE ═════════ */
+  /* ═════════ ④ ÉLAGAGE ═════════ */
   const sortedAbs = () => NET.W.flat(2).map(Math.abs).sort((a, b) => a - b);
   const thrAt = (sorted, p) => (p <= 0 ? -1 : sorted[Math.min(sorted.length - 1, Math.max(0, Math.floor((sorted.length * p) / 100) - 1))]);
   function withPrune(thr, f) { const s = snapW(); NET.W.forEach((a) => a.forEach((r) => r.forEach((v, k) => { if (Math.abs(v) <= thr) r[k] = 0; }))); try { return f(); } finally { restore(s); } }
@@ -31942,7 +32168,7 @@ function setUITheme(t,silent){
     $("dgSpV").textContent = p + "%";
     const dA = ev.acc == null ? null : ev.acc - base.acc, ok = ev.acc == null ? ev.loss <= base.loss * 1.2 + 1e-4 : dA >= -2;
     $("dgPK").innerHTML = `<div><b>${k.t - k.z}/${k.t}</b><span>Poids gardés</span></div><div><b style="color:${p === 0 ? "var(--text)" : ok ? "var(--grn)" : "var(--red)"}">${ev.acc == null ? "—" : ev.acc.toFixed(0) + "%"}</b><span>Précision${dA == null || !p ? "" : " (" + (dA >= 0 ? "+" : "") + dA.toFixed(0) + ")"}</span></div><div><b>${ev.loss.toFixed(4)}</b><span>Loss</span></div><div><b>${(k.t / Math.max(1, k.t - k.z)).toFixed(1)}×</b><span>Compression</span></div>`;
-    drawMats(thr);
+    drawMats(thr); refreshNeu(p ? thr : -1);
     if (S.curve) drawCurve(p);
   };
   window.dgCurve = function () {
@@ -31970,19 +32196,98 @@ function setUITheme(t,silent){
   window.dgUndoPrune = function () { if (!S.undo) return; restore(S.undo); S.undo = null; $("dgUndo").disabled = true; afterChange(); S.base = null; S.curve = null; $("dgPCv").style.display = "none"; $("dgPLeg").style.display = "none"; dgPreview(); };
   function afterChange() { try { if (typeof gpuSyncWeightsToDevice === "function") gpuSyncWeightsToDevice(); } catch (e) {} try { redraw(); } catch (e) {} }
 
+  /* ── Neurones inutiles : w = 0 sur toutes les entrées ET toutes les sorties ── */
+  const dgClone = (o) => JSON.parse(JSON.stringify(o));
+  // thr = -1 : seulement les poids exactement nuls ; thr >= 0 : simule un élagage à ce seuil.
+  function deadList(thr) {
+    const z = (v) => v === 0 || Math.abs(v) <= thr, out = [];
+    for (let l = 0; l < NET.W.length - 1; l++) {
+      const idx = [];
+      NET.W[l].forEach((row, j) => { if (row.every(z) && NET.W[l + 1].every((r) => z(r[j]))) idx.push(j); });
+      if (idx.length >= NET.W[l].length) idx.shift(); // on garde toujours au moins 1 neurone par couche
+      out.push(idx);
+    }
+    return out;
+  }
+  const deadCount = (D) => D.reduce((a, x) => a + x.length, 0);
+  function refreshNeu(thr) {
+    const D = deadList(-1), n = deadCount(D), prev = thr >= 0 ? deadCount(deadList(thr)) : n;
+    $("dgNeuBtn").textContent = `🧹 Supprimer les neurones inutiles (${n})`; $("dgNeuBtn").disabled = !n;
+    let h = n ? D.map((idx, l) => idx.length ? `<b style="color:var(--text)">Couche ${l + 1}</b> : neurone${idx.length > 1 ? "s" : ""} ${idx.map((j) => "n°" + (j + 1)).join(", ")}` : "").filter(Boolean).join(" &nbsp;·&nbsp; ") : "Aucun neurone inutile pour l'instant.";
+    if (prev > n) h += `<br><span style="color:var(--ylw)">Avec l'élagage en aperçu, ${prev - n} neurone${prev - n > 1 ? "s" : ""} de plus deviendrai${prev - n > 1 ? "ent" : "t"} inutile${prev - n > 1 ? "s" : ""} : clique d'abord sur « ✂ Appliquer ».</span>`;
+    $("dgNeuInfo").innerHTML = h;
+  }
+  const snapNet = () => ({ L: NET.L.slice(), W: dgClone(NET.W), B: dgClone(NET.B), BN: dgClone(BN), VEL: dgClone(VEL), MA: dgClone(MA), MV: dgClone(MV) });
+  function netChanged() {
+    try { BN_ZHAT = []; BN_GRAD = { gamma: [], beta: [] }; LAST_ACT = []; LAST_Z = []; LAST_DELTAS = []; SELECTED = null; } catch (e) {}
+    try { $("iLayers").value = NET.L.join(","); } catch (e) {}
+    try { if (typeof gpuOnNetChanged === "function") gpuOnNetChanged(); } catch (e) {}
+    try { resizeCvs(); } catch (e) {}
+    try { redraw(); } catch (e) {}
+    S.base = null; S.curve = null; S.scan = null; $("dgPCv").style.display = "none"; $("dgPLeg").style.display = "none"; dgPreview();
+  }
+  window.dgRemoveDead = function () {
+    if (!ready()) return;
+    const D = deadList(-1), n = deadCount(D); if (!n) return;
+    const before = NET.L.join("→"); S.undoN = snapNet();
+    D.forEach((idx, l) => {
+      for (let q = idx.length - 1; q >= 0; q--) {
+        const j = idx[q];
+        NET.W[l].splice(j, 1); NET.B[l].splice(j, 1);
+        NET.W[l + 1].forEach((r) => r.splice(j, 1));
+        [VEL, MA, MV].forEach((o) => { if (o.w[l]) { o.w[l].splice(j, 1); o.b[l].splice(j, 1); } if (o.w[l + 1]) o.w[l + 1].forEach((r) => r.splice(j, 1)); });
+        ["gamma", "beta", "runMean", "runVar"].forEach((k) => { if (BN[k] && BN[k][l]) BN[k][l].splice(j, 1); });
+      }
+      NET.L[l + 1] -= idx.length;
+    });
+    $("dgNeuUndo").disabled = false; netChanged();
+    try { log(`<span class="ls">🧹 NEURONES INUTILES</span> — ${n} neurone${n > 1 ? "s" : ""} supprimé${n > 1 ? "s" : ""} : [${before}] → [${NET.L.join("→")}]`); } catch (e) {}
+  };
+  window.dgUndoDead = function () {
+    const s = S.undoN; if (!s) return;
+    NET = { L: s.L.slice(), W: dgClone(s.W), B: dgClone(s.B) }; BN = dgClone(s.BN); VEL = dgClone(s.VEL); MA = dgClone(s.MA); MV = dgClone(s.MV);
+    S.undoN = null; $("dgNeuUndo").disabled = true; netChanged();
+    try { log(`<span class="ls">↩ Neurones restaurés</span> — architecture [${NET.L.join("→")}]`); } catch (e) {}
+  };
+
   /* ═════════ Navigation / cycle de vie ═════════ */
   window.dgTab = function (t) {
     S.tab = t;
     document.querySelectorAll(".dg-tab").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
     document.querySelectorAll(".dg-pane").forEach((p) => p.classList.toggle("on", p.id === "dg-p-" + t));
-    if (t === "sante") dgScan(); else if (t === "lr") { drawLR(); if (S.lr.length && !S.lrRun) lrOut(); } else { S.base = null; dgPreview(); if (S.curve) drawCurve(+$("dgSp").value); }
+    if (t === "sante" || t === "soins") dgScan(); else if (t === "lr") { drawLR(); if (S.lr.length && !S.lrRun) lrOut(); } else { S.base = null; dgPreview(); if (S.curve) drawCurve(+$("dgSp").value); }
   };
-  window.openDGLab = function () { $("dg-modal-bg").classList.add("show"); S.base = null; dgTab(S.tab); };
+  window.openDGLab = function (t) { S.undoN = null; $("dgNeuUndo").disabled = true; $("dg-modal-bg").classList.add("show"); S.base = null; dgTab(typeof t === "string" ? t : S.tab); };
+  window.autOpen = () => openDGLab("sante"); // compat : ancien point d'entrée de l'Autopsie
+  window.autClose = () => closeDGLab();
   window.closeDGLab = function () { S.lrStop = true; $("dg-modal-bg").classList.remove("show"); };
   $("dg-modal-bg").addEventListener("click", (e) => { if (e.target === $("dg-modal-bg")) closeDGLab(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && isOpen()) closeDGLab(); });
-  window.addEventListener("resize", () => { if (!isOpen()) return; if (S.tab === "sante" && S.scan) renderScan(); else if (S.tab === "lr") drawLR(); else if (S.curve) drawCurve(+$("dgSp").value); });
-  setInterval(() => { if (isOpen() && S.live && S.tab === "sante" && !S.lrRun && ready() && typeof autoRunning !== "undefined" && autoRunning) dgScan(); }, 900);
+  window.addEventListener("resize", () => { if (!isOpen()) return; if (S.tab === "sante" && S.scan) renderScan(); else if (S.tab === "soins" && S.scan) renderSoins(); else if (S.tab === "lr") drawLR(); else if (S.curve) drawCurve(+$("dgSp").value); });
+  setInterval(() => { if (isOpen() && S.live && (S.tab === "sante" || S.tab === "soins") && !S.lrRun && ready() && typeof autoRunning !== "undefined" && autoRunning) dgScan(); }, 900);
+})();
+</script>
+<div id="dg-hud" onclick="openDGLab('sante')"></div>
+<script>
+(function(){
+// Place la bulle de surveillance au-dessus des barres fixes mobiles (entraînement + navigation).
+function place(){
+  const h=document.getElementById("dg-hud");if(!h)return;
+  // Masquée dès qu'un labo / une fenêtre est ouverte (tous les overlays utilisent .show ou .open)
+  h.classList.toggle("dg-hide",!!document.querySelector('[id$="-bg"].show,[id$="-bg"].open'));
+  if(!h.classList.contains("on"))return;
+  let top=window.innerHeight;
+  ["mobile-trainbar","mobile-nav"].forEach(id=>{
+    const e=document.getElementById(id);if(!e)return;
+    const cs=getComputedStyle(e);if(cs.display==="none"||cs.visibility==="hidden")return;
+    const r=e.getBoundingClientRect();if(r.height>0&&r.top<top)top=r.top;
+  });
+  h.style.bottom=(window.innerHeight-top+10)+"px";
+}
+setInterval(place,500);
+try{new MutationObserver(place).observe(document.body,{attributes:true,attributeFilter:["class"],subtree:true})}catch(e){}
+window.addEventListener("resize",place);
+window.addEventListener("orientationchange",()=>setTimeout(place,200));
 })();
 </script>
 
@@ -32778,272 +33083,6 @@ window.addEventListener("resize",()=>{if(isOpen())S.tab==="run"?drawChart():rend
   })();
 </script>
 
-<style>
-#aut-ov{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;background:rgba(3,4,8,.82);backdrop-filter:blur(6px);padding:12px}
-#aut-ov.on{display:flex;animation:autIn .25s ease-out}
-@keyframes autIn{from{opacity:0}to{opacity:1}}
-#aut-box{width:min(600px,100%);max-height:90vh;overflow:auto;background:linear-gradient(160deg,#0a0c18,#05060c);border:1px solid var(--a1);border-radius:10px;box-shadow:0 0 40px rgba(0,229,255,.18),inset 0 0 30px rgba(191,95,255,.05);padding:16px 16px 14px;color:var(--text)}
-.aut-h{display:flex;align-items:center;gap:14px;margin-bottom:12px}
-.aut-ring{position:relative;width:96px;height:96px;flex:none}
-.aut-ring svg{transform:rotate(-90deg)}
-.aut-ring b{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px;line-height:1}
-.aut-ring b small{font-size:8px;letter-spacing:.14em;color:var(--dim);margin-top:3px;font-weight:700}
-.aut-t{font-size:15px;font-weight:800;letter-spacing:.08em;background:linear-gradient(110deg,#00e5ff,#bf5fff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.aut-sub{font-size:10px;color:var(--dim);line-height:1.6;margin-top:3px}
-.aut-x{margin-left:auto;align-self:flex-start;cursor:pointer;color:var(--dim);font-size:18px;padding:0 4px}
-.aut-x:hover{color:var(--red)}
-.aut-lay{display:flex;gap:6px;margin:8px 0 12px;flex-wrap:wrap}
-.aut-l{flex:1;min-width:78px;background:#030408;border:1px solid var(--brd);border-radius:6px;padding:6px 8px;font-size:9px;color:var(--dim)}
-.aut-l i{display:block;height:5px;border-radius:3px;background:#12182e;margin:5px 0 3px;overflow:hidden}
-.aut-l i s{display:block;height:100%;border-radius:3px;transition:width .7s cubic-bezier(.22,1,.36,1)}
-.aut-f{display:flex;gap:9px;padding:9px 10px;margin-bottom:6px;border-radius:6px;border:1px solid var(--brd);border-left:3px solid var(--c);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 9%,transparent),transparent);animation:autUp .35s both}
-@keyframes autUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.aut-f .ic{font-size:16px;line-height:1.3}
-.aut-f h4{margin:0 0 2px;font-size:11px;color:var(--c);letter-spacing:.04em}
-.aut-f p{margin:0;font-size:10px;line-height:1.6;color:var(--text)}
-.aut-f p em{color:var(--dim);font-style:normal}
-.aut-bar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
-.aut-bar .btn{flex:1}
-#aut-box .aut-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
-#aut-box .aut-bar .btn{white-space:normal;line-height:1.3;min-height:42px;height:auto;width:auto;padding:9px 10px;font-size:12px;text-align:center}
-#aut-box .aut-bar .btn.ok{grid-column:1/-1}
-@media(max-width:600px){
-#aut-ov{padding:6px;align-items:flex-end}
-#aut-box{max-height:94vh;padding:14px 12px calc(14px + env(safe-area-inset-bottom,0px))}
-#aut-box .aut-bar{grid-template-columns:1fr 1fr}
-#aut-box .aut-bar .btn{font-size:12.5px;min-height:46px}
-.aut-h{gap:10px}.aut-ring{width:80px;height:80px}.aut-ring svg{width:80px;height:80px}
-.aut-t{font-size:13px}.aut-sub{font-size:11px}
-.aut-l{font-size:10px;min-width:calc(50% - 6px)}
-.aut-f p{font-size:12px}.aut-f h4{font-size:12.5px}
-.aut-d>summary{font-size:11px;padding:11px 10px}.aut-d>div{font-size:11px}
-.aut-n{width:22px;height:22px}.aut-row{gap:6px}.aut-rl{width:44px;font-size:9px}
-.aut-hr{flex-wrap:wrap}.aut-hr svg{width:100%;max-width:190px}
-.aut-toast{font-size:11.5px}
-#aut-hud{font-size:13px;padding:8px 14px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
-}
-</style>
-<div id="aut-ov" onclick="if(event.target===this)autClose()"><div id="aut-box"></div></div>
-<script>
-(function(){
-const $=id=>document.getElementById(id);
-let LAST=null;
-function mean(a){return a.length?a.reduce((s,v)=>s+v,0)/a.length:0}
-function scan(){
-  if(typeof NET==="undefined"||!NET||!NET.W||!DS.inputs.length)return null;
-  const nL=NET.W.length,N=DS.inputs.length,F=[],lay=[];
-  const dead=[],sat=[],gAbs=Array(nL).fill(0);let nan=false,ok=0;
-  const cnt=NET.L.slice(1).map((n,l)=>({mx:Array(n).fill(0),sat:Array(n).fill(0),pos:Array(n).fill(0)}));
-  const step=Math.max(1,Math.floor(N/200));let used=0;
-  for(let s=0;s<N;s+=step){
-    used++;
-    const {activations,zs}=forward(DS.inputs[s]);
-    const dl=backward(activations,zs,DS.outputs[s]);
-    for(let l=0;l<nL;l++){
-      gAbs[l]+=mean(dl[l].map(Math.abs));
-      for(let j=0;j<NET.W[l].length;j++){
-        const a=activations[l+1][j];if(!isFinite(a))nan=true;
-        const c=cnt[l];c.mx[j]=Math.max(c.mx[j],Math.abs(a));
-        if(l<nL-1){const f=getActForLayer(l);
-          if((f==="tanh"&&Math.abs(a)>.97)||(f==="sigmoid"&&(a<.03||a>.97)))c.sat[j]++}
-      }}
-    const o=activations[nL];
-    const t=DS.outputs[s];
-    const g=o.length>1?o.indexOf(Math.max(...o))===t.indexOf(Math.max(...t)):(o[0]>.5)===(t[0]>.5);
-    if(g)ok++;
-  }
-  gAbs.forEach((v,i)=>gAbs[i]=v/used);
-  for(let l=0;l<nL-1;l++){
-    const f=getActForLayer(l),d=[],s=[];
-    cnt[l].mx.forEach((m,j)=>{ if(m<1e-7&&(f==="relu"||f==="leakyrelu"||f==="elu"||f==="relu6"||f==="gelu"||f==="swish"||f==="softplus"||f==="sigmoid"||f==="tanh"))d.push(j);
-      if(cnt[l].sat[j]>used*.9)s.push(j)});
-    // pour sigmoid/tanh, "mort" n'a pas de sens : on ne garde que ReLU-like
-    const reluLike=["relu","leakyrelu","elu","relu6"].includes(f);
-    const dd=reluLike?d:[];
-    dd.forEach(j=>dead.push([l,j]));s.forEach(j=>sat.push([l,j]));
-    const n=NET.W[l].length;
-    lay.push({l,n,f,dead:dd.length,sat:s.length,alive:1-(dd.length+s.length)/n});
-  }
-  const acc=ok/used;
-  // baseline = classe majoritaire
-  let base=0;
-  if(DS.outputs[0].length>1){const c={};DS.outputs.forEach(t=>{const k=t.indexOf(Math.max(...t));c[k]=(c[k]||0)+1});base=Math.max(...Object.values(c))/N}
-  else{const p=DS.outputs.filter(t=>t[0]>.5).length/N;base=Math.max(p,1-p)}
-  let wMax=0,nW=0;
-  NET.W.forEach(lw=>lw.forEach(r=>r.forEach(w=>{wMax=Math.max(wMax,Math.abs(w));nW++})));
-  const H=LOSS_H.filter(isFinite),n=H.length;
-  const last=n>=40?mean(H.slice(-20)):null,prev=n>=40?mean(H.slice(-40,-20)):null;
-  return {nL,N,dead,sat,gAbs,nan,acc,base,wMax,nW,cnt,used,lay,H,n,last,prev,epoch:EPOCH,lossNaN:LOSS_H.some(v=>!isFinite(v))};
-}
-function diagnose(r){
-  const F=[];let score=100;
-  const add=(sev,ic,t,msg,pen)=>{F.push({sev,ic,t,msg});score-=pen};
-  const tot=NET.L.slice(1,-1).reduce((a,b)=>a+b,0);
-  if(r.nan||r.lossNaN)add("c","💥","Valeurs NaN / ∞ détectées","Le réseau a divergé. Baisse fortement le taux d'apprentissage, vérifie la normalisation des entrées, puis réinitialise.",40);
-  if(r.dead.length){const p=r.dead.length/Math.max(1,tot);
-    add(p>.3?"c":"w","💀",`${r.dead.length} neurone(s) mort(s) (${Math.round(p*100)} %)`,"Ces neurones sortent 0 sur tout le dataset : ils n'apprennent plus. <em>Cause typique : LR trop haut ou biais très négatif. Le bouton ci-dessous les réveille.</em>",Math.min(35,10+p*60))}
-  if(r.sat.length){const p=r.sat.length/Math.max(1,tot);
-    add("w","🌫",`${r.sat.length} neurone(s) saturé(s)`,"Collés à leurs bornes (sigmoïde/tanh), leur dérivée est quasi nulle : ils bloquent le gradient. <em>Essaie ReLU/Leaky ReLU ou des entrées centrées-réduites.</em>",Math.min(20,6+p*30))}
-  if(r.gAbs.length>1){const a=r.gAbs[0],b=r.gAbs[r.nL-1];
-    if(a>0&&b>0&&a/b<.02)add("w","📉","Gradient qui s'évanouit",`La 1re couche reçoit ${(b/a).toFixed(0)}× moins de signal que la dernière. <em>Réduis la profondeur, change d'activation ou active la Batch Norm.</em>`,14);
-    if(b>0&&a/b>50)add("w","📈","Gradient qui explose",`La 1re couche reçoit ${(a/b).toFixed(0)}× plus de signal que la dernière. <em>Baisse le LR ou active le clipping.</em>`,14)}
-  if(r.wMax>10)add("w","⚖",`Poids extrême (|w| = ${r.wMax.toFixed(1)})`,"Un poids très grand rend le réseau instable et sur-confiant. <em>Essaie la régularisation L2 ou un LR plus faible.</em>",8);
-  if(r.last!==null){
-    const d=(r.prev-r.last)/Math.max(1e-9,r.prev);
-    if(d<-.05)add("c","🌋","La perte remonte",`Elle a augmenté de ${Math.round(-d*100)} % sur les dernières epochs. <em>LR trop élevé ou oscillation : divise-le par 3.</em>`,18);
-    else if(Math.abs(d)<.002&&r.last>.05)add("w","🧊","Plateau d'apprentissage",`La perte est figée à ${r.last.toFixed(4)}. <em>Capacité insuffisante, LR trop petit, ou minimum local : ajoute des neurones ou mute les poids.</em>`,12)}
-  else if(r.n<10)add("i","⏳","Pas encore assez d'historique","Lance quelques dizaines d'epochs pour un diagnostic de convergence.",0);
-  if(r.acc<=r.base+.02&&r.n>=40&&r.base>.55)add("w","⚠",`Ne bat pas le hasard informé`,`Précision ${Math.round(r.acc*100)} % ≈ classe majoritaire (${Math.round(r.base*100)} %). <em>Le réseau prédit presque toujours la même classe : dataset déséquilibré ?</em>`,14);
-  if(r.nW>r.N*4&&r.N<200)add("i","🧬","Beaucoup de paramètres pour peu de données",`${r.nW} poids pour ${r.N} exemples : risque de surapprentissage. <em>Voir le Labo Généralisation.</em>`,5);
-  if(!F.some(f=>f.sev!=="i"))F.unshift({sev:"g",ic:"✅",t:"Réseau en bonne santé",msg:`Précision ${Math.round(r.acc*100)} %, aucun neurone mort, gradients équilibrés. Continue l'entraînement ou teste sur de nouveaux points.`});
-  return {F,score:Math.max(0,Math.min(100,Math.round(score)))};
-}
-const COL={c:"var(--red)",w:"var(--org)",i:"var(--a1)",g:"var(--grn)"};
-window.autOpen=function(){
-  const r=scan(),box=$("aut-box");
-  if(!r){alert("Crée d'abord un réseau et un dataset.");return}
-  const {F,score}=diagnose(r);LAST=r;
-  const col=score>=75?"var(--grn)":score>=45?"var(--ylw)":"var(--red)";
-  const verdict=score>=75?"Bonne santé":score>=45?"À surveiller":"État critique";
-  const C=2*Math.PI*42;
-  box.innerHTML=`<div class="aut-h"><div class="aut-ring"><svg width="96" height="96" viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" fill="none" stroke="#12182e" stroke-width="7"/><circle id="aut-arc" cx="48" cy="48" r="42" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" style="filter:drop-shadow(0 0 6px ${col});transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)"/></svg><b style="color:${col}">${score}<small>/ 100</small></b></div>
-  <div><div class="aut-t">🩺 AUTOPSIE DU RÉSEAU</div><div class="aut-sub"><b style="color:${col}">${verdict}</b> · ${NET.L.join("→")} · epoch ${r.epoch}<br>Précision ${Math.round(r.acc*100)} % · ${r.N} exemples · ${r.nW} poids</div></div><span class="aut-x" onclick="autClose()">✕</span></div>
-  <div class="aut-lay">${r.lay.map(L=>{const c=L.alive>.8?"var(--grn)":L.alive>.5?"var(--ylw)":"var(--red)";return`<div class="aut-l">Couche ${L.l+1} · ${L.f}<i><s style="width:${Math.round(L.alive*100)}%;background:${c}"></s></i>${L.n-L.dead-L.sat}/${L.n} actifs</div>`}).join("")}</div>
-  ${F.map((f,i)=>`<div class="aut-f" style="--c:${COL[f.sev]};animation-delay:${i*70}ms"><span class="ic">${f.ic}</span><div><h4>${f.t}</h4><p>${f.msg}</p></div></div>`).join("")}
-  <div class="aut-bar">${r.dead.length?`<button class="btn ok" onclick="autRevive()">⚡ Réveiller ${r.dead.length} neurone(s)</button>`:""}<button class="btn" onclick="autOpen()">↻ Rescanner</button><button class="btn" onclick="autCopy()">📋 Copier</button></div>`;
-  $("aut-ov").classList.add("on");
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=$("aut-arc");if(a)a.style.strokeDashoffset=C*(1-score/100)}));
-};
-window.autClose=()=>$("aut-ov").classList.remove("on");
-window.autRevive=function(){
-  if(!LAST)return;
-  LAST.dead.forEach(([l,j])=>{
-    const fin=NET.W[l][j].length,s=Math.sqrt(2/fin);
-    for(let k=0;k<fin;k++)NET.W[l][j][k]=(Math.random()*2-1)*s*1.7;
-    NET.B[l][j]=0.1;
-  });
-  try{redraw()}catch(e){}
-  autOpen();
-};
-window.autCopy=function(){
-  if(!LAST)return;const {F,score}=diagnose(LAST);
-  const t=`Autopsie Neural Lab — score ${score}/100 — ${NET.L.join("→")} — epoch ${LAST.epoch}\n`+F.map(f=>`${f.ic} ${f.t}: ${f.msg.replace(/<[^>]+>/g,"")}`).join("\n");
-  navigator.clipboard&&navigator.clipboard.writeText(t);
-};
-window.__aut={scan,diagnose,last:()=>LAST};document.addEventListener("keydown",e=>{if(e.key==="Escape")autClose()});
-})();
-</script>
-<style>
-.aut-d{margin:8px 0;border:1px solid var(--brd);border-radius:6px;background:#030408}
-.aut-d>summary{cursor:pointer;padding:7px 10px;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--a1);list-style:none;display:flex;justify-content:space-between}
-.aut-d>summary::after{content:"▾";color:var(--dim)}.aut-d[open]>summary::after{content:"▴"}
-.aut-d>div{padding:4px 10px 10px;font-size:9px;color:var(--dim);line-height:1.6}
-.aut-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:5px 0}
-.aut-rl{width:38px;font-size:8px;color:var(--dim)}
-.aut-n{width:15px;height:15px;border-radius:4px;background:rgba(0,229,255,var(--o));box-shadow:0 0 6px rgba(0,229,255,calc(var(--o)*.5));transition:transform .15s}
-.aut-n.d{background:transparent;border:1px dashed var(--red);box-shadow:none;cursor:pointer}
-.aut-n.s{background:rgba(255,140,42,.7);box-shadow:0 0 6px var(--org);cursor:pointer}
-.aut-n:hover{transform:scale(1.35)}
-.aut-hr{display:flex;align-items:center;gap:8px;margin:4px 0}.aut-hr svg{flex:none}
-.aut-chip{display:inline-block;padding:1px 7px;border-radius:9px;font-size:9px;font-weight:700;margin-left:6px;border:1px solid currentColor}
-.aut-toast{padding:7px 10px;margin-bottom:8px;border-radius:6px;font-size:10px;border:1px solid var(--grn);color:var(--grn);background:rgba(0,255,157,.07);animation:autUp .3s}
-.aut-toast.bad{border-color:var(--org);color:var(--org);background:rgba(255,140,42,.07)}
-.aut-bar .btn.on{background:rgba(0,255,157,.18);border-color:var(--grn);color:var(--grn)}
-#aut-hud{position:fixed;left:12px;bottom:12px;z-index:99980;display:none;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;background:#05060ce8;border:1px solid var(--c,var(--a1));color:var(--c,var(--a1));font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 0 16px color-mix(in srgb,var(--c,#00e5ff) 35%,transparent);backdrop-filter:blur(6px)}
-#aut-hud.aut-hide{display:none!important}
-#aut-hud.on{display:flex}#aut-hud.alert{animation:autPulse .8s 4}
-#aut-hud small{font-weight:500;color:var(--dim);font-size:9px}
-@keyframes autPulse{50%{transform:scale(1.12);box-shadow:0 0 28px var(--red)}}
-</style>
-<div id="aut-hud" onclick="autOpen()"></div>
-<script>
-(function(){
-const A=window.__aut,$=id=>document.getElementById(id),HIST=[],LOG=[];
-let timer=null,heal=false,lastEp=-1,lastT=0;
-const col=s=>s>=75?"var(--grn)":s>=45?"var(--ylw)":"var(--red)";
-const redo=()=>{try{redraw()}catch(e){}};
-const log=m=>{LOG.unshift(`ep ${EPOCH} · ${m}`);LOG.length=12};
-function push(r,d){const h=HIST[HIST.length-1];if(!h||h.e!==r.epoch||h.s!==d.score)HIST.push({e:r.epoch,s:d.score});if(HIST.length>80)HIST.shift()}
-function reviveNeuron(l,j){const s=Math.sqrt(2/NET.W[l][j].length);NET.W[l][j]=NET.W[l][j].map(()=>(Math.random()*2-1)*s*1.7);NET.B[l][j]=.1}
-function desat(l,j){NET.W[l][j]=NET.W[l][j].map(w=>w*.5);NET.B[l][j]*=.5}
-function fix(label,fn){
-  const before=A.diagnose(A.scan()).score;fn();redo();window.autOpen();
-  const after=A.diagnose(A.scan()).score,d=after-before,b=$("aut-box");
-  log(label+` (${before}→${after})`);
-  b.insertAdjacentHTML("afterbegin",`<div class="aut-toast ${d<0?"bad":""}">${label} — score ${before} → <b>${after}</b> ${d>0?"▲ +"+d:d<0?"▼ "+d:"="}</div>`);
-}
-window.autNeu=(l,j,st)=>fix(st==="d"?`Neurone C${l+1}·N${j+1} réveillé`:`Neurone C${l+1}·N${j+1} désaturé`,()=>st==="d"?reviveNeuron(l,j):desat(l,j));
-window.autLR=()=>fix("LR ÷ 3",()=>{const e=$("lrN");e.value=(parseFloat(e.value)/3).toPrecision(2);["input","change"].forEach(t=>e.dispatchEvent(new Event(t,{bubbles:true})))});
-window.autDesat=()=>fix("Neurones saturés atténués",()=>A.last().sat.forEach(([l,j])=>desat(l,j)));
-window.autClip=()=>fix("Poids écrêtés à ±5",()=>NET.W.forEach(lw=>lw.forEach(r=>{for(let k=0;k<r.length;k++)r[k]=Math.max(-5,Math.min(5,r[k]))})));
-function hist(l){
-  let m=1e-6,n=0,s=0,z=0;NET.W[l].forEach(r=>r.forEach(v=>{m=Math.max(m,Math.abs(v));n++;s+=v*v;if(Math.abs(v)<.01)z++}));
-  const B=18,b=Array(B).fill(0);NET.W[l].forEach(r=>r.forEach(v=>b[Math.min(B-1,Math.floor((v+m)/(2*m)*B))]++));
-  let mx=1;b.forEach(v=>mx=Math.max(mx,v));
-  const bars=b.map((v,i)=>`<rect x="${i*10}" y="${34-v/mx*32}" width="8" height="${v/mx*32}" rx="2" fill="${i===B>>1||i===(B>>1)-1?"#bf5fff":"#00e5ff"}" opacity=".8"/>`).join("");
-  return `<div class="aut-hr"><span class="aut-rl">C${l+1}</span><svg width="180" height="36">${bars}</svg><span>σ ${Math.sqrt(s/n).toFixed(2)} · max ${m.toFixed(2)} · ${Math.round(z/n*100)} % ≈ 0</span></div>`}
-function spark(){
-  if(HIST.length<2)return "Lance plusieurs scans (ou la surveillance) pour tracer la courbe.";
-  const W=260,H=44,p=HIST.map((h,i)=>`${(i/(HIST.length-1)*W).toFixed(1)},${(H-h.s/100*H).toFixed(1)}`).join(" ");
-  const c=col(HIST[HIST.length-1].s);
-  return `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="max-height:60px"><polyline points="${p}" fill="none" stroke="${c.replace("var(--grn)","#00ff9d").replace("var(--ylw)","#ffd600").replace("var(--red)","#ff3d5a")}" stroke-width="2" stroke-linejoin="round"/></svg>`}
-const orig=window.autOpen;
-window.autOpen=function(){
-  orig();const r=A.last();if(!r||!$("aut-ov").classList.contains("on"))return;
-  const d=A.diagnose(r),prev=HIST[HIST.length-1];push(r,d);
-  const D=new Set(r.dead.map(x=>x.join(","))),box=$("aut-box");
-  if(prev&&prev.s!==d.score){const dl=d.score-prev.s;box.querySelector(".aut-sub").insertAdjacentHTML("beforeend",`<span class="aut-chip" style="color:${dl>0?"var(--grn)":"var(--red)"}">${dl>0?"▲ +":"▼ "}${dl}</span>`)}
-  const map=r.cnt.map((c,l)=>`<div class="aut-row"><span class="aut-rl">${l<r.nL-1?"C"+(l+1):"Sortie"}</span>${c.mx.map((m,j)=>{const hid=l<r.nL-1,dd=D.has(l+","+j),ss=hid&&c.sat[j]>r.used*.9,st=dd?"d":ss?"s":"a";return `<i class="aut-n ${st}" style="--o:${(.25+.75*Math.min(1,m)).toFixed(2)}" title="C${l+1}·N${j+1} — max|a| ${m.toFixed(3)}${dd?" — mort (clic : réveiller)":ss?" — saturé (clic : atténuer)":""}" ${st!=="a"?`onclick="autNeu(${l},${j},'${st}')"`:""}></i>`}).join("")}</div>`).join("");
-  const hw=NET.W.map((_,l)=>hist(l)).join("");
-  const sec=(t,b,o)=>`<details class="aut-d" ${o?"open":""}><summary>${t}</summary><div>${b}</div></details>`;
-  const html=sec("🧠 CARTE DES NEURONES",`${map}<div style="margin-top:6px">Intensité = activation max · <span style="color:var(--red)">▢ mort</span> · <span style="color:var(--org)">■ saturé</span> · clique un neurone en difficulté pour le soigner.</div>`,r.dead.length+r.sat.length>0)
-   +sec("📊 DISTRIBUTION DES POIDS",hw+"<div>Barre violette = zéro. Une cloche centrée et étroite est saine ; des pics aux bords signalent saturation ou explosion.</div>")
-   +sec("🕰 HISTORIQUE DE SANTÉ",spark()+(LOG.length?`<div style="margin-top:6px">${LOG.map(x=>"· "+x).join("<br>")}</div>`:""));
-  box.querySelector(".aut-bar").insertAdjacentHTML("beforebegin",html);
-  const bar=box.querySelector(".aut-bar");
-  bar.insertAdjacentHTML("afterbegin",`<button class="btn" onclick="autLR()">🐢 LR ÷ 3</button>${r.sat.length?`<button class="btn" onclick="autDesat()">🌫 Désaturer ${r.sat.length}</button>`:""}${r.wMax>5?`<button class="btn" onclick="autClip()">✂ Écrêter poids</button>`:""}`);
-  bar.insertAdjacentHTML("beforeend",`<button class="btn ${timer?"on":""}" onclick="autMon()">🛰 Surveillance ${timer?"ON":"OFF"}</button><button class="btn ${heal?"on":""}" onclick="autHeal()">🚑 Auto-soin ${heal?"ON":"OFF"}</button>`);
-};
-function tick(){
-  const r=A.scan();if(!r)return;
-  if(r.epoch===lastEp&&Date.now()-lastT<10000)return;
-  lastEp=r.epoch;lastT=Date.now();
-  const d=A.diagnose(r),prev=HIST[HIST.length-1];push(r,d);
-  if(heal&&r.dead.length&&r.dead.length/Math.max(1,r.dead.length+r.lay.reduce((a,L)=>a+L.n-L.dead,0))>.05){r.dead.forEach(([l,j])=>reviveNeuron(l,j));log(`auto-soin : ${r.dead.length} neurone(s) réveillé(s)`);redo()}
-  const h=$("aut-hud");h.style.setProperty("--c",col(d.score).replace("var(--grn)","#00ff9d").replace("var(--ylw)","#ffd600").replace("var(--red)","#ff3d5a"));
-  h.innerHTML=`🩺 ${d.score}<small>ep ${r.epoch}</small>`;h.classList.add("on");
-  if(prev&&(d.score-prev.s<=-10||(d.score<45&&prev.s>=45))){h.classList.remove("alert");void h.offsetWidth;h.classList.add("alert");log(`⚠ chute de santé ${prev.s}→${d.score}`)}
-}
-window.autMon=function(){
-  if(timer){clearInterval(timer);timer=null;$("aut-hud").classList.remove("on")}
-  else{timer=setInterval(tick,2000);tick()}
-  window.autOpen();
-};
-window.autHeal=function(){heal=!heal;if(heal&&!timer)autMon();else window.autOpen()};
-})();
-</script>
-<script>
-(function(){
-// Place la bulle de surveillance au-dessus des barres fixes mobiles (entraînement + navigation).
-function place(){
-  const h=document.getElementById("aut-hud");if(!h)return;
-  // Masquée dès qu'un labo / une fenêtre est ouverte (tous les overlays utilisent .show, .on ou .open)
-  h.classList.toggle("aut-hide",!!document.querySelector('[id$="-bg"].show,[id$="-bg"].open,#aut-ov.on'));
-  if(!h.classList.contains("on"))return;
-  let top=window.innerHeight;
-  ["mobile-trainbar","mobile-nav"].forEach(id=>{
-    const e=document.getElementById(id);if(!e)return;
-    const cs=getComputedStyle(e);if(cs.display==="none"||cs.visibility==="hidden")return;
-    const r=e.getBoundingClientRect();if(r.height>0&&r.top<top)top=r.top;
-  });
-  h.style.bottom=(window.innerHeight-top+10)+"px";
-}
-setInterval(place,500);
-try{new MutationObserver(place).observe(document.body,{attributes:true,attributeFilter:["class"],subtree:true})}catch(e){}
-window.addEventListener("resize",place);
-window.addEventListener("orientationchange",()=>setTimeout(place,200));
-})();
-</script>
 <style id="nl-searchfix">
 /* ── Barres de recherche (Formules + Options) ── */
 .fs-box{position:relative;margin-bottom:8px}
